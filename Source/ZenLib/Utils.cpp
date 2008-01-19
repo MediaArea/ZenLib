@@ -1,5 +1,5 @@
 // ZenLib::Utils - Very small utilities
-// Copyright (C) 2002-2007 Jerome Martinez, Zen@MediaArea.net
+// Copyright (C) 2002-2008 Jerome Martinez, Zen@MediaArea.net
 //
 // This software is provided 'as-is', without any express or implied
 // warranty.  In no event will the authors be held liable for any damages
@@ -232,6 +232,18 @@ float64 LittleEndian2float64(const char* Liste)
 }
 
 //---------------------------------------------------------------------------
+// Little Endian - float 80 bits
+float80 LittleEndian2float80(const char* Liste)
+{
+    int128u RetourI;
+    RetourI  =LittleEndian2int64u(Liste);
+    RetourI<<=16;
+    RetourI |=LittleEndian2int16u(Liste+8);
+    float80 Retour=*((float80*)(&RetourI));
+    return Retour;
+}
+
+//---------------------------------------------------------------------------
 // Big Endian - 8 bits
 int8s  BigEndian2int8s     (const char* Liste)
 {
@@ -422,6 +434,18 @@ float64 BigEndian2float64(const char* Liste)
 {
     int64u RetourI=BigEndian2int64u(Liste);
     float64 Retour=*((float64*)(&RetourI));
+    return Retour;
+}
+
+//---------------------------------------------------------------------------
+// Big Endian - float 80 bits
+float80 BigEndian2float80(const char* Liste)
+{
+    int128u RetourI;
+    RetourI  =BigEndian2int64u(Liste);
+    RetourI<<=16;
+    RetourI |=BigEndian2int16u(Liste+8);
+    float80 Retour=*((float80*)(&RetourI));
     return Retour;
 }
 

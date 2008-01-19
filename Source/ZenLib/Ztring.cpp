@@ -1511,7 +1511,7 @@ bool Ztring::Compare (const Ztring &ToCompare, const Ztring &Comparator, ztring_
 
         //string comparasion
         if (Comparator==_T("==")) return (Left==Right);
-        if (Comparator==_T("IN")) {if (Left.find(Right)!=Error) return true; else return false;}
+        if (Comparator==_T("IN")) {if (Left.find(Right)!=string::npos) return true; else return false;}
         if (Comparator==_T("<"))  return (Left< Right);
         if (Comparator==_T("<=")) return (Left<=Right);
         if (Comparator==_T(">=")) return (Left>=Right);
@@ -1524,7 +1524,7 @@ bool Ztring::Compare (const Ztring &ToCompare, const Ztring &Comparator, ztring_
     {
         //string comparasion
         if (Comparator==_T("==")) return (*this==ToCompare);
-        if (Comparator==_T("IN")) {if (this->find(ToCompare)!=Error) return true; else return false;}
+        if (Comparator==_T("IN")) {if (this->find(ToCompare)!=string::npos) return true; else return false;}
         if (Comparator==_T("<"))  return (*this< ToCompare);
         if (Comparator==_T("<=")) return (*this<=ToCompare);
         if (Comparator==_T(">=")) return (*this>=ToCompare);
