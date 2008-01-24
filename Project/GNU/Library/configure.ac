@@ -41,6 +41,7 @@ dnl -------------------------------------------------------------------------
 dnl Enable
 dnl
 AC_ARG_ENABLE(unicode,      AC_HELP_STRING([--disable-unicode],     [Disable Unicode]),                         , enable_unicode=yes)
+AC_ARG_ENABLE(large_files,  AC_HELP_STRING([--disable-large-files], [Disable Large files support]),             , enable_large_files=yes)
 
 dnl -------------------------------------------------------------------------
 dnl With
@@ -189,6 +190,17 @@ else
 fi
 
 dnl -------------------------------------------------------------------------
+dnl Large files
+dnl
+if test "$enable_large_files" = "yes"; then
+	AC_DEFINE(_LARGE_FILES)
+	ZenLib_CXXFLAGS="$ZenLib_CXXFLAGS -D_LARGE_FILES"
+	ZenLib_LargeFiles="yes"
+else
+	ZenLib_LargeFiles="no"
+fi
+
+dnl -------------------------------------------------------------------------
 dnl Disable lib flags if we don't plan to create executables
 dnl
 if test "$enable_shared" != "yes"; then
@@ -210,6 +222,7 @@ dnl #########################################################################
 AC_SUBST(ZenLib_CXXFLAGS)
 AC_SUBST(ZenLib_LIBS)
 AC_SUBST(ZenLib_Unicode)
+AC_SUBST(ZenLib_LargeFiles)
 AC_CONFIG_FILES(ZenLib-config, [chmod u+x ZenLib-config])
 
 AC_OUTPUT(Makefile)
@@ -222,6 +235,7 @@ echo ""
 echo "Configured ZenLib for '$build'"
 echo ""
 echo "  Unicode?                                                $enable_unicode"
+echo "  Large files support?                                    $enable_large_files"
 echo "  Using WxWidgets?                                        $with_wxwidgets"
 echo ""
 echo "  Create static lib?                                      $enable_static"
