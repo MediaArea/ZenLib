@@ -193,8 +193,8 @@ dnl -------------------------------------------------------------------------
 dnl Large files
 dnl
 if test "$enable_large_files" = "yes"; then
-	AC_DEFINE(_LARGE_FILES)
-	ZenLib_CXXFLAGS="$ZenLib_CXXFLAGS -D_LARGE_FILES"
+	ZenLib_CXXFLAGS="$ZenLib_CXXFLAGS -D_LARGE_FILES -D_FILE_OFFSET_BITS=64"
+	CXXFLAGS="$CXXFLAGS -D_LARGE_FILES -D_FILE_OFFSET_BITS=64"
 	ZenLib_LargeFiles="yes"
 else
 	ZenLib_LargeFiles="no"
