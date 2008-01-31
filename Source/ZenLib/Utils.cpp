@@ -216,21 +216,21 @@ int128u LittleEndian2int128u(const char* Liste)
 
 //---------------------------------------------------------------------------
 // Little Endian - float 32 bits
-float32 LittleEndian2float32(const char* Liste)
+float32 LittleEndian2float32(const char*)
 {
     return 0.0; //Does it exist?
 }
 
 //---------------------------------------------------------------------------
 // Little Endian - float 64 bits
-float64 LittleEndian2float64(const char* Liste)
+float64 LittleEndian2float64(const char*)
 {
     return 0.0; //Does it exist?
 }
 
 //---------------------------------------------------------------------------
 // Little Endian - float 80 bits
-float80 LittleEndian2float80(const char* Liste)
+float80 LittleEndian2float80(const char*)
 {
     return 0.0; //Does it exist?
 }
@@ -452,7 +452,7 @@ float64 BigEndian2float64(const char* Liste)
     int64u Integer=BigEndian2int64u(Liste);
 
     //Retrieving elements
-    bool   Sign    =(Integer&0x8000000000000000L)?true:false;
+    bool   Sign    =(Integer&0x8000000000000000LL)?true:false;
     int64u Exponent=(Integer>>52)&0x7FF;
     int64u Mantissa= Integer&0xFFFFFFFFFFFFFLL;
 
