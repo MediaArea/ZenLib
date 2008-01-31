@@ -205,6 +205,8 @@ ZtringList Dir::GetAllFileNames(const Ztring &Dir_Name_)
                 #endif
                 if (NewSize!=std::string::npos)
                     Dir_Name.resize(NewSize);
+                if (!Dir::Exists(Dir_Name))
+                    return ToReturn; //Does not exist
             }
 
             //open
