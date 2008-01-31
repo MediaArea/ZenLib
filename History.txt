@@ -2,6 +2,7 @@ Version 0.3.2.5 2008-01-
 ---------------
 + Linux/MacOS: support of 2GiB+ files
 x File: Re-enabled shared reading
+x Better handling of Floating point to string
 
 Version 0.3.2.4 2008-01-09
 ---------------
