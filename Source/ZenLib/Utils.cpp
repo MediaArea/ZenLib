@@ -459,7 +459,7 @@ float64 BigEndian2float64(const char* Liste)
     //Some computing
     if (Exponent==0 || Exponent==0x7FF)
         return 0; //These are denormalised numbers, NANs, and other horrible things
-    Exponent-=0x7F; //Bias
+    Exponent-=0x3FF; //Bias
     float64 Answer=(((float64)Mantissa)/4503599627370496.0+1.0)*std::pow((float64)2, (int)Exponent); //(1+Mantissa) * 2^Exponent
     if (Sign)
         Answer=-Answer;
