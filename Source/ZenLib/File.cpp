@@ -348,6 +348,10 @@ size_t File::Read (int8u* Buffer, size_t Buffer_Size_Max)
     #else //ZENLIB_USEWX
         #ifdef ZENLIB_STANDARD
             //return read((int)File_Handle_Static[this], Buffer, Buffer_Size_Max);
+            int64u Position=Position_Get();
+            int64u Size=Size_Get();
+            if (Position+Buffer_Size_Max>Size)
+                Buffer_Size_Max=Size-Position; //We don't want to enable eofbit (impossible to seek after)
             ((fstream*)File_Handle_Static[this])->read((char*)Buffer, Buffer_Size_Max);
             return ((fstream*)File_Handle_Static[this])->gcount();
         #elif defined WINDOWS

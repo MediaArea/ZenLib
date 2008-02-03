@@ -1,3 +1,7 @@
+Version 0.3.2.6 2008-02-
+---------------
+x Was not seeking after EOF
+
 Version 0.3.2.5 2008-02-01
 ---------------
 + Linux/MacOS: support of 2GiB+ files
