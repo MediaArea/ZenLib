@@ -45,7 +45,7 @@
     #include <math.h>
     #define fmodf fmod
 #endif
-#ifdef __MONTAVISTA__
+#if defined (__MONTAVISTA__) || defined (__ARMEL__)
     #define fmodl fmod
 #endif
 
