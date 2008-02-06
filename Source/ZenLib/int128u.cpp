@@ -41,13 +41,12 @@
 #include <memory>
 #include <cmath>
 #ifdef __BORLANDC__
-    #include <mem.h>
-    #include <math.h>
     #define fmodf fmod
 #endif
 #if defined (__MONTAVISTA__) || defined (__ARMEL__)
     #define fmodl fmod
 #endif
+using namespace std;
 
 namespace ZenLib
 {

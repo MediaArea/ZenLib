@@ -53,7 +53,7 @@
 #include <algorithm>
 #include <sstream>
 #include <iomanip>
-#include <math.h>
+#include <cmath>
 #include "ZenLib/Ztring.h"
 #include <ZenLib/OS_Utils.h>
 #include <ZenLib/ConvertUTF.h>

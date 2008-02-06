@@ -74,10 +74,16 @@
             #undef __TEXT
             #include <windows.h>
         #endif //WINDOWS
+        #include <iomanip>
+        #include <algorithm>
+        #include <cmath>
+        #include <cstdio>
+        #include <cstdlib>
+        #include <ctime>
+        #include <map>
         #include <string>
         #include <sstream>
         #include <vector>
-        #include <algorithm>
     #endif //defined(__VISUALC__) || defined(__BORLANDC__)
 #endif //ZENLIB_USEWX
 
