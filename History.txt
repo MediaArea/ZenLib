@@ -1,6 +1,7 @@
 Version 0.3.2.6 2008-02-
 ---------------
 x Was not seeking after EOF
+x Win9X does not support shared reading, do not use it if Win9X
 
 Version 0.3.2.5 2008-02-01
 ---------------
