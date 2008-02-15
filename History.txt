@@ -1,3 +1,7 @@
+Version 0.3.3.0 2008-
+---------------
++ Base64 encode/decode
+
 Version 0.3.2.6 2008-02-09
 ---------------
 x Was not seeking after EOF
