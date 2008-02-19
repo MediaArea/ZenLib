@@ -35,7 +35,8 @@ cp -r ../Source/ZenLib/*.cpp ZenLib_GNU_FromSource/Source/ZenLib/
 mkdir ZenLib_GNU_FromSource/Source/ZenLib/HTTP_Client
 cp -r ../Source/ZenLib/HTTP_Client/*.h ZenLib_GNU_FromSource/Source/ZenLib/HTTP_Client
 cp -r ../Source/ZenLib/HTTP_Client/*.c ZenLib_GNU_FromSource/Source/ZenLib/HTTP_Client
-cp -r ../Source/ZenLib/Base64/*.h ZenLib_GNU_FromSource/Source/ZenLib/HTTP_Client
+mkdir ZenLib_GNU_FromSource/Source/ZenLib/Base64
+cp -r ../Source/ZenLib/Base64/*.h ZenLib_GNU_FromSource/Source/ZenLib/Base64
 
 #-----------------------------------------------------------------------
 # Copying : Projects
