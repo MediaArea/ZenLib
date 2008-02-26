@@ -1429,7 +1429,7 @@ Ztring &Ztring::MakeUpperCase()
 Ztring &Ztring::TrimLeft(Char ToTrim)
 {
     size_type First=0;
-    while (operator[](First)!=ToTrim)
+    while (operator[](First)==ToTrim)
         First++;
     assign (c_str()+First);
     return *this;
@@ -1440,7 +1440,7 @@ Ztring &Ztring::TrimLeft(Char ToTrim)
 Ztring &Ztring::TrimRight(Char ToTrim)
 {
     size_type Last=size();
-    while (operator[](Last)!=ToTrim)
+    while (operator[](Last)==ToTrim)
         Last--;
     assign (c_str(), Last);
     return *this;
