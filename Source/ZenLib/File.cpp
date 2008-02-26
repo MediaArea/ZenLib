@@ -506,6 +506,74 @@ int64u File::Size_Get()
 }
 
 //---------------------------------------------------------------------------
+Ztring File::Created_Get()
+{
+    #ifdef ZENLIB_USEWX
+        if (File_Handle_Static[this]==NULL)
+    #else //ZENLIB_USEWX
+        #ifdef ZENLIB_STANDARD
+            //if (File_Handle_Static[this]==-1)
+            if (File_Handle_Static[this]==NULL)
+        #elif defined WINDOWS
+            if (File_Handle_Static[this]==NULL)
+        #endif
+    #endif //ZENLIB_USEWX
+        return _T("");
+
+    #ifdef ZENLIB_USEWX
+        return _T(""); //Not implemented
+    #else //ZENLIB_USEWX
+        #ifdef ZENLIB_STANDARD
+            return _T(""); //Not implemented
+        #elif defined WINDOWS
+            FILETIME TimeFT;
+            if (GetFileTime(File_Handle_Static[this], &TimeFT, NULL, NULL))
+            {
+                int64u Time64=0x100000000ULL*TimeFT.dwHighDateTime+TimeFT.dwLowDateTime;
+                Ztring Time; Time.Date_From_Milliseconds_1601(Time64/10000);
+                return Time;
+            }
+            else
+                return _T(""); //There was a problem
+        #endif
+    #endif //ZENLIB_USEWX
+}
+
+//---------------------------------------------------------------------------
+Ztring File::Modified_Get()
+{
+    #ifdef ZENLIB_USEWX
+        if (File_Handle_Static[this]==NULL)
+    #else //ZENLIB_USEWX
+        #ifdef ZENLIB_STANDARD
+            //if (File_Handle_Static[this]==-1)
+            if (File_Handle_Static[this]==NULL)
+        #elif defined WINDOWS
+            if (File_Handle_Static[this]==NULL)
+        #endif
+    #endif //ZENLIB_USEWX
+        return _T("");
+
+    #ifdef ZENLIB_USEWX
+        return _T(""); //Not implemented
+    #else //ZENLIB_USEWX
+        #ifdef ZENLIB_STANDARD
+            return _T(""); //Not implemented
+        #elif defined WINDOWS
+            FILETIME TimeFT;
+            if (GetFileTime(File_Handle_Static[this], NULL, NULL, &TimeFT))
+            {
+                int64u Time64=0x100000000ULL*TimeFT.dwHighDateTime+TimeFT.dwLowDateTime;
+                Ztring Time; Time.Date_From_Milliseconds_1601(Time64/10000);
+                return Time;
+            }
+            else
+                return _T(""); //There was a problem
+        #endif
+    #endif //ZENLIB_USEWX
+}
+
+//---------------------------------------------------------------------------
 bool File::Opened_Get()
 {
     #ifdef ZENLIB_USEWX
@@ -529,6 +597,20 @@ int64u File::Size_Get(const Ztring &File_Name)
 {
     File F(File_Name);
     return F.Size_Get();
+}
+
+//---------------------------------------------------------------------------
+Ztring File::Created_Get(const Ztring &File_Name)
+{
+    File F(File_Name);
+    return F.Created_Get();
+}
+
+//---------------------------------------------------------------------------
+Ztring File::Modified_Get(const Ztring &File_Name)
+{
+    File F(File_Name);
+    return F.Modified_Get();
 }
 
 //---------------------------------------------------------------------------
