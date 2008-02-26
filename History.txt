@@ -1,6 +1,8 @@
 Version 0.3.3.0 2008-
 ---------------
 + Base64 encode/decode
++ File::Created() and File::Modified()
+x Trim() problem
 
 Version 0.3.2.6 2008-02-09
 ---------------
