@@ -1439,10 +1439,10 @@ Ztring &Ztring::TrimLeft(Char ToTrim)
 // Remove trailing whitespaces from a string
 Ztring &Ztring::TrimRight(Char ToTrim)
 {
-    size_type Last=size();
+    size_type Last=size()-1;
     while (operator[](Last)==ToTrim)
         Last--;
-    assign (c_str(), Last);
+    assign (c_str(), Last+1);
     return *this;
 }
 
