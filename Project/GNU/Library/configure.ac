@@ -51,7 +51,7 @@ dnl With
 dnl
 AC_ARG_WITH(wxwidgets,      AC_HELP_STRING([--with-wxwidgets],      [Use WxWidgets]),                           , with_wxwidgets=no)
 AC_ARG_WITH(wx_gui,         AC_HELP_STRING([--with-wx-gui],         [Use WxWidgets with a GUI]),                , with_wx_gui=no)
-AC_ARG_WITH(wx_static,      AC_HELP_STRING([--without-wx-static],   [Do not use WxWidgets static libs]),        , with_wx_static=yes)
+AC_ARG_WITH(wx_static,      AC_HELP_STRING([--with-wx-static],      [Use WxWidgets static libs]),               , with_wx_static=no)
 
 dnl -------------------------------------------------------------------------
 dnl Third party
