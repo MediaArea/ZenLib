@@ -1,4 +1,4 @@
-// ZenLib::CriticalSection - CriticalSection functions
+// ZenLib::Thread - Thread functions
 // Copyright (C) 2007-2008 Jerome Martinez, Zen@MediaArea.net
 //
 // This software is provided 'as-is', without any express or implied
@@ -27,7 +27,7 @@
 #endif
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-#include "ZenLib/CriticalSection.h"
+#include "ZenLib/Thread.h"
 //---------------------------------------------------------------------------
 
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -46,36 +46,77 @@
 namespace ZenLib
 {
 
+class ThreadEntry : public wxThread
+{
+public :
+    ThreadEntry(Thread* Th_) : wxThread(wxTHREAD_JOINABLE)
+        {Th=Th_;};
+    void* Entry() {Th->Entry(); return NULL;}
+private :
+    Thread* Th;
+};
+
 //***************************************************************************
 // Constructor/Destructor
 //***************************************************************************
 
 //---------------------------------------------------------------------------
-CriticalSection::CriticalSection()
+Thread::Thread()
 {
-    CritSect=new wxCriticalSection();
+    ThreadPointer=(void*)new ThreadEntry(this);
+    ((ThreadEntry*)ThreadPointer)->Create();
 }
 
 //---------------------------------------------------------------------------
-CriticalSection::~CriticalSection()
+Thread::~Thread()
 {
-    delete ((wxCriticalSection*)CritSect); //CritSect=NULL;
+    delete (ThreadEntry*)ThreadPointer;
 }
 
 //***************************************************************************
-// Enter/Leave
+// Main Entry
 //***************************************************************************
 
-//---------------------------------------------------------------------------
-void CriticalSection::Enter()
+void Thread::Entry()
 {
-    ((wxCriticalSection*)CritSect)->Enter();
 }
 
-//---------------------------------------------------------------------------
-void CriticalSection::Leave()
+//***************************************************************************
+// Control
+//***************************************************************************
+
+void Thread::Run()
 {
-    ((wxCriticalSection*)CritSect)->Leave();
+    ((ThreadEntry*)ThreadPointer)->Resume();
+}
+
+void Thread::Pause()
+{
+    ((ThreadEntry*)ThreadPointer)->Pause();
+}
+
+void Thread::Stop()
+{
+    ((ThreadEntry*)ThreadPointer)->Delete();
+}
+
+bool Thread::IsRunning()
+{
+    return ((ThreadEntry*)ThreadPointer)->IsRunning();
+}
+
+//***************************************************************************
+// Communicating
+//***************************************************************************
+
+void Thread::Sleep(size_t Millisecond)
+{
+    ((ThreadEntry*)ThreadPointer)->Sleep((unsigned long)Millisecond);
+}
+
+void Thread::Yield()
+{
+    ((ThreadEntry*)ThreadPointer)->Yield();
 }
 
 } //Namespace
@@ -93,44 +134,128 @@ void CriticalSection::Leave()
 //---------------------------------------------------------------------------
 #undef __TEXT
 #include <windows.h>
+#undef Yield
 //---------------------------------------------------------------------------
 
+//---------------------------------------------------------------------------
+//Config
+
+#ifndef _MT
+    #define _MT //Must have this symbol defined to get _beginthread/_endthread declarations
+#endif
+
+#ifdef __BORLANDC__
+    #if !defined(__MT__)
+        #define __MT__ //-tWM in the IDE is not always set
+    #endif
+
+    #if !defined(__MFC_COMPAT__)
+        #define __MFC_COMPAT__ // Needed to know about _beginthreadex etc..
+    #endif
+#endif //__BORLANDC__
+
+
+#if  defined(__VISUALC__) || \
+    (defined(__BORLANDC__) && (__BORLANDC__ >= 0x500)) || \
+    (defined(__GNUG__) && defined(__MSVCRT__)) || \
+     defined(__WATCOMC__) || \
+     defined(__MWERKS__)
+
+    #ifndef __WXWINCE__
+        #define USING_BEGINTHREAD //Using _beginthreadex() instead of CreateThread() if possible (better, because of Win32 API has problems with memory leaks in C library)
+    #endif
+#endif
+
+#ifdef USING_BEGINTHREAD
+    #include <process.h>
+    typedef unsigned THREAD_RETVAL;     //The return type        of the thread function entry point
+    #define THREAD_CALLCONV __stdcall   //The calling convention of the thread function entry point
+#else
+    // the settings for CreateThread()
+    typedef DWORD THREAD_RETVAL;
+    #define THREAD_CALLCONV WINAPI
+#endif
+//---------------------------------------------------------------------------
 
 namespace ZenLib
 {
+
+THREAD_RETVAL THREAD_CALLCONV Thread_Start(void *param)
+{
+    ((Thread*)param)->Entry();
+    return 1;
+}
 
 //***************************************************************************
 // Constructor/Destructor
 //***************************************************************************
 
 //---------------------------------------------------------------------------
-CriticalSection::CriticalSection()
+Thread::Thread()
 {
-    CritSect=new CRITICAL_SECTION;
-    InitializeCriticalSection((CRITICAL_SECTION*)CritSect);
+    #ifdef USING_BEGINTHREAD
+        #ifdef __WATCOMC__
+            const unsigned stksize=10240; //Watcom is reported to not like 0 stack size (which means "use default")
+        #else
+            const unsigned stksize=0; //Default
+        #endif //__WATCOMC__
+
+        ThreadPointer=(void*)_beginthreadex (NULL, stksize, Thread_Start, this, CREATE_SUSPENDED, NULL);
+    #else
+        ThreadPointer=(void*)CreateThread   (NULL,       0, Thread_Start, this, CREATE_SUSPENDED, NULL);
+    #endif //USING_BEGINTHREAD
 }
 
 //---------------------------------------------------------------------------
-CriticalSection::~CriticalSection()
+Thread::~Thread()
 {
-    DeleteCriticalSection((CRITICAL_SECTION*)CritSect);
-    delete ((CRITICAL_SECTION*)CritSect); //CritSect=NULL;
+    CloseHandle((HANDLE)ThreadPointer);
 }
 
 //***************************************************************************
-// Enter/Leave
+// Main Entry
 //***************************************************************************
 
-//---------------------------------------------------------------------------
-void CriticalSection::Enter()
+void Thread::Entry()
 {
-    EnterCriticalSection((CRITICAL_SECTION*)CritSect);
 }
 
-//---------------------------------------------------------------------------
-void CriticalSection::Leave()
+//***************************************************************************
+// Control
+//***************************************************************************
+
+void Thread::Run()
 {
-    LeaveCriticalSection((CRITICAL_SECTION*)CritSect);
+    ResumeThread((HANDLE)ThreadPointer);
+}
+
+void Thread::Pause()
+{
+    SuspendThread((HANDLE)SuspendThread);
+}
+
+void Thread::Stop()
+{
+    SuspendThread((HANDLE)SuspendThread); //Find better
+}
+
+bool Thread::IsRunning()
+{
+    return true; //ToImplement
+}
+
+//***************************************************************************
+// Communicating
+//***************************************************************************
+
+void Thread::Sleep(size_t Millisecond)
+{
+    ::Sleep((DWORD)Millisecond);
+}
+
+void Thread::Yield()
+{
+    ::Sleep(0);
 }
 
 } //Namespace
@@ -152,26 +277,53 @@ namespace ZenLib
 //***************************************************************************
 
 //---------------------------------------------------------------------------
-CriticalSection::CriticalSection()
+Thread::Thread()
 {
 }
 
 //---------------------------------------------------------------------------
-CriticalSection::~CriticalSection()
+Thread::~Thread()
 {
 }
 
 //***************************************************************************
-// Enter/Leave
+// Main Entry
 //***************************************************************************
 
-//---------------------------------------------------------------------------
-void CriticalSection::Enter()
+void Thread::Entry()
 {
 }
 
-//---------------------------------------------------------------------------
-void CriticalSection::Leave()
+//***************************************************************************
+// Control
+//***************************************************************************
+
+void Thread::Run()
+{
+}
+
+void Thread::Pause()
+{
+}
+
+void Thread::Stop()
+{
+}
+
+bool Thread::IsRunning()
+{
+    return true; //ToImplement
+}
+
+//***************************************************************************
+// Communicating
+//***************************************************************************
+
+void Thread::Sleep(size_t Millisecond)
+{
+}
+
+void Thread::Yield()
 {
 }
 
