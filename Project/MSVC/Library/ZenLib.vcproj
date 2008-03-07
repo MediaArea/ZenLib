@@ -326,6 +326,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\Source\ZenLib\Thread.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\Source\ZenLib\Utils.cpp"
 				>
 			</File>
@@ -401,6 +405,10 @@
 			</File>
 			<File
 				RelativePath="..\..\..\Source\ZenLib\OS_Utils.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\Source\ZenLib\Thread.h"
 				>
 			</File>
 			<File

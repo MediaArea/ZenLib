@@ -1,3 +1,7 @@
+Version 0.3.3.1 2008-03-
+---------------
++ Basic support of threads
+
 Version 0.3.3.0 2008-02-29
 ---------------
 + Base64 encode/decode

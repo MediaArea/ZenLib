@@ -189,8 +189,8 @@
         <FILE FILENAME="..\..\..\Source\ZenLib\HTTP_Client\HTTPClient.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="HTTPClient" FORMNAME="" DESIGNCLASS=""/>
         <FILE FILENAME="..\..\..\Source\ZenLib\Conf.cpp" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="Conf" FORMNAME="" DESIGNCLASS=""/>
         <FILE FILENAME="..\..\..\Source\ZenLib\ConvertUTF.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="ConvertUTF" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\..\Source\ZenLib\CriticalSection.cpp" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="CriticalSection" FORMNAME="" DESIGNCLASS=""/>
         <FILE FILENAME="..\..\..\Source\ZenLib\Dir.cpp" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="Dir" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="..\..\..\Source\ZenLib\CriticalSection.cpp" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="CriticalSection" FORMNAME="" DESIGNCLASS=""/>
         <FILE FILENAME="..\..\..\Source\ZenLib\int128s.cpp" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="int128s" FORMNAME="" DESIGNCLASS=""/>
         <FILE FILENAME="..\..\..\Source\ZenLib\int128u.cpp" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="int128u" FORMNAME="" DESIGNCLASS=""/>
         <FILE FILENAME="..\..\..\Source\ZenLib\File.cpp" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="File" FORMNAME="" DESIGNCLASS=""/>
@@ -198,6 +198,7 @@
         <FILE FILENAME="..\..\..\Source\ZenLib\HTTP_Client.cpp" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="HTTP_Client" FORMNAME="" DESIGNCLASS=""/>
         <FILE FILENAME="..\..\..\Source\ZenLib\MemoryDebug.cpp" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="MemoryDebug" FORMNAME="" DESIGNCLASS=""/>
         <FILE FILENAME="..\..\..\Source\ZenLib\OS_Utils.cpp" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="OS_Utils" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="..\..\..\Source\ZenLib\Thread.cpp" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="Thread" FORMNAME="" DESIGNCLASS=""/>
         <FILE FILENAME="..\..\..\Source\ZenLib\Utils.cpp" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="Utils" FORMNAME="" DESIGNCLASS=""/>
         <FILE FILENAME="..\..\..\Source\ZenLib\Ztring.cpp" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="Ztring" FORMNAME="" DESIGNCLASS=""/>
         <FILE FILENAME="..\..\..\Source\ZenLib\ZtringList.cpp" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="ZtringList" FORMNAME="" DESIGNCLASS=""/>

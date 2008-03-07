@@ -10,6 +10,7 @@ libzen_la_SOURCES = \
                        ../../../Source/ZenLib/int128s.cpp \
                        ../../../Source/ZenLib/int128u.cpp \
                        ../../../Source/ZenLib/MemoryDebug.cpp \
+                       ../../../Source/ZenLib/Thread.cpp \
                        ../../../Source/ZenLib/Utils.cpp \
                        ../../../Source/ZenLib/Ztring.cpp \
                        ../../../Source/ZenLib/ZtringList.cpp \
