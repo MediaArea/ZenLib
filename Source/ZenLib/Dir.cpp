@@ -68,7 +68,7 @@ namespace ZenLib
 ZtringList Dir::GetAllFileNames(const Ztring &Dir_Name_)
 {
     ZtringList ToReturn;
-	Ztring Dir_Name=Dir_Name_;
+    Ztring Dir_Name=Dir_Name_;
 
     #ifdef ZENLIB_USEWX
         int Flags=wxDIR_FILES | wxDIR_DIRS;
@@ -141,14 +141,14 @@ ZtringList Dir::GetAllFileNames(const Ztring &Dir_Name_)
             #ifdef UNICODE
                 WIN32_FIND_DATAA FindFileDataA;
                 WIN32_FIND_DATAW FindFileDataW;
-				HANDLE hFind;
+                HANDLE hFind;
                 if (IsWin9X())
-					hFind=FindFirstFileA(Dir_Name.To_Local().c_str(), &FindFileDataA);
+                    hFind=FindFirstFileA(Dir_Name.To_Local().c_str(), &FindFileDataA);
                 else
                     hFind=FindFirstFileW(Dir_Name.c_str(), &FindFileDataW);
             #else
                 WIN32_FIND_DATA FindFileData;
-				HANDLE hFind=FindFirstFile(Dir_Name.c_str(), &FindFileData);
+                HANDLE hFind=FindFirstFile(Dir_Name.c_str(), &FindFileData);
             #endif //UNICODE
 
             if (hFind==INVALID_HANDLE_VALUE)
