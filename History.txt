@@ -1,4 +1,4 @@
-Version 0.3.3.1 2008-03-
+Version 0.3.3.1 2008-03-14
 ---------------
 + Basic support of threads
 
