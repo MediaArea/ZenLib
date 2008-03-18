@@ -440,7 +440,7 @@ Ztring& Ztring::From_Local (const char* S, size_type Start, size_type Length)
         From_Local(Temp);
         delete[] Temp; //Temp=NULL;
     #else
-        assign(S, Start, Length);
+        assign(S+Start, Length);
     #endif
     return *this;
 }
@@ -522,7 +522,11 @@ Ztring& Ztring::From_Number (const int8s I, int8u Radix)
         delete[] C1; //C1=NULL;
     #else
         toStringStream SS;
-        SS << setbase(Radix) << I;
+        #ifdef UNICODE
+            SS << setbase(Radix) << I;
+        #else //UNICODE
+            SS << setbase(Radix) << (size_t)I; //On linux (at least), (un)signed char is detected as a char
+        #endif //UNICODE
         assign(SS.str());
     #endif
     MakeUpperCase();
@@ -538,7 +542,11 @@ Ztring& Ztring::From_Number (const int8u I, int8u Radix)
         delete[] C1; //C1=NULL;
     #else
         toStringStream SS;
-        SS << setbase(Radix) << I;
+        #ifdef UNICODE
+            SS << setbase(Radix) << I;
+        #else //UNICODE
+            SS << setbase(Radix) << (size_t)I; //On linux (at least), (un)signed char is detected as a char
+        #endif //UNICODE
         assign(SS.str());
     #endif
     MakeUpperCase();
