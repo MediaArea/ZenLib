@@ -441,6 +441,8 @@ Ztring& Ztring::From_Local (const char* S, size_type Start, size_type Length)
         delete[] Temp; //Temp=NULL;
     #else
         assign(S+Start, Length);
+        if (find(_T('\0'))!=std::string::npos)
+            resize(find(_T('\0')));
     #endif
     return *this;
 }
