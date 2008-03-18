@@ -1058,6 +1058,8 @@ int32s Ztring::To_int8s (ztring_t Options) const
     #else
         tStringStream SS(*this);
         SS >> I;
+        if (SS.fail())
+            return 0;
     #endif
 
     //Rounded
@@ -1087,6 +1089,8 @@ int32u Ztring::To_int8u (ztring_t Options) const
     #else
         tStringStream SS(*this);
         SS >> I;
+        if (SS.fail())
+            return 0;
     #endif
 
     //Rounded
@@ -1116,6 +1120,8 @@ int32s Ztring::To_int16s (ztring_t Options) const
     #else
         tStringStream SS(*this);
         SS >> I;
+        if (SS.fail())
+            return 0;
     #endif
 
     //Rounded
@@ -1145,6 +1151,8 @@ int32u Ztring::To_int16u (ztring_t Options) const
     #else
         tStringStream SS(*this);
         SS >> I;
+        if (SS.fail())
+            return 0;
     #endif
 
     //Rounded
@@ -1174,6 +1182,8 @@ int32s Ztring::To_int32s (ztring_t Options) const
     #else
         tStringStream SS(*this);
         SS >> I;
+        if (SS.fail())
+            return 0;
     #endif
 
     //Rounded
@@ -1203,6 +1213,8 @@ int32u Ztring::To_int32u (ztring_t Options) const
     #else
         tStringStream SS(*this);
         SS >> I;
+        if (SS.fail())
+            return 0;
     #endif
 
     //Rounded
@@ -1232,6 +1244,8 @@ int64s Ztring::To_int64s (ztring_t Options) const
     #else
         tStringStream SS(*this);
         SS >> I;
+        if (SS.fail())
+            return 0;
     #endif
 
     //Rounded
@@ -1261,6 +1275,8 @@ int64u Ztring::To_int64u (ztring_t Options) const
     #else
         tStringStream SS(*this);
         SS >> I;
+        if (SS.fail())
+            return 0;
     #endif
 
     //Rounded
@@ -1294,6 +1310,8 @@ float32 Ztring::To_float32(ztring_t) const
         float32 F;
         tStringStream SS(*this);
         SS >> F;
+        if (SS.fail())
+            return 0;
 
         return F;
     #endif
@@ -1318,6 +1336,8 @@ float64 Ztring::To_float64(ztring_t) const
         float64 F;
         tStringStream SS(*this);
         SS >> F;
+        if (SS.fail())
+            return 0;
 
         return F;
     #endif
@@ -1342,6 +1362,8 @@ float80 Ztring::To_float80(ztring_t) const
         float80 F;
         tStringStream SS(*this);
         SS >> F;
+        if (SS.fail())
+            return 0;
 
         return F;
     #endif
