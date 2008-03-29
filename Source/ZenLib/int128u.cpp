@@ -40,6 +40,7 @@
 
 #include <memory>
 #include <cmath>
+#include <cstring>
 #ifdef __BORLANDC__
     #define fmodf fmod
 #endif
