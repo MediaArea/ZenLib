@@ -97,6 +97,11 @@ public :
     static bool             Copy(const Ztring &Source, const Ztring &Destination, bool OverWrite=false);
     static bool             Move(const Ztring &Source, const Ztring &Destination, bool OverWrite=false);
     static bool             Delete(const Ztring &File_Name);
+
+    //Temp
+    void*  File_Handle;
+    int64u Position; //Position is saved, may be not good because position may change
+    int64u Size; //Size is saved, may be not good because size may change
 };
 
 } //NameSpace
