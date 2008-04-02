@@ -311,9 +311,9 @@ size_t File::Read (int8u* Buffer, size_t Buffer_Size_Max)
     #else //ZENLIB_USEWX
         #ifdef ZENLIB_STANDARD
             //return read((int)File_Handle, Buffer, Buffer_Size_Max);
-            if (Position!=(int64u)-1)
+            if (Position==(int64u)-1)
                 Position_Get();
-            if (Size!=(int64u)-1)
+            if (Size==(int64u)-1)
                 Size_Get();
             if (Position+Buffer_Size_Max>Size)
                 Buffer_Size_Max=Size-Position; //We don't want to enable eofbit (impossible to seek after)
@@ -378,8 +378,9 @@ size_t File::Write (Ztring ToWrite)
 //***************************************************************************
 
 //---------------------------------------------------------------------------
-bool File::GoTo (int64s Position, move_t MoveMethod)
+bool File::GoTo (int64s Position_ToMove, move_t MoveMethod)
 {
+    Position=(int64u)-1; //Disabling memory
     #ifdef ZENLIB_USEWX
         return ((wxFile*)File_Handle)->Seek(Position, (wxSeekMode)MoveMethod)!=wxInvalidOffset; //move_t and wxSeekMode are same
     #else //ZENLIB_USEWX
@@ -403,10 +404,10 @@ bool File::GoTo (int64s Position, move_t MoveMethod)
                 case FromEnd     : dir=ios_base::end; break;
                 default          : dir=ios_base::beg;
             }
-            ((fstream*)File_Handle)->seekg(Position, dir);
+            ((fstream*)File_Handle)->seekg(Position_ToMove, dir);
             return !((fstream*)File_Handle)->fail();
         #elif defined WINDOWS
-            LARGE_INTEGER GoTo; GoTo.QuadPart=Position;
+            LARGE_INTEGER GoTo; GoTo.QuadPart=Position_ToMove;
             //return SetFilePointerEx(File_Handle, GoTo, NULL, MoveMethod)!=0; //Not on win9X
             GoTo.LowPart=SetFilePointer(File_Handle, GoTo.LowPart, &GoTo.HighPart, MoveMethod);
             if (GoTo.LowPart==INVALID_SET_FILE_POINTER && GetLastError()!=NO_ERROR)
@@ -427,9 +428,13 @@ int64u File::Position_Get ()
         return (int64u)-1;
     #else //ZENLIB_USEWX
         #ifdef ZENLIB_STANDARD
-            return ((fstream*)File_Handle)->tellg();
+            Position=((fstream*)File_Handle)->tellg();
+            return Position;
         #elif defined WINDOWS
-            return (int64u)-1;
+            LARGE_INTEGER GoTo=0;
+            GoTo.LowPart=SetFilePointer(File_Handle, GoTo.LowPart, &GoTo.HighPart, FILE_CURRENT);
+            Position=GoTo.QuadPart;
+            return Position;
         #endif
     #endif //ZENLIB_USEWX
 }
@@ -459,15 +464,13 @@ int64u File::Size_Get()
             */
             streampos CurrentPos=((fstream*)File_Handle)->tellg();
             ((fstream*)File_Handle)->seekg(0, ios_base::end);
-            int64u File_Size;
-            File_Size=((fstream*)File_Handle)->tellg();
+            Size=((fstream*)File_Handle)->tellg();
             ((fstream*)File_Handle)->seekg(CurrentPos, ios_base::beg);
-            return File_Size;
+            return Size;
         #elif defined WINDOWS
-            int64u File_Size;
             DWORD High;DWORD Low=GetFileSize(File_Handle, &High);
-            File_Size=0x100000000ULL*High+Low;
-            return File_Size;
+            Size=0x100000000ULL*High+Low;
+            return Size;
         #endif
     #endif //ZENLIB_USEWX
 }
