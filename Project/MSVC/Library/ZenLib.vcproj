@@ -310,6 +310,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\Source\ZenLib\InfoMap.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\Source\ZenLib\int128s.cpp"
 				>
 			</File>
@@ -327,6 +331,10 @@
 			</File>
 			<File
 				RelativePath="..\..\..\Source\ZenLib\Thread.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\Source\ZenLib\Translation.cpp"
 				>
 			</File>
 			<File
@@ -392,6 +400,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\Source\ZenLib\InfoMap.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\Source\ZenLib\int128s.h"
 				>
 			</File>
@@ -413,6 +425,10 @@
 			</File>
 			<File
 				RelativePath="..\..\..\Source\ZenLib\Trace.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\Source\ZenLib\Translation.h"
 				>
 			</File>
 			<File

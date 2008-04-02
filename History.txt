@@ -1,3 +1,7 @@
+Version 0.3.3.3 2008-04-
+---------------
++ Adding some classes for speed improvement
+
 Version 0.3.3.2 2008-03-28
 ---------------
 x On some systems, if a string is not a number, the returned number from string-->number conversion is undetermined

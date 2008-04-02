@@ -1434,8 +1434,9 @@ bool Ztring::IsNumber() const
         return false;
 
     bool OK=true;
-    for (size_t Pos=0; Pos<size(); Pos++)
-        if (at(Pos)<_T('0') || at(Pos)>_T('9'))
+    size_t Size=size();
+    for (size_t Pos=0; Pos<Size; Pos++)
+        if (operator[](Pos)<_T('0') || operator[](Pos)>_T('9'))
         {
             OK=false;
             break;

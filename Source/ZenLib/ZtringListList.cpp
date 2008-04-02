@@ -177,11 +177,16 @@ Ztring &ZtringListList::operator() (size_type Pos0, size_type Pos1)
 
 Ztring &ZtringListList::operator() (const Ztring &Pos0, size_type Pos0_1, size_type Pos1)
 {
-    size_type Pos=Find(Pos0, Pos0_1, 0, _T("=="), Ztring_CaseSensitive);
+    size_type Pos=0;
+    size_t Size=size();
+    for (; Pos<Size; Pos++)
+        if (operator[](Pos).size()>Pos0_1)
+            if (operator[](Pos)[Pos0_1]==Pos0)
+                break;
 
-    if (Pos==Error)
+    if (Pos>=Size)
     {
-        Write(Pos0, size(), Pos0_1);
+        Write(Pos0, Size, Pos0_1);
         Pos=size()-1;
     }
 
@@ -421,6 +426,32 @@ void ZtringListList::Sort(size_type, ztring_t)
 
 //---------------------------------------------------------------------------
 // Find
+Ztring::size_type ZtringListList::Find (const Ztring &ToFind, size_type Pos1, size_type Pos0) const
+{
+    size_t Size=size();
+    for (; Pos0<Size; Pos0++)
+        if (operator[](Pos0).size()>Pos1)
+            if (operator[](Pos0)[Pos1]==ToFind)
+                break;
+
+    if (Pos0>=Size)
+        return Error;
+    return Pos0;
+}
+
+Ztring::size_type ZtringListList::Find_Filled (size_type Pos1, size_type Pos0) const
+{
+    size_t Size=size();
+    for (; Pos0<Size; Pos0++)
+        if (operator[](Pos0).size()>Pos1)
+            if (!operator[](Pos0)[Pos1].empty())
+                break;
+
+    if (Pos0>=Size)
+        return Error;
+    return Pos0;
+}
+
 Ztring::size_type ZtringListList::Find (const Ztring &ToFind, size_type Pos1, size_type Pos0, const Ztring &Comparator, ztring_t Options) const
 {
     while (    Pos0<size()

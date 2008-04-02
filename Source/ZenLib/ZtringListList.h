@@ -115,7 +115,11 @@ public :
 
     //Information
     /// @brief Find the first position of the string in the vector of vector, in a specific column
-    size_type Find (const Ztring &ToFind, size_type Pos1=0, size_type Pos0Begin=0, const Ztring &Comparator=_T("=="), ztring_t Options=Ztring_Nothing) const;
+    size_type Find (const Ztring &ToFind, size_type Pos1=0, size_type Pos0Begin=0) const;
+    /// @brief Find the first position of the string in the vector of vector, in a specific column, which is not empty
+    size_type Find_Filled (size_type Pos1=0, size_type Pos0Begin=0) const;
+    /// @brief Find the first position of the string in the vector of vector, in a specific column
+    size_type Find (const Ztring &ToFind, size_type Pos1, size_type Pos0Begin, const Ztring &Comparator, ztring_t Options=Ztring_Nothing) const;
     /// @brief Return [xxx][Pos1Value] when founded the first position of the string in the vector of vector, in a specific column
     Ztring FindValue (const Ztring &ToFind, size_type Pos1Value=1, size_type Pos1=0, size_type Pos0Begin=0, const Ztring &Comparator=_T("=="), ztring_t Options=Ztring_Nothing) const;
     /// @brief Return a subsheet, with all lines with position of the string in the vector of vector, in a specific column

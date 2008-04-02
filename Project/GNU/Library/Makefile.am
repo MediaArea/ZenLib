@@ -7,9 +7,11 @@ libzen_la_SOURCES = \
                        ../../../Source/ZenLib/Dir.cpp \
                        ../../../Source/ZenLib/File.cpp \
                        ../../../Source/ZenLib/FileName.cpp \
+                       ../../../Source/ZenLib/InfoMap.cpp \
                        ../../../Source/ZenLib/int128s.cpp \
                        ../../../Source/ZenLib/int128u.cpp \
                        ../../../Source/ZenLib/MemoryDebug.cpp \
+                       ../../../Source/ZenLib/Translation.cpp \
                        ../../../Source/ZenLib/Thread.cpp \
                        ../../../Source/ZenLib/Utils.cpp \
                        ../../../Source/ZenLib/Ztring.cpp \
