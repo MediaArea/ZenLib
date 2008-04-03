@@ -431,7 +431,7 @@ int64u File::Position_Get ()
             Position=((fstream*)File_Handle)->tellg();
             return Position;
         #elif defined WINDOWS
-            LARGE_INTEGER GoTo=0;
+            LARGE_INTEGER GoTo; GoTo.QuadPart=0;
             GoTo.LowPart=SetFilePointer(File_Handle, GoTo.LowPart, &GoTo.HighPart, FILE_CURRENT);
             Position=GoTo.QuadPart;
             return Position;

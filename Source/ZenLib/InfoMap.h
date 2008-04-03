@@ -40,7 +40,7 @@ namespace ZenLib
 /// @brief Helper for InfoMap
 //***************************************************************************
 
-class InfoMap : public std::map<Ztring, ZtringList>
+class InfoMap : public std::multimap<Ztring, ZtringList>
 {
 public :
     //Constructors/Destructor
@@ -53,6 +53,7 @@ public :
 
     //In/Out
     const Ztring   &Get (const Ztring &Value, size_t Pos);
+    const Ztring   &Get (const Ztring &Value, size_t Pos, const Ztring &WithValue, size_t WithValue_Pos);
           void      Write (const Ztring &NewLanguage);
 
     //Configuration

@@ -48,13 +48,14 @@ const Ztring EmptyZtring_Const; //Use it when we can't return a reference to a t
 //---------------------------------------------------------------------------
 // Constructors
 InfoMap::InfoMap()
-: std::map<ZenLib::Ztring, ZenLib::ZtringList> ()
+: std::multimap<ZenLib::Ztring, ZenLib::ZtringList> ()
 {
     Separator[0]=EOL;
     Separator[1]=_T(";");
 }
 
 InfoMap::InfoMap(const Ztring &Source)
+: std::multimap<ZenLib::Ztring, ZenLib::ZtringList> ()
 {
     Separator[0]=EOL;
     Separator[1]=_T(";");
@@ -62,6 +63,7 @@ InfoMap::InfoMap(const Ztring &Source)
 }
 
 InfoMap::InfoMap(const Char *Source)
+: std::multimap<ZenLib::Ztring, ZenLib::ZtringList> ()
 {
     Separator[0]=EOL;
     Separator[1]=_T(";");
@@ -70,6 +72,7 @@ InfoMap::InfoMap(const Char *Source)
 
 #ifdef _UNICODE
 InfoMap::InfoMap (const char* S)
+: std::multimap<ZenLib::Ztring, ZenLib::ZtringList> ()
 {
     Separator[0]=EOL;
     Separator[1]=_T(";");
@@ -84,20 +87,66 @@ InfoMap::InfoMap (const char* S)
 //---------------------------------------------------------------------------
 const Ztring &InfoMap::Get (const Ztring &Value, size_t Pos)
 {
-    ZtringList &List=operator[](Value);
-    if (List.empty())
+    InfoMap::iterator List=find(Value);
+    if (List==end())
         return EmptyZtring_Const; //Not found
-    if (List.size()==1)
+    if (List->second.size()==1)
     {
         //Not prepared
-        Ztring Temp=List.Read();
+        Ztring Temp=List->second.Read();
         Temp.Trim(_T('\"'));
-        List.Separator_Set(0, _T(";"));
-        List.Max_Set(0, Error);
-        List.Write(Temp);
+        List->second.Separator_Set(0, _T(";"));
+        List->second.Max_Set(0, Error);
+        List->second.Write(Temp);
     }
-    if (Pos<List.size())
-        return List[Pos];
+    if (Pos<List->second.size())
+        return List->second[Pos];
+    else
+        return EmptyZtring_Const; //Not found
+}
+
+//---------------------------------------------------------------------------
+const Ztring &InfoMap::Get (const Ztring &Value, size_t Pos, const Ztring &WithValue, size_t WithValue_Pos)
+{
+    InfoMap::iterator List=find(Value);
+    if (List==end())
+        return EmptyZtring_Const; //Not found
+    if (List->second.size()==1)
+    {
+        //Not prepared
+        Ztring Temp=List->second.Read();
+        Temp.Trim(_T('\"'));
+        List->second.Separator_Set(0, _T(";"));
+        List->second.Max_Set(0, Error);
+        List->second.Write(Temp);
+    }
+    if (Pos<List->second.size())
+    {
+        if (List->second[WithValue_Pos]==WithValue)
+            return List->second[Pos];
+        else
+        {
+            List++; //The second one, this is a stupid hack for a 2 value, should be changed later...
+            if (List->second.size()==1)
+            {
+                //Not prepared
+                Ztring Temp=List->second.Read();
+                Temp.Trim(_T('\"'));
+                List->second.Separator_Set(0, _T(";"));
+                List->second.Max_Set(0, Error);
+                List->second.Write(Temp);
+            }
+            if (Pos<List->second.size())
+            {
+                if (List->second[WithValue_Pos]==WithValue)
+                    return List->second[Pos];
+                else
+                    return EmptyZtring_Const; //Not found
+            }
+            else
+                return EmptyZtring_Const; //Not found
+        }
+    }
     else
         return EmptyZtring_Const; //Not found
 }
@@ -119,7 +168,8 @@ void InfoMap::Write(const Ztring &NewInfoMap)
         Pos2_Separator=NewInfoMap.find(_T(';'), Pos1);
         if (Pos2_Separator<Pos2_EOL)
         {
-            operator[](NewInfoMap.substr(Pos1, Pos2_Separator-Pos1)).Write(NewInfoMap.substr(Pos1, Pos2_EOL-Pos2_Separator-1), 0);
+            ZtringList List; List.Write(NewInfoMap.substr(Pos1, Pos2_EOL-Pos1), 0);
+            insert (pair<Ztring, ZtringList>(NewInfoMap.substr(Pos1, Pos2_Separator-Pos1), List));
         }
         Pos1=Pos2_EOL+1;
     }
