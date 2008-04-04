@@ -44,8 +44,16 @@ namespace ZenLib
 class BitStream
 {
 public:
-    BitStream ()                                                                {Buffer=(const int8u*)-1; Attach(NULL, 0);};
-    BitStream (const int8u* Buffer_, size_t Size_)                              {Buffer=(const int8u*)-1; Attach(Buffer_, Size_);};
+    BitStream ()                                                                {Buffer=NULL;
+                                                                                 Buffer_Size=Buffer_Size_Init=Buffer_Size_BeforeLastCall=0;
+                                                                                 LastByte_Size=0;
+                                                                                 BufferUnderRun=true;
+                                                                                 BookMark=false;}
+    BitStream (const int8u* Buffer_, size_t Size_)                              {Buffer=Buffer_;
+                                                                                 Buffer_Size=Buffer_Size_Init=Buffer_Size_BeforeLastCall=Size_*8; //Size is in bits
+                                                                                 LastByte_Size=0;
+                                                                                 BufferUnderRun=Buffer_Size?false:true;
+                                                                                 BookMark=false;}
     virtual ~BitStream ()                                                       {};
 
     virtual void Attach(const int8u* Buffer_, size_t Size_)
