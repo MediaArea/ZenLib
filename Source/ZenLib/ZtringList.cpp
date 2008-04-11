@@ -240,6 +240,8 @@ void ZtringList::Write(const Ztring &ToWrite)
 
 void ZtringList::Write(const Ztring &ToWrite, size_type Pos)
 {
+    if (Pos==Error)
+        return;
     if (Pos>=size())
     {
         //Ressource reservation
