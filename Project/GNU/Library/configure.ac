@@ -20,6 +20,8 @@ AM_INIT_AUTOMAKE(ZenLib,0)
 dnl -------------------------------------------------------------------------
 dnl Autotools init
 dnl
+CFLAGS="$CFLAGS"
+CXXFLAGS="$CXXFLAGS"
 AC_PROG_CC
 AC_PROG_CXX
 AC_DISABLE_SHARED
@@ -200,7 +202,6 @@ dnl -------------------------------------------------------------------------
 dnl Large files
 dnl
 if test "$enable_large_files" = "yes"; then
-	ZenLib_CXXFLAGS="$ZenLib_CXXFLAGS -D_LARGE_FILES -D_FILE_OFFSET_BITS=64"
 	CXXFLAGS="$CXXFLAGS -D_LARGE_FILES -D_FILE_OFFSET_BITS=64"
 	ZenLib_LargeFiles="yes"
 else
