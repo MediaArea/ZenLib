@@ -52,8 +52,8 @@ public :
     #endif
 
     //In/Out
-    const Ztring   &Get (const Ztring &Value, size_t Pos);
-    const Ztring   &Get (const Ztring &Value, size_t Pos, const Ztring &WithValue, size_t WithValue_Pos);
+    const Ztring   &Get (const Ztring &Value, size_t Pos) const;
+    const Ztring   &Get (const Ztring &Value, size_t Pos, const Ztring &WithValue, size_t WithValue_Pos) const;
           void      Write (const Ztring &NewLanguage);
 
     //Configuration

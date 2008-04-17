@@ -85,20 +85,11 @@ InfoMap::InfoMap (const char* S)
 //***************************************************************************
 
 //---------------------------------------------------------------------------
-const Ztring &InfoMap::Get (const Ztring &Value, size_t Pos)
+const Ztring &InfoMap::Get (const Ztring &Value, size_t Pos) const
 {
-    InfoMap::iterator List=find(Value);
+    InfoMap::const_iterator List=find(Value);
     if (List==end())
         return EmptyZtring_Const; //Not found
-    if (List->second.size()==1)
-    {
-        //Not prepared
-        Ztring Temp=List->second.Read();
-        Temp.Trim(_T('\"'));
-        List->second.Separator_Set(0, _T(";"));
-        List->second.Max_Set(0, Error);
-        List->second.Write(Temp);
-    }
     if (Pos<List->second.size())
         return List->second[Pos];
     else
@@ -106,20 +97,11 @@ const Ztring &InfoMap::Get (const Ztring &Value, size_t Pos)
 }
 
 //---------------------------------------------------------------------------
-const Ztring &InfoMap::Get (const Ztring &Value, size_t Pos, const Ztring &WithValue, size_t WithValue_Pos)
+const Ztring &InfoMap::Get (const Ztring &Value, size_t Pos, const Ztring &WithValue, size_t WithValue_Pos) const
 {
-    InfoMap::iterator List=find(Value);
+    InfoMap::const_iterator List=find(Value);
     if (List==end())
         return EmptyZtring_Const; //Not found
-    if (List->second.size()==1)
-    {
-        //Not prepared
-        Ztring Temp=List->second.Read();
-        Temp.Trim(_T('\"'));
-        List->second.Separator_Set(0, _T(";"));
-        List->second.Max_Set(0, Error);
-        List->second.Write(Temp);
-    }
     if (Pos<List->second.size())
     {
         if (List->second[WithValue_Pos]==WithValue)
@@ -127,15 +109,6 @@ const Ztring &InfoMap::Get (const Ztring &Value, size_t Pos, const Ztring &WithV
         else
         {
             List++; //The second one, this is a stupid hack for a 2 value, should be changed later...
-            if (List->second.size()==1)
-            {
-                //Not prepared
-                Ztring Temp=List->second.Read();
-                Temp.Trim(_T('\"'));
-                List->second.Separator_Set(0, _T(";"));
-                List->second.Max_Set(0, Error);
-                List->second.Write(Temp);
-            }
             if (Pos<List->second.size())
             {
                 if (List->second[WithValue_Pos]==WithValue)
@@ -168,7 +141,7 @@ void InfoMap::Write(const Ztring &NewInfoMap)
         Pos2_Separator=NewInfoMap.find(_T(';'), Pos1);
         if (Pos2_Separator<Pos2_EOL)
         {
-            ZtringList List; List.Write(NewInfoMap.substr(Pos1, Pos2_EOL-Pos1), 0);
+            ZtringList List; List.Write(NewInfoMap.substr(Pos1, Pos2_EOL-Pos1));
             insert (pair<Ztring, ZtringList>(NewInfoMap.substr(Pos1, Pos2_Separator-Pos1), List));
         }
         Pos1=Pos2_EOL+1;
