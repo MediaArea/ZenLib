@@ -328,7 +328,7 @@ Ztring& Ztring::From_UTF16BE (const char* S, size_type Start, size_type Length)
     memcpy (Temp, S+Start, Length);
     Temp[Length+0]=0x00;
     Temp[Length+1]=0x00;
-    reserve(Length):
+    reserve(Length);
     From_UTF16BE(Temp);
     delete[] Temp; //Temp=NULL;
     return *this;
