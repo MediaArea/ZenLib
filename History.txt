@@ -1,3 +1,7 @@
+Version 0.3.3.4 2008-
+---------------
+x #1946749, Ztring: From_UTF16BE - endless loop
+
 Version 0.3.3.3 2008-04-12
 ---------------
 + Adding some classes for speed improvement

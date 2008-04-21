@@ -302,7 +302,8 @@ Ztring& Ztring::From_UTF16BE (const char* S)
             while (SW[Pos]!=_T('\0'))
             {
                 wchar_t Temp=(wchar_t)(((SW[Pos]&0xFF00)>>8)+((SW[Pos]&0x00FF)<<8));
-                append(Temp, 1);
+                append(1, Temp);
+                Pos++;
             }
         #else //WINDOWS
             clear(); //Not implemented
@@ -327,6 +328,7 @@ Ztring& Ztring::From_UTF16BE (const char* S, size_type Start, size_type Length)
     memcpy (Temp, S+Start, Length);
     Temp[Length+0]=0x00;
     Temp[Length+1]=0x00;
+    reserve(Length):
     From_UTF16BE(Temp);
     delete[] Temp; //Temp=NULL;
     return *this;
