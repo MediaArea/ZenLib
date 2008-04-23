@@ -47,6 +47,7 @@
 #ifdef __MINGW32__
     #include <windows.h>
 #endif //__MINGW32__
+#include <cstring>
 #include <cstdio>
 #include <cstdlib>
 #include <ctime>
