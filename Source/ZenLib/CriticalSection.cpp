@@ -144,6 +144,10 @@ void CriticalSection::Leave()
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
+//---------------------------------------------------------------------------
+#include <pthread.h>
+//---------------------------------------------------------------------------
+
 namespace ZenLib
 {
 
@@ -154,11 +158,15 @@ namespace ZenLib
 //---------------------------------------------------------------------------
 CriticalSection::CriticalSection()
 {
+    CritSect=new pthread_mutex_t;
+    pthread_mutex_init((pthread_mutex_t*)CritSect, NULL);
 }
 
 //---------------------------------------------------------------------------
 CriticalSection::~CriticalSection()
 {
+    pthread_mutex_destroy((pthread_mutex_t*)CritSect);
+    delete (pthread_mutex_t*)CritSect;
 }
 
 //***************************************************************************
@@ -168,11 +176,13 @@ CriticalSection::~CriticalSection()
 //---------------------------------------------------------------------------
 void CriticalSection::Enter()
 {
+    pthread_mutex_lock((pthread_mutex_t*)CritSect);
 }
 
 //---------------------------------------------------------------------------
 void CriticalSection::Leave()
 {
+    pthread_mutex_unlock((pthread_mutex_t*)CritSect);
 }
 
 } //Namespace
