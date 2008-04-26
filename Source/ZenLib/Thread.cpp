@@ -156,10 +156,10 @@ void Thread::Yield()
 
 
 #if  defined(__VISUALC__) || \
-    (defined(__BORLANDC__) && (__BORLANDC__ >= 0x500)) || \
     (defined(__GNUG__) && defined(__MSVCRT__)) || \
      defined(__WATCOMC__) || \
      defined(__MWERKS__)
+    //(defined(__BORLANDC__) && (__BORLANDC__ >= 0x500))
 
     #ifndef __WXWINCE__
         #define USING_BEGINTHREAD //Using _beginthreadex() instead of CreateThread() if possible (better, because of Win32 API has problems with memory leaks in C library)
