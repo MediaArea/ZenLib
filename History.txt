@@ -1,3 +1,7 @@
+Version 0.3.3.5 2008-
+---------------
+x xxxBSD compatibility
+
 Version 0.3.3.4 2008-04-26
 ---------------
 x #1946749, Ztring: From_UTF16BE - endless loop
