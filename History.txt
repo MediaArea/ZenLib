@@ -1,5 +1,6 @@
-Version 0.3.3.5 2008-
+Version 0.3.3.5 2008-05-16
 ---------------
+x Ztring: Problem with UTF-8 locale
 x xxxBSD compatibility
 
 Version 0.3.3.4 2008-04-26
