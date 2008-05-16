@@ -53,8 +53,8 @@ public :
 
     //In/Out
           Ztring    Get () const;
-    const Ztring   &Get (const Ztring &Value) const;
-          Ztring    Get (const Ztring &Count, const Ztring &Value) const;
+    const Ztring   &Get (const Ztring &Value);
+          Ztring    Get (const Ztring &Count, const Ztring &Value);
           void      Write (const Ztring &NewLanguage); //All language in one
           void      Write (const Ztring &Value, const Ztring &NewLanguage); //Per item
 

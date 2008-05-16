@@ -98,14 +98,20 @@ Ztring Translation::Get () const
     return ToReturn;
 }
 
-const Ztring &Translation::Get (const Ztring &) const
+const Ztring &Translation::Get (const Ztring &Value)
 {
-    return EmptyZtring_Const; //Not finnished
+    iterator Pos=find(Value);
+    if (Pos==end())
+        operator[](Value)=Value;
+    return operator[](Value);
 }
 
-Ztring Translation::Get (const Ztring &, const Ztring &) const
+Ztring Translation::Get (const Ztring &Value, const Ztring &Default)
 {
-    return Ztring(); //Not finnished
+    iterator Pos=find(Value);
+    if (Pos==end())
+        operator[](Value)=Default;
+    return operator[](Value);
 }
 
 //---------------------------------------------------------------------------
