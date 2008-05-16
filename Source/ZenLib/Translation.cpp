@@ -93,6 +93,7 @@ Ztring Translation::Get () const
         ToReturn+=Separator[1];
         ToReturn+=Temp->second;
         ToReturn+=Separator[0];
+        Temp++;
     }
     return ToReturn;
 }
@@ -128,6 +129,13 @@ void Translation::Write(const Ztring &NewLanguage)
         }
         Pos1=Pos2_EOL+1;
     }
+}
+
+//---------------------------------------------------------------------------
+// Set
+void Translation::Write(const Ztring &Value, const Ztring &NewLanguage)
+{
+    operator[](Value)=NewLanguage;
 }
 
 //***************************************************************************

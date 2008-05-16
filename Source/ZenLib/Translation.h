@@ -55,7 +55,8 @@ public :
           Ztring    Get () const;
     const Ztring   &Get (const Ztring &Value) const;
           Ztring    Get (const Ztring &Count, const Ztring &Value) const;
-          void      Write (const Ztring &NewLanguage);
+          void      Write (const Ztring &NewLanguage); //All language in one
+          void      Write (const Ztring &Value, const Ztring &NewLanguage); //Per item
 
     //Configuration
     /// @brief Set the Separator character
