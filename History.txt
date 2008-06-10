@@ -1,4 +1,8 @@
-Version 0.3.3.6 2008-06-30
+Version 0.3.3.7 2008-06
+---------------
++ MinGW compatibility
+
+Version 0.3.3.6 2008-05-30
 ---------------
 + MSVC2008 project files
 

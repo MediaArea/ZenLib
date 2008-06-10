@@ -27,15 +27,15 @@
 #endif
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-//#ifdef ZENLIB_USEWX
-//#else //ZENLIB_USEWX
-    //#ifdef ZENLIB_STANDARD
-    //#elif defined WINDOWS
+#ifdef ZENLIB_USEWX
+#else //ZENLIB_USEWX
+    #ifdef ZENLIB_STANDARD
+    #elif defined WINDOWS
         #undef __TEXT
         #include <windows.h>
         #include <shlobj.h>
-    //#endif
-//#endif //ZENLIB_USEWX
+    #endif
+#endif //ZENLIB_USEWX
 #include "ZenLib/OS_Utils.h"
 //---------------------------------------------------------------------------
 

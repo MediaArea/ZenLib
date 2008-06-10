@@ -3,6 +3,7 @@ AUTOMAKE_OPTIONS = foreign
 lib_LTLIBRARIES = libzen.la
 libzen_la_SOURCES = \
                        ../../../Source/ZenLib/Conf.cpp \
+                       ../../../Source/ZenLib/ConvertUTF.c \
                        ../../../Source/ZenLib/CriticalSection.cpp \
                        ../../../Source/ZenLib/Dir.cpp \
                        ../../../Source/ZenLib/File.cpp \
@@ -11,6 +12,7 @@ libzen_la_SOURCES = \
                        ../../../Source/ZenLib/int128s.cpp \
                        ../../../Source/ZenLib/int128u.cpp \
                        ../../../Source/ZenLib/MemoryDebug.cpp \
+                       ../../../Source/ZenLib/OS_Utils.cpp \
                        ../../../Source/ZenLib/Translation.cpp \
                        ../../../Source/ZenLib/Thread.cpp \
                        ../../../Source/ZenLib/Utils.cpp \

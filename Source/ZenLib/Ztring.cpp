@@ -521,6 +521,11 @@ Ztring& Ztring::From_CC1 (const int8u S)
 Ztring& Ztring::From_Number (const int8s I, int8u Radix)
 {
     #ifdef __MINGW32__
+        if (Radix==0)
+        {
+            clear();
+            return *this;
+        }
         Char* C1=new Char[33];
         _itot (I, C1, Radix);
         assign (C1);
@@ -541,6 +546,11 @@ Ztring& Ztring::From_Number (const int8s I, int8u Radix)
 Ztring& Ztring::From_Number (const int8u I, int8u Radix)
 {
     #ifdef __MINGW32__
+        if (Radix==0)
+        {
+            clear();
+            return *this;
+        }
         Char* C1=new Char[33];
         _ultot (I, C1, Radix);
         assign (C1);
@@ -561,6 +571,11 @@ Ztring& Ztring::From_Number (const int8u I, int8u Radix)
 Ztring& Ztring::From_Number (const int16s I, int8u Radix)
 {
     #ifdef __MINGW32__
+        if (Radix==0)
+        {
+            clear();
+            return *this;
+        }
         Char* C1=new Char[33];
         _itot (I, C1, Radix);
         assign (C1);
@@ -577,6 +592,11 @@ Ztring& Ztring::From_Number (const int16s I, int8u Radix)
 Ztring& Ztring::From_Number (const int16u I, int8u Radix)
 {
     #ifdef __MINGW32__
+        if (Radix==0)
+        {
+            clear();
+            return *this;
+        }
         Char* C1=new Char[33];
         _ultot (I, C1, Radix);
         assign (C1);
@@ -593,6 +613,11 @@ Ztring& Ztring::From_Number (const int16u I, int8u Radix)
 Ztring& Ztring::From_Number (const int32s I, int8u Radix)
 {
     #ifdef __MINGW32__
+        if (Radix==0)
+        {
+            clear();
+            return *this;
+        }
         Char* C1=new Char[33];
         _itot (I, C1, Radix);
         assign (C1);
@@ -609,6 +634,11 @@ Ztring& Ztring::From_Number (const int32s I, int8u Radix)
 Ztring& Ztring::From_Number (const int32u I, int8u Radix)
 {
     #ifdef __MINGW32__
+        if (Radix==0)
+        {
+            clear();
+            return *this;
+        }
         Char* C1=new Char[33];
         _ultot (I, C1, Radix);
         assign (C1);
@@ -625,6 +655,11 @@ Ztring& Ztring::From_Number (const int32u I, int8u Radix)
 Ztring& Ztring::From_Number (const int64s I, int8u Radix)
 {
     #ifdef __MINGW32__
+        if (Radix==0)
+        {
+            clear();
+            return *this;
+        }
         Char* C1=new Char[65];
         _i64tot (I, C1, Radix);
         assign (C1);
@@ -641,6 +676,11 @@ Ztring& Ztring::From_Number (const int64s I, int8u Radix)
 Ztring& Ztring::From_Number (const int64u I, int8u Radix)
 {
     #ifdef __MINGW32__
+        if (Radix==0)
+        {
+            clear();
+            return *this;
+        }
         Char* C1=new Char[65];
         _ui64tot (I, C1, Radix);
         assign (C1);
