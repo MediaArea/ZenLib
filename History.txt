@@ -1,4 +1,4 @@
-Version 0.3.3.7 2008-06
+Version 0.3.3.7 2008-06-13
 ---------------
 + MinGW compatibility
 
