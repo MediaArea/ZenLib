@@ -1,3 +1,7 @@
+Version 0.3.3.8 2008-08-22
+---------------
+x UTF-16 parsing under Linux
+
 Version 0.3.3.7 2008-06-13
 ---------------
 + MinGW compatibility

@@ -307,7 +307,12 @@ Ztring& Ztring::From_UTF16BE (const char* S)
                 Pos++;
             }
         #else //WINDOWS
-            clear(); //Not implemented
+            clear();
+            while (S[0]!=0 || S[1]!=0)
+            {
+                append(1, (wchar_t)BigEndian2int16u(S));
+                S+=2;
+            }
         #endif
     #endif //ZENLIB_USEWX
     return *this;
@@ -359,7 +364,12 @@ Ztring& Ztring::From_UTF16LE (const char* S)
                 clear(); //Not implemented
             #endif
         #else //WINDOWS
-            clear(); //Not implemented
+            clear();
+            while (S[0]!=0 || S[1]!=0)
+            {
+                append(1, (wchar_t)LittleEndian2int16u(S));
+                S+=2;
+            }
         #endif
     #endif //ZENLIB_USEWX
     return *this;
