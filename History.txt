@@ -1,3 +1,7 @@
+Version 0.3.3.9 2008-
+---------------
+x MacOS X wchar_t stuff
+
 Version 0.3.3.8 2008-08-22
 ---------------
 x UTF-16 parsing under Linux
