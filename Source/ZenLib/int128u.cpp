@@ -46,7 +46,8 @@
 #endif
 #if defined (__MONTAVISTA__) || defined (__ARMEL__)     || \
     defined (__FreeBSD__)    || defined (__OpenBSD__)   || \
-    defined (__NetBSD__)     || defined (__DragonFly__)
+    defined (__NetBSD__)     || defined (__DragonFly__) || \
+    defined (__sparc__)      || defined (__sparc64__)
     #define fmodl fmod
 #endif
 using namespace std;
