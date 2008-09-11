@@ -1,4 +1,4 @@
-Version 0.3.3.9 2008-
+Version 0.3.3.9 2008-09-12
 ---------------
 + Sparc compatibility
 x MacOS X wchar_t stuff
