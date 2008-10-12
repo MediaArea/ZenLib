@@ -204,19 +204,19 @@ public :
         /// @brief Convert into Int (8 bits)
         /// @return the value corresponding \n
         ///         0 if there is a problem
-    int32s      To_int8s    (ztring_t Options=Ztring_Rounded) const;
+    int8s       To_int8s    (ztring_t Options=Ztring_Rounded) const;
         /// @brief Convert into unsigned Int (8 bits)
         /// @return the value corresponding
         ///         0 if there is a problem
-    int32u      To_int8u    (ztring_t Options=Ztring_Rounded) const;
+    int8u       To_int8u    (ztring_t Options=Ztring_Rounded) const;
         /// @brief Convert into Int (16 bits)
         /// @return the value corresponding \n
         ///         0 if there is a problem
-    int32s      To_int16s   (ztring_t Options=Ztring_Rounded) const;
+    int16s      To_int16s   (ztring_t Options=Ztring_Rounded) const;
         /// @brief Convert into unsigned Int (16 bits)
         /// @return the value corresponding
         ///         0 if there is a problem
-    int32u      To_int16u   (ztring_t Options=Ztring_Rounded) const;
+    int16u      To_int16u   (ztring_t Options=Ztring_Rounded) const;
         /// @brief Convert into Int (32 bits)
         /// @return the value corresponding \n
         ///         0 if there is a problem

@@ -1108,7 +1108,7 @@ std::string Ztring::To_Local () const
 
 //---------------------------------------------------------------------------
 //Operateur ToInt
-int32s Ztring::To_int8s (ztring_t Options) const
+int8s Ztring::To_int8s (ztring_t Options) const
 {
     //Integrity
     if (empty())
@@ -1139,7 +1139,7 @@ int32s Ztring::To_int8s (ztring_t Options) const
 
 //---------------------------------------------------------------------------
 //Operateur ToInt
-int32u Ztring::To_int8u (ztring_t Options) const
+int8u Ztring::To_int8u (ztring_t Options) const
 {
     //Integrity
     if (empty())
@@ -1170,7 +1170,7 @@ int32u Ztring::To_int8u (ztring_t Options) const
 
 //---------------------------------------------------------------------------
 //Operateur ToInt
-int32s Ztring::To_int16s (ztring_t Options) const
+int16s Ztring::To_int16s (ztring_t Options) const
 {
     //Integrity
     if (empty())
@@ -1201,7 +1201,7 @@ int32s Ztring::To_int16s (ztring_t Options) const
 
 //---------------------------------------------------------------------------
 //Operateur ToInt
-int32u Ztring::To_int16u (ztring_t Options) const
+int16u Ztring::To_int16u (ztring_t Options) const
 {
     //Integrity
     if (empty())
