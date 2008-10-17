@@ -100,7 +100,7 @@ Ztring FileName::Name_Get() const
     #else //ZENLIB_USEWX
         size_t Pos_Path=rfind(FileName_PathSeparator); //Path limit
         if (Pos_Path==Ztring::npos)
-            Pos_Path=0; //Not found
+            Pos_Path=(size_type)-1; //Not found
         //Extension limit
         size_t Pos_Ext=rfind(_T('.'));
         if (Pos_Ext==Ztring::npos || Pos_Ext<Pos_Path)

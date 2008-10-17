@@ -1,6 +1,7 @@
-Version 0.3.4.0 2008-
+Version 0.3.4.0 2008-10-17
 ---------------
 x some size of returned value problems in Ztring
+x Bug in FileName.cpp
 
 Version 0.3.3.9 2008-09-12
 ---------------
