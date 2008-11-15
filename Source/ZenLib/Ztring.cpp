@@ -56,8 +56,8 @@
 #include <iomanip>
 #include <cmath>
 #include "ZenLib/Ztring.h"
-#include <ZenLib/OS_Utils.h>
-#include <ZenLib/ConvertUTF.h>
+#include "ZenLib/OS_Utils.h"
+#include "ZenLib/ConvertUTF.h"
 using namespace std;
 //---------------------------------------------------------------------------
 

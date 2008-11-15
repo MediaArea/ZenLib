@@ -29,7 +29,7 @@
 #ifdef WINDOWS
     #include <io.h>
 #else
-    #include <stdio.h>
+    #include <cstdio>
 #endif
 #include <fcntl.h>
 #include <sys/stat.h>
@@ -151,7 +151,7 @@ void MemoryDebug::Free(void* Ptr, bool Array)
     // Si le bloc n'a pas été alloué, on génère une erreur
     if (It == m_Blocks.end())
     {
-        // En fait ça arrive souvent, du fait que le delete surchargé est pris en compte même là où on n'inclue pas DebugNew.h,
+        // En fait ça arrive souvent, du fait que le delete surcharge est pris en compte meme la ou on n'inclue pas DebugNew.h,
         // mais pas la macro pour le new
         // Dans ce cas on détruit le bloc et on quitte immédiatement
         free(Ptr);

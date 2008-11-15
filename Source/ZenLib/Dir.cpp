@@ -46,11 +46,11 @@
         #include <dirent.h>
     #endif
 #endif //ZENLIB_USEWX
-#include <ZenLib/Dir.h>
-#include <ZenLib/File.h>
-#include <ZenLib/FileName.h>
-#include <ZenLib/ZtringList.h>
-#include <ZenLib/OS_Utils.h>
+#include "ZenLib/Dir.h"
+#include "ZenLib/File.h"
+#include "ZenLib/FileName.h"
+#include "ZenLib/ZtringList.h"
+#include "ZenLib/OS_Utils.h"
 //---------------------------------------------------------------------------
 
 namespace ZenLib

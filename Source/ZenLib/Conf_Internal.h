@@ -1,5 +1,5 @@
 // ZenLib::Conf_Internal - To be independant of platform & compiler
-// Copyright (C) 2007-2007 Jerome Martinez, Zen@MediaArea.net
+// Copyright (C) 2007-2008 Jerome Martinez, Zen@MediaArea.net
 //
 // This software is provided 'as-is', without any express or implied
 // warranty.  In no event will the authors be held liable for any damages
@@ -74,16 +74,21 @@
             #undef __TEXT
             #include <windows.h>
         #endif //WINDOWS
-        #include <iomanip>
         #include <algorithm>
         #include <cmath>
+        #include <complex>
         #include <cstdio>
         #include <cstdlib>
+        #include <cstring>
         #include <ctime>
+        #include <fstream>
+        #include <functional>
+        #include <iomanip>
         #include <map>
-        #include <string>
+        #include <memory>
         #include <sstream>
-        #include <vector>
+        #include <stack>
+        #include <string>
     #endif //defined(__VISUALC__) || defined(__BORLANDC__)
 #endif //ZENLIB_USEWX
 

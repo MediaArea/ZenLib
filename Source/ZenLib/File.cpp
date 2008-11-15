@@ -38,7 +38,7 @@
         #ifdef WINDOWS
             #include <io.h>
         #else
-            #include <stdio.h>
+            #include <cstdio>
         #endif
         #include <fcntl.h>
         #include <sys/stat.h>
@@ -55,7 +55,7 @@
     #endif
 #endif //ZENLIB_USEWX
 #include "ZenLib/File.h"
-#include <ZenLib/OS_Utils.h>
+#include "ZenLib/OS_Utils.h"
 #include <map>
 //---------------------------------------------------------------------------
 

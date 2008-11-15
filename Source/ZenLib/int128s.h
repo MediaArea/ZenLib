@@ -43,7 +43,7 @@
 #include <cstdlib>
 #include <cstdio>
 #include <new>
-#include <ZenLib/Conf.h>
+#include "ZenLib/Conf.h"
 
 namespace ZenLib
 {

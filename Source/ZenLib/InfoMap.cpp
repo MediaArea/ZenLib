@@ -38,7 +38,7 @@ namespace ZenLib
 {
 
 //---------------------------------------------------------------------------
-const Ztring EmptyZtring_Const; //Use it when we can't return a reference to a true Ztring, const version
+const Ztring InfoMap_EmptyZtring_Const; //Use it when we can't return a reference to a true Ztring, const version
 //---------------------------------------------------------------------------
 
 //***************************************************************************
@@ -89,11 +89,11 @@ const Ztring &InfoMap::Get (const Ztring &Value, size_t Pos) const
 {
     InfoMap::const_iterator List=find(Value);
     if (List==end())
-        return EmptyZtring_Const; //Not found
+        return InfoMap_EmptyZtring_Const; //Not found
     if (Pos<List->second.size())
         return List->second[Pos];
     else
-        return EmptyZtring_Const; //Not found
+        return InfoMap_EmptyZtring_Const; //Not found
 }
 
 //---------------------------------------------------------------------------
@@ -101,7 +101,7 @@ const Ztring &InfoMap::Get (const Ztring &Value, size_t Pos, const Ztring &WithV
 {
     InfoMap::const_iterator List=find(Value);
     if (List==end())
-        return EmptyZtring_Const; //Not found
+        return InfoMap_EmptyZtring_Const; //Not found
     if (Pos<List->second.size())
     {
         if (List->second[WithValue_Pos]==WithValue)
@@ -114,14 +114,14 @@ const Ztring &InfoMap::Get (const Ztring &Value, size_t Pos, const Ztring &WithV
                 if (List->second[WithValue_Pos]==WithValue)
                     return List->second[Pos];
                 else
-                    return EmptyZtring_Const; //Not found
+                    return InfoMap_EmptyZtring_Const; //Not found
             }
             else
-                return EmptyZtring_Const; //Not found
+                return InfoMap_EmptyZtring_Const; //Not found
         }
     }
     else
-        return EmptyZtring_Const; //Not found
+        return InfoMap_EmptyZtring_Const; //Not found
 }
 
 //---------------------------------------------------------------------------

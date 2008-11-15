@@ -28,7 +28,7 @@
 #ifndef ZenLib_ThreadH
 #define ZenLib_ThreadH
 //---------------------------------------------------------------------------
-#include <ZenLib/Conf.h>
+#include "ZenLib/Conf.h"
 #undef Yield
 //---------------------------------------------------------------------------
 

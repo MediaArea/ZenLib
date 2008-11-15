@@ -174,7 +174,7 @@
 
 //---------------------------------------------------------------------------
 #if defined(ZENLIB_DEBUG) && (defined(DEBUG) || defined(_DEBUG))
-    #include <ZenLib/MemoryDebug.h>
+    #include "ZenLib/MemoryDebug.h"
 #endif // defined(ZENLIB_DEBUG) && (defined(DEBUG) || defined(_DEBUG))
 
 //***************************************************************************

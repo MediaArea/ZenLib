@@ -1,3 +1,7 @@
+Version 0.3.4.1 2008-
+---------------
+x Code cleanup
+
 Version 0.3.4.0 2008-10-17
 ---------------
 x some size of returned value problems in Ztring
