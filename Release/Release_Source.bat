@@ -7,7 +7,7 @@ mkdir ZenLib_Source
 
 
 rem --- Copying : Include ---
-xcopy ..\Source\ZenLib\*.h ZenLib_Source\Include\ZenLib\
+xcopy ..\Source\ZenLib\*.h ZenLib_Source\Include\ZenLib\ /S
 
 rem --- Copying : Documentation ---
 mkdir Doc
@@ -74,7 +74,8 @@ copy ..\*.cvsignore ZenLib_Source\
 rem --- Compressing Archive ---
 if "%2"=="SkipCompression" goto SkipCompression
 move ZenLib_Source ZenLib
-..\..\Shared\Binary\Win32\7-Zip\7z a -r -t7z -mx9 ZenLib_Source.7z ZenLib\*
+..\..\Shared\Binary\Win32\7-Zip\7z a -r -ttar -mx9 ZenLib_Source.tar ZenLib\*
+..\..\Shared\Binary\Win32\7-Zip\7z a -r -tbzip2 -mx9 ZenLib_Source.tar.bz2 ZenLib_Source.tar
 move ZenLib ZenLib_Source
 :SkipCompression
 

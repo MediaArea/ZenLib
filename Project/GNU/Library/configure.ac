@@ -242,7 +242,8 @@ AC_SUBST(ZenLib_CXXFLAGS)
 AC_SUBST(ZenLib_LIBS)
 AC_SUBST(ZenLib_Unicode)
 AC_SUBST(ZenLib_LargeFiles)
-AC_CONFIG_FILES(ZenLib-config, [chmod u+x ZenLib-config])
+AC_CONFIG_FILES(libzen-config, [chmod u+x libzen-config])
+AC_CONFIG_FILES(libzen.pc, [chmod u+x libzen-config])
 
 AC_OUTPUT(Makefile)
 

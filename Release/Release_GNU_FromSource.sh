@@ -55,7 +55,8 @@ cp ../Project/GNU/Library/Makefile.am ZenLib_GNU_FromSource/Project/GNU/Library/
 cp ../Project/GNU/Library/Makefile.in ZenLib_GNU_FromSource/Project/GNU/Library/
 cp ../Project/GNU/Library/missing ZenLib_GNU_FromSource/Project/GNU/Library/
 cp ../Project/GNU/Library/wxwin.m4 ZenLib_GNU_FromSource/Project/GNU/Library/
-cp ../Project/GNU/Library/ZenLib-config.in ZenLib_GNU_FromSource/Project/GNU/Library/
+cp ../Project/GNU/Library/libzen.pc.in ZenLib_GNU_FromSource/Project/GNU/Library/
+cp ../Project/GNU/Library/libzen-config.in ZenLib_GNU_FromSource/Project/GNU/Library/
 
 
 #-----------------------------------------------------------------------
