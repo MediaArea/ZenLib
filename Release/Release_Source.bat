@@ -76,6 +76,7 @@ if "%2"=="SkipCompression" goto SkipCompression
 move ZenLib_Source ZenLib
 ..\..\Shared\Binary\Win32\7-Zip\7z a -r -ttar -mx9 ZenLib_Source.tar ZenLib\*
 ..\..\Shared\Binary\Win32\7-Zip\7z a -r -tbzip2 -mx9 ZenLib_Source.tar.bz2 ZenLib_Source.tar
+rm ZenLib_Source.tar
 move ZenLib ZenLib_Source
 :SkipCompression
 
