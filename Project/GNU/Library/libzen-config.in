@@ -4,6 +4,9 @@ fi
 if test "$1" = "LIBS"; then
 echo @ZenLib_LIBS@
 fi
+if test "$1" = "LIBS_Static"; then
+echo @ZenLib_LIBS_Static@
+fi
 if test "$1" = "Unicode"; then
 echo @ZenLib_Unicode@
 fi

@@ -174,14 +174,15 @@ dnl
 if test "$with_wxwidgets" != "no"; then
 	CFLAGS="$CFLAGS $($ZenLib_Wx_Config --unicode=$enable_unicode --cflags)"
 	CXXFLAGS="$CXXFLAGS $($ZenLib_Wx_Config --unicode=$enable_unicode --cxxflags)"
-	LIBS="$LIBS $($ZenLib_Wx_Config --unicode=$enable_unicode --libs)"
 	ZenLib_LIBS="$ZenLib_LIBS $($ZenLib_Wx_Config --unicode=$enable_unicode --libs)"
+	ZenLib_LIBS_Static="$ZenLib_LIBS_Static $($ZenLib_Wx_Config --unicode=$enable_unicode --libs)"
 fi
 
 dnl -------------------------------------------------------------------------
 dnl Common
 dnl
 ZenLib_LIBS="-L$(pwd) -lzen $ZenLib_LIBS"
+ZenLib_LIBS_Static="$(pwd)/libzen.a $ZenLib_LIBS_Static"
 
 dnl #########################################################################
 dnl ### C/C++ compiler options used to compile
@@ -209,13 +210,6 @@ else
 fi
 
 dnl -------------------------------------------------------------------------
-dnl Disable lib flags if we don't plan to create executables
-dnl
-if test "$enable_shared" != "yes"; then
-	LIBS=""
-fi
-
-dnl -------------------------------------------------------------------------
 dnl GNU compiler
 dnl
 if test "$GXX" = yes ; then
@@ -240,10 +234,11 @@ dnl #########################################################################
 
 AC_SUBST(ZenLib_CXXFLAGS)
 AC_SUBST(ZenLib_LIBS)
+AC_SUBST(ZenLib_LIBS_Static)
 AC_SUBST(ZenLib_Unicode)
 AC_SUBST(ZenLib_LargeFiles)
 AC_CONFIG_FILES(libzen-config, [chmod u+x libzen-config])
-AC_CONFIG_FILES(libzen.pc, [chmod u+x libzen-config])
+AC_CONFIG_FILES(libzen.pc)
 
 AC_OUTPUT(Makefile)
 
