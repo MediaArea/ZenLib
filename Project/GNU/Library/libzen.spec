@@ -53,7 +53,7 @@ popd
 
 %install
 pushd Project/GNU/Library
-	%makeinstall
+	%__make install-strip DESTDIR=%{buildroot}
 popd
 
 # Zenlib headers and ZenLib-config
