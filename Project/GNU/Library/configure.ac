@@ -182,7 +182,7 @@ dnl -------------------------------------------------------------------------
 dnl Common
 dnl
 ZenLib_LIBS="-L$(pwd) -lzen $ZenLib_LIBS"
-ZenLib_LIBS_Static="$(pwd)/libzen.a $ZenLib_LIBS_Static"
+ZenLib_LIBS_Static="$(pwd)/.libs/libzen.a -lpthread $ZenLib_LIBS_Static"
 
 dnl #########################################################################
 dnl ### C/C++ compiler options used to compile
