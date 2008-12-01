@@ -1,0 +1,21 @@
+Source: libzen
+Priority: optional
+Maintainer: Jerome Martinez <zen@mediaarea.net>
+Build-Depends: debhelper (>= 5), doxygen, tofrodos
+Standards-Version: 3.7.3
+Section: libs
+Homepage: http://mediainfo.sourceforge.net
+
+Package: libzen0-dev
+Section: libdevel
+Architecture: any
+Depends: libzen0
+Description: libmediainfo mandatory library (dev)
+ This package includes the development support files
+
+Package: libzen0
+Section: libs
+Architecture: any
+Depends:
+Description: libmediainfo mandatory library
+ This package includes the shared library
