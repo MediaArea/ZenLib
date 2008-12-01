@@ -16,31 +16,37 @@ Summary:		Shared library for libmediainfo and medianfo-*
 Group:			System/Libraries
 License:		BSD
 URL:			http://zenlib.sourceforge.net/
-Source:			ZenLib_%{version}_Source.tar.bz2
+Source:			libzen_%{version}.tar.bz2
 BuildRoot:		%{_tmppath}/%{name}-%{version}-%{release}-root
-BuildRequires:	dos2unix
-BuildRequires:	gcc-c++
+BuildRequires:		dos2unix
+BuildRequires:		doxygen
+BuildRequires:		gcc-c++
 
 %description
 Shared library for libmediainfo and medianfo-*.
 
-%package -n libzen-devel
+%package -n libzen%{_SO_nr}-devel
 Summary:	Include files and mandatory libraries for development
 Group:		Development/Libraries/C and C++
 Requires:	libzen%{_SO_nr} = %{version}
 
-%description -n libzen-devel
+%description -n libzen%{_SO_nr}-devel
 Include files and mandatory libraries for development.
 
 %prep
 %setup -q -n ZenLib
-dos2unix     Doc/* *.txt *.html
-%__chmod 644 Doc/* *.txt *.html
+dos2unix     *.txt Source/Doc/*.html
+%__chmod 644 *.txt Source/Doc/*.html
 
 %build
 export CFLAGS="$RPM_OPT_FLAGS"
 export CPPFLAGS="$RPM_OPT_FLAGS"
 export CXXFLAGS="$RPM_OPT_FLAGS"
+
+pushd Source/Doc/
+	doxygen Doxyfile
+popd
+cp Source/Doc/*.html ./
 
 pushd Project/GNU/Library
 	%__chmod +x autogen
@@ -58,11 +64,11 @@ popd
 
 # Zenlib headers and ZenLib-config
 %__install -dm 755 %{buildroot}%{_includedir}/ZenLib
-%__install -m 644 Include/ZenLib/*.h \
+%__install -m 644 Source/ZenLib/*.h \
 	%{buildroot}%{_includedir}/ZenLib
 for i in Base64 HTTP_Client; do
 	%__install -dm 755 %{buildroot}%{_includedir}/ZenLib/$i
-	%__install -m 644 Include/ZenLib/$i/*.h \
+	%__install -m 644 Source/ZenLib/$i/*.h \
 		%{buildroot}%{_includedir}/ZenLib/$i
 done
 
@@ -81,11 +87,12 @@ done
 
 %files
 %defattr(-,root,root,-)
-%doc *.txt *.html
+%doc History.txt License.txt ReadMe.txt
 %{_libdir}/libzen.so.*
 
-%files -n libzen-devel
+%files -n libzen%{_SO_nr}-devel
 %defattr(-,root,root,-)
+%doc Documentation.html
 %doc Doc/*
 %dir %{_includedir}/ZenLib
 %{_includedir}/ZenLib/*
