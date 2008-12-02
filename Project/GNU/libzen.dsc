@@ -6,6 +6,6 @@ Version: 0.3.4.0-1
 Maintainer: Jerome Martinez <zen@mediaarea.net>
 Homepage: http://mediainfo.sourceforge.net
 Standards-Version: 3.7.3
-Build-Depends: debhelper (>= 5), doxygen, tofrodos
+Build-Depends: debhelper (>= 5), doxygen, tofrodos, automake, autoconf, libtool
 Files: 
  00000000000000000000000000000000 000000 libzen_0.3.4.0.tar.gz
