@@ -52,6 +52,7 @@ xcopy ..\Project\*.ico ZenLib_Source\Project\ /S
 xcopy ..\Project\*.workspace ZenLib_Source\Project\ /S
 xcopy ..\Project\*.cbp ZenLib_Source\Project\ /S
 xcopy ..\Project\BCB\*.h ZenLib_Source\Project\BCB\ /S
+xcopy ..\Project\CMake\*.txt ZenLib_Source\Project\CMake\ /S
 xcopy ..\Project\MSVC\*.h ZenLib_Source\Project\MSVC\ /S
 xcopy ..\Project\MSVC\*.rc ZenLib_Source\Project\MSVC\ /S
 xcopy ..\Project\GNU\* ZenLib_Source\Project\GNU\ /S
