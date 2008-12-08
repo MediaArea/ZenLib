@@ -16,8 +16,8 @@ chmod u+x autogen
 cd ../../../Release
 
 #-----------------------------------------------------------------------
-# Copying : Licence files
-cp ../Licence.txt ZenLib_GNU_FromSource/
+# Copying : License files
+cp ../License.txt ZenLib_GNU_FromSource/
 
 #-----------------------------------------------------------------------
 # Copying : History
