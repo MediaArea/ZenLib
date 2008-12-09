@@ -1,5 +1,6 @@
 Version 0.3.4.1 2008-
 ---------------
++ mipsel CPU support
 + Better Linux integration
 + rpm stuff (thanks to oc2pus http://packman.links2linux.org)
 + deb stuff

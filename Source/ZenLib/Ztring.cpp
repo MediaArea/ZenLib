@@ -982,6 +982,7 @@ Ztring& Ztring::Date_From_String (const char* Value, size_t Value_Size)
     return *this;
 }
 
+#ifndef WSTRING_MISSING
 //---------------------------------------------------------------------------
 std::wstring Ztring::To_Unicode () const
 {
@@ -995,6 +996,7 @@ std::wstring Ztring::To_Unicode () const
         #endif //ZENLIB_USEWX
     #endif //_UNICODE
 }
+#endif //WSTRING_MISSING
 
 std::string Ztring::To_UTF8 () const
 {

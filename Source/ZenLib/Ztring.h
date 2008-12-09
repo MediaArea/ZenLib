@@ -82,8 +82,10 @@ public :
     Char &operator () (size_type Pos);
 
     //Conversions - From
+    #ifndef WSTRING_MISSING
         /// @brief convert an Unicode encoded string into Ztring
     Ztring& From_Unicode (const std::wstring &S)                                {return From_Unicode(S.c_str());};
+    #endif //WSTRING_MISSING
         /// @brief convert an Unicode encoded string into Ztring
     Ztring& From_Unicode (const wchar_t *S);
         /// @brief convert an Unicode encoded string into Ztring
@@ -192,9 +194,11 @@ public :
     Ztring& Date_From_String (const char* Date, size_type Value_Size=Error);
 
     //Conversions - To
+    #ifndef WSTRING_MISSING
         /// @brief Convert into Unicode chars
         /// @return the string corresponding \n
     std::wstring To_Unicode () const;
+    #endif //WSTRING_MISSING
         /// @brief Convert into char* (UTF-8 encoded)
         /// @return the string corresponding \n
     std::string To_UTF8     () const;

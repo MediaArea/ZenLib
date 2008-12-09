@@ -43,6 +43,7 @@ dnl -------------------------------------------------------------------------
 dnl Enable
 dnl
 AC_ARG_ENABLE(unicode,      AC_HELP_STRING([--disable-unicode],     [Disable Unicode]),                         , enable_unicode=yes)
+AC_ARG_ENABLE(wstringmissing, AC_HELP_STRING([--enable-wstringmissing], [Disable wstring support (old compilers)]), , enable_wstringmissing=no)
 AC_ARG_ENABLE(large_files,  AC_HELP_STRING([--disable-large-files], [Disable Large files support]),             , enable_large_files=yes)
 AC_ARG_ENABLE(debug,        AC_HELP_STRING([--enable-debug],        [Enable full debug]),                       , enable_debug=no)
 AC_ARG_ENABLE(gprof,        AC_HELP_STRING([--enable-gprof],        [Enable gprof log]),                        , enable_gprof=no)
@@ -189,10 +190,22 @@ dnl ### C/C++ compiler options used to compile
 dnl #########################################################################
 
 dnl -------------------------------------------------------------------------
+dnl wstring
+dnl
+if test "$enable_wstringmissing" = "yes"; then
+	CXXFLAGS="$CXXFLAGS -DWSTRING_MISSING"
+	ZenLib_CXXFLAGS="$ZenLib_CXXFLAGS -DWSTRING_MISSING"
+	ZenLib_WstringMissing="yes"
+	enable_unicode="no"
+else
+	ZenLib_WstringMissing="no"
+fi
+
+dnl -------------------------------------------------------------------------
 dnl Unicode
 dnl
 if test "$enable_unicode" = "yes"; then
-	AC_DEFINE(UNICODE)
+	CXXFLAGS="$CXXFLAGS -DUNICODE"
 	ZenLib_CXXFLAGS="$ZenLib_CXXFLAGS -DUNICODE"
 	ZenLib_Unicode="yes"
 else
@@ -236,6 +249,7 @@ AC_SUBST(ZenLib_CXXFLAGS)
 AC_SUBST(ZenLib_LIBS)
 AC_SUBST(ZenLib_LIBS_Static)
 AC_SUBST(ZenLib_Unicode)
+AC_SUBST(ZenLib_WstringSupport)
 AC_SUBST(ZenLib_LargeFiles)
 AC_CONFIG_FILES(libzen-config, [chmod u+x libzen-config])
 AC_CONFIG_FILES(libzen.pc)
@@ -247,9 +261,10 @@ dnl ### Report how we have been configured
 dnl #########################################################################
 
 echo ""
-echo "Configured ZenLib for '$build'"
+echo "Configured ZenLib for '$host'"
 echo ""
 echo "  Unicode?                                                $enable_unicode"
+echo "  wstring missing support?                                $ZenLib_WstringMissing"
 echo "  Large files support?                                    $enable_large_files"
 echo "  Using WxWidgets?                                        $with_wxwidgets"
 echo ""

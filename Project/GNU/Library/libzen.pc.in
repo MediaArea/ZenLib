@@ -3,6 +3,7 @@ exec_prefix=@exec_prefix@
 libdir=@libdir@
 includedir=@includedir@
 Unicode=@ZenLib_Unicode@
+WstringSupport=@ZenLib_WstringMissing@
 Libs_Static=${libdir}/libzen.a -lpthread
 
 Name: libzen
