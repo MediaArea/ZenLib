@@ -122,7 +122,11 @@ uint128::uint128 (const char * sz) throw ()
 };
 
 uint128::uint128 (const float a) throw ()
+    #if defined (__mips__)       || defined (__mipsel__)
+    : lo ((int64u) fmod ((const double)a, 18446744073709551616.0)),
+    #else
     : lo ((int64u) fmodf (a, 18446744073709551616.0f)),
+    #endif
       hi ((int64u) (a / 18446744073709551616.0f)) {};
 
 uint128::uint128 (const double & a) throw ()
