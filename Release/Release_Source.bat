@@ -9,7 +9,7 @@ mkdir ZenLib_Source
 rem --- Copying : Documentation ---
 rem mkdir Doc
 rem cd ..\Source\Doc
-rem ..\..\..\Shared\Binary\Win32\Doxygen\Doxygen Doxygen
+rem ..\..\..\Shared\Binary\Windows_i386\Doxygen\Doxygen Doxygen
 rem cd ..\..\Release
 rem mkdir ZenLib_Source\Doc\
 rem xcopy ..\Doc\*.*  ZenLib_Source\Doc\
@@ -75,8 +75,8 @@ copy ..\*.cvsignore ZenLib_Source\
 rem --- Compressing Archive ---
 if "%2"=="SkipCompression" goto SkipCompression
 move ZenLib_Source ZenLib
-..\..\Shared\Binary\Win32\7-Zip\7z a -r -ttar -mx9 ZenLib_Source.tar ZenLib\*
-..\..\Shared\Binary\Win32\7-Zip\7z a -r -tbzip2 -mx9 libzen_.tar.bz2 ZenLib_Source.tar
+..\..\Shared\Binary\Windows_i386\7-Zip\7z a -r -ttar -mx9 ZenLib_Source.tar ZenLib\*
+..\..\Shared\Binary\Windows_i386\7-Zip\7z a -r -tbzip2 -mx9 libzen_.tar.bz2 ZenLib_Source.tar
 del ZenLib_Source.tar
 move ZenLib ZenLib_Source
 :SkipCompression
