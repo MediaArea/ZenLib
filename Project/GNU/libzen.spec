@@ -10,7 +10,7 @@
 %define _SO_nr	0
 
 Name:			libzen%{_SO_nr}
-Version:		0.3.4.0
+Version:		0.3.5
 Release:		1
 Summary:		Shared library for libmediainfo and medianfo-*
 Group:			System/Libraries
