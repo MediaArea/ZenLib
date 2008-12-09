@@ -133,7 +133,11 @@ int128::int128 (const double & a) throw ()
       hi ((int64s) (a / 18446744073709551616.0)) {};
 
 int128::int128 (const long double & a) throw ()
+    #if defined (__mips__)       || defined (__mipsel__)
+    : lo ((int64u) fmod ((const double)a, 18446744073709551616.0)),
+    #else
     : lo ((int64u) fmodl (a, 18446744073709551616.0l)),
+    #endif
       hi ((int64s) (a / 18446744073709551616.0l)) {};
 
 float int128::toFloat () const throw () {
