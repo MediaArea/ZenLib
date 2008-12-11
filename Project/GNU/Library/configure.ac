@@ -182,7 +182,7 @@ fi
 dnl -------------------------------------------------------------------------
 dnl Common
 dnl
-ZenLib_LIBS="-L$(pwd) -lzen $ZenLib_LIBS"
+ZenLib_LIBS="-L$(pwd) -lzen -lpthread $ZenLib_LIBS"
 ZenLib_LIBS_Static="$(pwd)/.libs/libzen.a -lpthread $ZenLib_LIBS_Static"
 
 dnl #########################################################################
