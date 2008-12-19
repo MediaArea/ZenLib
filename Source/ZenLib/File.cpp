@@ -26,7 +26,6 @@
     #pragma hdrstop
 #endif
 //---------------------------------------------------------------------------
-//#undef ZENLIB_STANDARD
 //---------------------------------------------------------------------------
 #ifdef ZENLIB_USEWX
     #include <wx/file.h>
@@ -49,6 +48,12 @@
         #include <sys/stat.h>
         #include <fstream>
         using namespace std;
+        #ifndef S_ISDIR
+            #define S_ISDIR(mode) (((mode)&S_IFMT) == S_IFDIR)
+        #endif
+        #ifndef S_ISREG
+            #define S_ISREG(mode) (((mode)&S_IFMT) == S_IFREG)
+        #endif
     #elif defined WINDOWS
         #undef __TEXT
         #include <windows.h>
@@ -236,10 +241,17 @@ bool File::Create (Ztring File_Name, bool OverWrite)
                 //case false         : mode=          ; break;
                 default                  : mode=0                            ; break;
             }*/
+            ios_base::openmode access;
+            switch (OverWrite)
+            {
+                case false        : if (Exists(File_Name))
+                                        return false;
+                default           : access=ios_base::binary|ios_base::in|ios_base::out|ios_base::trunc; break;
+            }
             #ifdef UNICODE
-                File_Handle=new fstream(File_Name.To_Local().c_str(), ios_base::binary|ios_base::in);
+                File_Handle=new fstream(File_Name.To_Local().c_str(), access);
             #else
-                File_Handle=new fstream(File_Name.c_str(), ios_base::binary|ios_base::in);
+                File_Handle=new fstream(File_Name.c_str(), access);
             #endif //UNICODE
             return ((fstream*)File_Handle)->is_open();
         #elif defined WINDOWS
@@ -316,7 +328,7 @@ size_t File::Read (int8u* Buffer, size_t Buffer_Size_Max)
             if (Size==(int64u)-1)
                 Size_Get();
             if (Position+Buffer_Size_Max>Size)
-                Buffer_Size_Max=Size-Position; //We don't want to enable eofbit (impossible to seek after)
+                Buffer_Size_Max=(size_t)(Size-Position); //We don't want to enable eofbit (impossible to seek after)
             ((fstream*)File_Handle)->read((char*)Buffer, Buffer_Size_Max);
             size_t ByteRead=((fstream*)File_Handle)->gcount();
             Position+=ByteRead;
@@ -404,7 +416,7 @@ bool File::GoTo (int64s Position_ToMove, move_t MoveMethod)
                 case FromEnd     : dir=ios_base::end; break;
                 default          : dir=ios_base::beg;
             }
-            ((fstream*)File_Handle)->seekg(Position_ToMove, dir);
+            ((fstream*)File_Handle)->seekg((long)Position_ToMove, dir);
             return !((fstream*)File_Handle)->fail();
         #elif defined WINDOWS
             LARGE_INTEGER GoTo; GoTo.QuadPart=Position_ToMove;
@@ -668,7 +680,11 @@ bool File::Delete(const Ztring &File_Name)
         return wxRemoveFile(File_Name.c_str());
     #else //ZENLIB_USEWX
         #ifdef ZENLIB_STANDARD
-            return false;
+            #ifdef UNICODE
+                return unlink(File_Name.To_Local().c_str())==0;
+            #else
+                return unlink(File_Name.c_str())==0;
+            #endif //UNICODE
         #elif defined WINDOWS
             #ifdef UNICODE
                 if (IsWin9X())
