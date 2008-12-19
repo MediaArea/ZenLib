@@ -35,7 +35,7 @@ namespace ZenLib
 {
 
 //***************************************************************************
-// Transformations
+// Transformations - Little Endian to something
 //***************************************************************************
 
 //---------------------------------------------------------------------------
@@ -234,6 +234,10 @@ float80 LittleEndian2float80(const char*)
 {
     return 0.0; //Does it exist?
 }
+
+//***************************************************************************
+// Transformations - Big Endian to something
+//***************************************************************************
 
 //---------------------------------------------------------------------------
 // Big Endian - 8 bits
@@ -494,6 +498,174 @@ float80 BigEndian2float80(const char* Liste)
 
     return (float80)Answer;
 }
+
+//***************************************************************************
+// Transformations - Something to Big Endian
+//***************************************************************************
+
+//---------------------------------------------------------------------------
+// Big Endian - 8 bits
+void int8s2BigEndian     (char* List, int8s Value)
+{
+    List[0]=(char)Value;
+}
+
+void int8u2BigEndian     (char* List, int8u Value)
+{
+    List[0]=(char)Value;
+}
+
+//---------------------------------------------------------------------------
+// Big Endian - 16 bits
+void int16s2BigEndian    (char* List, int16s Value)
+{
+    List[0]=(char)(Value>> 8);
+    List[1]=(char) Value;
+}
+
+void int16u2BigEndian    (char* List, int16u Value)
+{
+    List[0]=(char)(Value>> 8);
+    List[1]=(char) Value;
+}
+
+//---------------------------------------------------------------------------
+// Big Endian - 24 bits
+void int24s2BigEndian    (char* List, int32s Value)
+{
+    List[0]=(char)(Value>>16);
+    List[1]=(char)(Value>> 8);
+    List[2]=(char) Value;
+}
+
+void int24u2BigEndian    (char* List, int32u Value)
+{
+    List[0]=(char)(Value>>16);
+    List[1]=(char)(Value>> 8);
+    List[2]=(char) Value;
+}
+
+//---------------------------------------------------------------------------
+// Big Endian - 32 bits
+void int32s2BigEndian    (char* List, int32s Value)
+{
+    List[0]=(char)(Value>>24);
+    List[1]=(char)(Value>>16);
+    List[2]=(char)(Value>> 8);
+    List[3]=(char) Value;
+}
+
+void int32u2BigEndian    (char* List, int32u Value)
+{
+    List[0]=(char)(Value>>24);
+    List[1]=(char)(Value>>16);
+    List[2]=(char)(Value>> 8);
+    List[3]=(char) Value;
+}
+
+//---------------------------------------------------------------------------
+// Big Endian - 40 bits
+void int40s2BigEndian    (char* List, int64s Value)
+{
+    List[0]=(char)(Value>>32);
+    List[1]=(char)(Value>>24);
+    List[2]=(char)(Value>>16);
+    List[3]=(char)(Value>> 8);
+    List[4]=(char) Value;
+}
+
+void int40u2BigEndian    (char* List, int64u Value)
+{
+    List[0]=(char)(Value>>32);
+    List[1]=(char)(Value>>24);
+    List[2]=(char)(Value>>16);
+    List[3]=(char)(Value>> 8);
+    List[4]=(char) Value;
+}
+
+//---------------------------------------------------------------------------
+// Big Endian - 48 bits
+void int48s2BigEndian    (char* List, int64s Value)
+{
+    List[0]=(char)(Value>>40);
+    List[1]=(char)(Value>>32);
+    List[2]=(char)(Value>>24);
+    List[3]=(char)(Value>>16);
+    List[4]=(char)(Value>> 8);
+    List[5]=(char) Value;
+}
+
+void int48u2BigEndian    (char* List, int64u Value)
+{
+    List[0]=(char)(Value>>40);
+    List[1]=(char)(Value>>32);
+    List[2]=(char)(Value>>24);
+    List[3]=(char)(Value>>16);
+    List[4]=(char)(Value>> 8);
+    List[5]=(char) Value;
+}
+
+//---------------------------------------------------------------------------
+// Big Endian - 56 bits
+void int56s2BigEndian    (char* List, int64s Value)
+{
+    List[0]=(char)(Value>>48);
+    List[1]=(char)(Value>>40);
+    List[2]=(char)(Value>>32);
+    List[3]=(char)(Value>>24);
+    List[4]=(char)(Value>>16);
+    List[5]=(char)(Value>> 8);
+    List[6]=(char) Value;
+}
+
+void int56u2BigEndian    (char* List, int64u Value)
+{
+    List[0]=(char)(Value>>48);
+    List[1]=(char)(Value>>40);
+    List[2]=(char)(Value>>32);
+    List[3]=(char)(Value>>24);
+    List[4]=(char)(Value>>16);
+    List[5]=(char)(Value>> 8);
+    List[6]=(char) Value;
+}
+
+//---------------------------------------------------------------------------
+// Big Endian - 64 bits
+void int64s2BigEndian    (char* List, int64s Value)
+{
+    List[0]=(char)(Value>>56);
+    List[1]=(char)(Value>>48);
+    List[2]=(char)(Value>>40);
+    List[3]=(char)(Value>>32);
+    List[4]=(char)(Value>>24);
+    List[5]=(char)(Value>>16);
+    List[6]=(char)(Value>> 8);
+    List[7]=(char) Value;
+}
+
+void int64u2BigEndian    (char* List, int64u Value)
+{
+    List[0]=(char)(Value>>56);
+    List[1]=(char)(Value>>48);
+    List[2]=(char)(Value>>40);
+    List[3]=(char)(Value>>32);
+    List[4]=(char)(Value>>24);
+    List[5]=(char)(Value>>16);
+    List[6]=(char)(Value>> 8);
+    List[7]=(char) Value;
+}
+
+//---------------------------------------------------------------------------
+// Big Endian - 128 bits
+void int128u2BigEndian(char* List, int128u Value)
+{
+    int64u2BigEndian(List, Value.hi);
+    int64u2BigEndian(List+8, Value.lo);
+}
+
+//***************************************************************************
+// Int to Int
+//***************************************************************************
 
 //---------------------------------------------------------------------------
 // int32 - int64
