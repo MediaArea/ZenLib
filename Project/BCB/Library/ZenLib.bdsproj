@@ -111,13 +111,15 @@
           <property category="win32.*.win32b.bcc32" name="option.H=.arg.merge" value="1"/>
           <property category="win32.*.win32b.bcc32" name="option.H=.enabled" value="1"/>
           <property category="win32.*.win32b.bcc32" name="option.Hc.enabled" value="1"/>
-          <property category="win32.*.win32b.bcc32" name="option.I.arg.1" value="..\..\..\Source\ZenLib\HTTP_Client"/>
-          <property category="win32.*.win32b.bcc32" name="option.I.arg.2" value="..\..\..\Source\ZenLib"/>
-          <property category="win32.*.win32b.bcc32" name="option.I.arg.3" value="..\..\..\Source"/>
-          <property category="win32.*.win32b.bcc32" name="option.I.arg.4" value="..\..\..\..\shared\include"/>
-          <property category="win32.*.win32b.bcc32" name="option.I.arg.5" value="$(BDS)\include"/>
-          <property category="win32.*.win32b.bcc32" name="option.I.arg.6" value="$(BDS)\include\dinkumware"/>
-          <property category="win32.*.win32b.bcc32" name="option.I.arg.7" value="$(BDS)\include\vcl"/>
+          <property category="win32.*.win32b.bcc32" name="option.I.arg.1" value="..\..\..\Source\ZenLib\Format\Http"/>
+          <property category="win32.*.win32b.bcc32" name="option.I.arg.2" value="..\..\..\Source\ZenLib\Format\Html"/>
+          <property category="win32.*.win32b.bcc32" name="option.I.arg.3" value="..\..\..\Source\ZenLib\HTTP_Client"/>
+          <property category="win32.*.win32b.bcc32" name="option.I.arg.4" value="..\..\..\Source\ZenLib"/>
+          <property category="win32.*.win32b.bcc32" name="option.I.arg.5" value="..\..\..\Source"/>
+          <property category="win32.*.win32b.bcc32" name="option.I.arg.6" value="..\..\..\..\shared\include"/>
+          <property category="win32.*.win32b.bcc32" name="option.I.arg.7" value="$(BDS)\include"/>
+          <property category="win32.*.win32b.bcc32" name="option.I.arg.8" value="$(BDS)\include\dinkumware"/>
+          <property category="win32.*.win32b.bcc32" name="option.I.arg.9" value="$(BDS)\include\vcl"/>
           <property category="win32.*.win32b.bcc32" name="option.I.arg.merge" value="1"/>
           <property category="win32.*.win32b.bcc32" name="option.I.enabled" value="1"/>
           <property category="win32.*.win32b.bcc32" name="option.O1.enabled" value="0"/>
@@ -138,33 +140,43 @@
           <property category="win32.*.win32b.bcc32" name="option.w.enabled" value="0"/>
           <property category="win32.*.win32b.brcc32" name="option.C.arg.merge" value="1"/>
           <property category="win32.*.win32b.brcc32" name="option.C.enabled" value="0"/>
-          <property category="win32.*.win32b.dcc32" name="option.I.arg.1" value="..\..\..\Source\ZenLib\HTTP_Client"/>
-          <property category="win32.*.win32b.dcc32" name="option.I.arg.2" value="..\..\..\Source\ZenLib"/>
-          <property category="win32.*.win32b.dcc32" name="option.I.arg.3" value="E:\Programmation\ZenLib\Project\BCB\Library"/>
+          <property category="win32.*.win32b.dcc32" name="option.I.arg.1" value="..\..\..\Source\ZenLib\Format\Http"/>
+          <property category="win32.*.win32b.dcc32" name="option.I.arg.2" value="..\..\..\Source\ZenLib\Format\Html"/>
+          <property category="win32.*.win32b.dcc32" name="option.I.arg.3" value="..\..\..\Source\ZenLib\HTTP_Client"/>
+          <property category="win32.*.win32b.dcc32" name="option.I.arg.4" value="..\..\..\Source\ZenLib"/>
+          <property category="win32.*.win32b.dcc32" name="option.I.arg.5" value="E:\Programmation\ZenLib\Project\BCB\Library"/>
           <property category="win32.*.win32b.dcc32" name="option.I.arg.merge" value="1"/>
           <property category="win32.*.win32b.dcc32" name="option.I.enabled" value="0"/>
-          <property category="win32.*.win32b.dcc32" name="option.O.arg.1" value="..\..\..\Source\ZenLib\HTTP_Client"/>
-          <property category="win32.*.win32b.dcc32" name="option.O.arg.2" value="..\..\..\Source\ZenLib"/>
-          <property category="win32.*.win32b.dcc32" name="option.O.arg.3" value="E:\Programmation\ZenLib\Project\BCB\Library"/>
+          <property category="win32.*.win32b.dcc32" name="option.O.arg.1" value="..\..\..\Source\ZenLib\Format\Http"/>
+          <property category="win32.*.win32b.dcc32" name="option.O.arg.2" value="..\..\..\Source\ZenLib\Format\Html"/>
+          <property category="win32.*.win32b.dcc32" name="option.O.arg.3" value="..\..\..\Source\ZenLib\HTTP_Client"/>
+          <property category="win32.*.win32b.dcc32" name="option.O.arg.4" value="..\..\..\Source\ZenLib"/>
+          <property category="win32.*.win32b.dcc32" name="option.O.arg.5" value="E:\Programmation\ZenLib\Project\BCB\Library"/>
           <property category="win32.*.win32b.dcc32" name="option.O.arg.merge" value="1"/>
           <property category="win32.*.win32b.dcc32" name="option.O.enabled" value="0"/>
-          <property category="win32.*.win32b.dcc32" name="option.R.arg.1" value="..\..\..\Source\ZenLib\HTTP_Client"/>
-          <property category="win32.*.win32b.dcc32" name="option.R.arg.2" value="..\..\..\Source\ZenLib"/>
-          <property category="win32.*.win32b.dcc32" name="option.R.arg.3" value="E:\Programmation\ZenLib\Project\BCB\Library"/>
+          <property category="win32.*.win32b.dcc32" name="option.R.arg.1" value="..\..\..\Source\ZenLib\Format\Http"/>
+          <property category="win32.*.win32b.dcc32" name="option.R.arg.2" value="..\..\..\Source\ZenLib\Format\Html"/>
+          <property category="win32.*.win32b.dcc32" name="option.R.arg.3" value="..\..\..\Source\ZenLib\HTTP_Client"/>
+          <property category="win32.*.win32b.dcc32" name="option.R.arg.4" value="..\..\..\Source\ZenLib"/>
+          <property category="win32.*.win32b.dcc32" name="option.R.arg.5" value="E:\Programmation\ZenLib\Project\BCB\Library"/>
           <property category="win32.*.win32b.dcc32" name="option.R.arg.merge" value="1"/>
           <property category="win32.*.win32b.dcc32" name="option.R.enabled" value="0"/>
-          <property category="win32.*.win32b.dcc32" name="option.U.arg.1" value="..\..\..\Source\ZenLib\HTTP_Client"/>
-          <property category="win32.*.win32b.dcc32" name="option.U.arg.2" value="..\..\..\Source\ZenLib"/>
-          <property category="win32.*.win32b.dcc32" name="option.U.arg.3" value="E:\Programmation\ZenLib\Project\BCB\Library"/>
-          <property category="win32.*.win32b.dcc32" name="option.U.arg.4" value="C:\Documents and Settings\Jerome\Mes documents\Borland Studio Projects"/>
-          <property category="win32.*.win32b.dcc32" name="option.U.arg.5" value="$(BDS)\lib"/>
-          <property category="win32.*.win32b.dcc32" name="option.U.arg.6" value="$(BDS)\lib\obj"/>
+          <property category="win32.*.win32b.dcc32" name="option.U.arg.1" value="..\..\..\Source\ZenLib\Format\Http"/>
+          <property category="win32.*.win32b.dcc32" name="option.U.arg.2" value="..\..\..\Source\ZenLib\Format\Html"/>
+          <property category="win32.*.win32b.dcc32" name="option.U.arg.3" value="..\..\..\Source\ZenLib\HTTP_Client"/>
+          <property category="win32.*.win32b.dcc32" name="option.U.arg.4" value="..\..\..\Source\ZenLib"/>
+          <property category="win32.*.win32b.dcc32" name="option.U.arg.5" value="E:\Programmation\ZenLib\Project\BCB\Library"/>
+          <property category="win32.*.win32b.dcc32" name="option.U.arg.6" value="C:\Documents and Settings\Jerome\Mes documents\Borland Studio Projects"/>
+          <property category="win32.*.win32b.dcc32" name="option.U.arg.7" value="$(BDS)\lib"/>
+          <property category="win32.*.win32b.dcc32" name="option.U.arg.8" value="$(BDS)\lib\obj"/>
           <property category="win32.*.win32b.dcc32" name="option.U.arg.merge" value="1"/>
           <property category="win32.*.win32b.dcc32" name="option.U.enabled" value="1"/>
           <property category="win32.*.win32b.dcc32" name="param.filenames.merge" value="1"/>
-          <property category="win32.*.win32b.idl2cpp" name="option.I.arg.1" value="..\..\..\Source\ZenLib\HTTP_Client"/>
-          <property category="win32.*.win32b.idl2cpp" name="option.I.arg.2" value="..\..\..\Source\ZenLib"/>
-          <property category="win32.*.win32b.idl2cpp" name="option.I.arg.3" value="E:\Programmation\ZenLib\Project\BCB\Library"/>
+          <property category="win32.*.win32b.idl2cpp" name="option.I.arg.1" value="..\..\..\Source\ZenLib\Format\Http"/>
+          <property category="win32.*.win32b.idl2cpp" name="option.I.arg.2" value="..\..\..\Source\ZenLib\Format\Html"/>
+          <property category="win32.*.win32b.idl2cpp" name="option.I.arg.3" value="..\..\..\Source\ZenLib\HTTP_Client"/>
+          <property category="win32.*.win32b.idl2cpp" name="option.I.arg.4" value="..\..\..\Source\ZenLib"/>
+          <property category="win32.*.win32b.idl2cpp" name="option.I.arg.5" value="E:\Programmation\ZenLib\Project\BCB\Library"/>
           <property category="win32.*.win32b.idl2cpp" name="option.I.arg.merge" value="1"/>
           <property category="win32.*.win32b.idl2cpp" name="option.I.enabled" value="1"/>
           <property category="win32.*.win32b.ilink32" name="option.Gi.enabled" value="0"/>
@@ -209,6 +221,12 @@
         <FILE FILENAME="..\..\..\Source\ZenLib\ZtringList.cpp" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="ZtringList" FORMNAME="" DESIGNCLASS=""/>
         <FILE FILENAME="..\..\..\Source\ZenLib\ZtringListList.cpp" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="ZtringListList" FORMNAME="" DESIGNCLASS=""/>
         <FILE FILENAME="..\..\..\Source\ZenLib\ZtringListListF.cpp" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="ZtringListListF" FORMNAME="" DESIGNCLASS="" ADDITIONAL="..\..\..\Source\ZenLib\ZtringListListF.h"/>
+        <FILE FILENAME="..\..\..\Source\ZenLib\Format\Html\Html_Handler.cpp" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="Html_Handler" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="..\..\..\Source\ZenLib\Format\Html\Html_Request.cpp" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="Html_Request" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="..\..\..\Source\ZenLib\Format\Http\Http_Cookies.cpp" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="Http_Cookies" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="..\..\..\Source\ZenLib\Format\Http\Http_Handler.cpp" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="Http_Handler" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="..\..\..\Source\ZenLib\Format\Http\Http_Request.cpp" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="Http_Request" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="..\..\..\Source\ZenLib\Format\Http\Http_Utils.cpp" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="Http_Utils" FORMNAME="" DESIGNCLASS=""/>
       </FILELIST>
       <IDEOPTIONS>
         <VersionInfo>

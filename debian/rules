@@ -59,6 +59,10 @@ install: build
 	install -m 644 Source/ZenLib/Base64/*.h $(CURDIR)/debian/tmp/usr/include/ZenLib/Base64
 	install -dm 755 $(CURDIR)/debian/tmp/usr/include/ZenLib/HTTP_Client
 	install -m 644 Source/ZenLib/HTTP_Client/*.h $(CURDIR)/debian/tmp/usr/include/ZenLib/HTTP_Client
+	install -dm 755 $(CURDIR)/debian/tmp/usr/include/ZenLib/Format/Html
+	install -m 644 Source/ZenLib/Format/Html/*.h $(CURDIR)/debian/tmp/usr/include/ZenLib/Format/Html
+	install -dm 755 $(CURDIR)/debian/tmp/usr/include/ZenLib/Format/Http
+	install -m 644 Source/ZenLib/Format/Http/*.h $(CURDIR)/debian/tmp/usr/include/ZenLib/Format/Http
 
 	sed -i -e 's|Version: |Version: %{version}|g' Project/GNU/Library/libzen.pc
 	install -dm 755 $(CURDIR)/debian/tmp/usr/lib/pkgconfig

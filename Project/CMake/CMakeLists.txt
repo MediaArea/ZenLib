@@ -24,6 +24,12 @@ set(zenlib_SRCS
 	ZenLib/ZtringList.cpp
 	ZenLib/ZtringListList.cpp
 	ZenLib/ZtringListListF.cpp
+	ZenLib/Format/Html/Html_Handler.cpp
+	ZenLib/Format/Html/Html_Request.cpp
+	ZenLib/Format/Http/Http_Cookies.cpp
+	ZenLib/Format/Http/Http_Handler.cpp
+	ZenLib/Format/Http/Http_Request.cpp
+	ZenLib/Format/Http/Http_Utils.cpp
 )
 
 add_library(zenlib STATIC ${zenlib_SRCS})

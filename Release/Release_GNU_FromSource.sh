@@ -38,6 +38,13 @@ cp -r ../Source/ZenLib/HTTP_Client/*.h ZenLib_GNU_FromSource/Source/ZenLib/HTTP_
 cp -r ../Source/ZenLib/HTTP_Client/*.c ZenLib_GNU_FromSource/Source/ZenLib/HTTP_Client
 mkdir ZenLib_GNU_FromSource/Source/ZenLib/Base64
 cp -r ../Source/ZenLib/Base64/*.h ZenLib_GNU_FromSource/Source/ZenLib/Base64
+mkdir ZenLib_GNU_FromSource/Source/ZenLib/Format
+mkdir ZenLib_GNU_FromSource/Source/ZenLib/Format/Html
+cp -r ../Source/ZenLib/Format/Html/*.h ZenLib_GNU_FromSource/Source/ZenLib/Format/Html
+cp -r ../Source/ZenLib/Format/Html/*.cpp ZenLib_GNU_FromSource/Source/ZenLib/Format/Html
+mkdir ZenLib_GNU_FromSource/Source/ZenLib/Format/Http
+cp -r ../Source/ZenLib/Format/Http/*.h ZenLib_GNU_FromSource/Source/ZenLib/Format/Http
+cp -r ../Source/ZenLib/Format/Http/*.cpp ZenLib_GNU_FromSource/Source/ZenLib/Format/Http
 
 #-----------------------------------------------------------------------
 # Copying : Projects

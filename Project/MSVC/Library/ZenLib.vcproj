@@ -604,6 +604,42 @@
 				RelativePath="..\..\..\Source\ZenLib\ZtringListListF.cpp"
 				>
 			</File>
+			<Filter
+				Name="Format"
+				>
+				<Filter
+					Name="Http"
+					>
+					<File
+						RelativePath="..\..\..\Source\ZenLib\Format\Http\Http_Cookies.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\Source\ZenLib\Format\Http\Http_Handler.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\Source\ZenLib\Format\Http\Http_Request.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\Source\ZenLib\Format\Http\Http_Utils.cpp"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="Html"
+					>
+					<File
+						RelativePath="..\..\..\Source\ZenLib\Format\Html\Html_Handler.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\Source\ZenLib\Format\Html\Html_Request.cpp"
+						>
+					</File>
+				</Filter>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -698,6 +734,42 @@
 				RelativePath="..\..\..\Source\ZenLib\ZtringListListF.h"
 				>
 			</File>
+			<Filter
+				Name="Format"
+				>
+				<Filter
+					Name="Html"
+					>
+					<File
+						RelativePath="..\..\..\Source\ZenLib\Format\Html\Html_Handler.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\Source\ZenLib\Format\Html\Html_Request.h"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="Http"
+					>
+					<File
+						RelativePath="..\..\..\Source\ZenLib\Format\Http\Http_Cookies.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\Source\ZenLib\Format\Http\Http_Handler.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\Source\ZenLib\Format\Http\Http_Request.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\Source\ZenLib\Format\Http\Http_Utils.h"
+						>
+					</File>
+				</Filter>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Resource Files"

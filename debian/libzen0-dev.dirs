@@ -3,5 +3,7 @@ usr/lib/pkgconfig
 usr/include/ZenLib
 usr/include/ZenLib/Base64
 usr/include/ZenLib/HTTP_Client
+usr/include/ZenLib/Format/Html
+usr/include/ZenLib/Format/Http
 usr/share/doc/libzen0-dev
 usr/share/doc/libzen0-dev/Doc

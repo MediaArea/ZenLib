@@ -19,7 +19,13 @@ libzen_la_SOURCES = \
                        ../../../Source/ZenLib/Ztring.cpp \
                        ../../../Source/ZenLib/ZtringList.cpp \
                        ../../../Source/ZenLib/ZtringListList.cpp \
-                       ../../../Source/ZenLib/ZtringListListF.cpp
+                       ../../../Source/ZenLib/ZtringListListF.cpp \
+                       ../../../Source/ZenLib/Format/Html/Html_Handler.cpp \
+                       ../../../Source/ZenLib/Format/Html/Html_Request.cpp \
+                       ../../../Source/ZenLib/Format/Http/Http_Cookies.cpp \
+                       ../../../Source/ZenLib/Format/Http/Http_Handler.cpp \
+                       ../../../Source/ZenLib/Format/Http/Http_Request.cpp \
+                       ../../../Source/ZenLib/Format/Http/Http_Utils.cpp
 
 libzen_la_LDFLAGS     = -no-undefined -version-info 0:0:0
 

@@ -302,7 +302,7 @@ Ztring& Ztring::From_UTF16BE (const char* S)
             size_t Pos=0;
             while (SW[Pos]!=_T('\0'))
             {
-                wchar_t Temp=(wchar_t)(((SW[Pos]&0xFF00)>>8)+((SW[Pos]&0x00FF)<<8));
+                Char Temp=(Char)(((SW[Pos]&0xFF00)>>8)+((SW[Pos]&0x00FF)<<8));
                 append(1, Temp);
                 Pos++;
             }

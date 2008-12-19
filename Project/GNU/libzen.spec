@@ -10,7 +10,7 @@
 %define _SO_nr	0
 
 Name:			libzen%{_SO_nr}
-Version:		0.3.5
+Version:		0.3.6
 Release:		1
 Summary:		Shared library for libmediainfo and medianfo-*
 Group:			System/Libraries
@@ -66,7 +66,7 @@ popd
 %__install -dm 755 %{buildroot}%{_includedir}/ZenLib
 %__install -m 644 Source/ZenLib/*.h \
 	%{buildroot}%{_includedir}/ZenLib
-for i in Base64 HTTP_Client; do
+for i in Base64 HTTP_Client Format/Html Format/Http; do
 	%__install -dm 755 %{buildroot}%{_includedir}/ZenLib/$i
 	%__install -m 644 Source/ZenLib/$i/*.h \
 		%{buildroot}%{_includedir}/ZenLib/$i
