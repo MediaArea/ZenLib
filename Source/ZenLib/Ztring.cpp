@@ -310,7 +310,7 @@ Ztring& Ztring::From_UTF16BE (const char* S)
             clear();
             while (S[0]!=0 || S[1]!=0)
             {
-                append(1, (wchar_t)BigEndian2int16u(S));
+                append(1, (Char)BigEndian2int16u(S));
                 S+=2;
             }
         #endif
@@ -367,7 +367,7 @@ Ztring& Ztring::From_UTF16LE (const char* S)
             clear();
             while (S[0]!=0 || S[1]!=0)
             {
-                append(1, (wchar_t)LittleEndian2int16u(S));
+                append(1, (Char)LittleEndian2int16u(S));
                 S+=2;
             }
         #endif
@@ -713,7 +713,7 @@ Ztring& Ztring::From_Number (const int128u I, int8u Radix)
 
 Ztring& Ztring::From_Number (const float32 F, int8u Precision, ztring_t Options)
 {
-    #ifdef __MINGW32__
+    #if defined(__MINGW32__) || defined(__mips__) || defined(__mipsel__)
         Char C1[100];
         #if defined (_UNICODE)
             snwprintf (C1, 99, (Ztring(_T("%."))+Ztring::ToZtring(Precision)+_T("f")).c_str(), F);
@@ -740,7 +740,7 @@ Ztring& Ztring::From_Number (const float32 F, int8u Precision, ztring_t Options)
 
 Ztring& Ztring::From_Number (const float64 F, int8u Precision, ztring_t Options)
 {
-    #ifdef __MINGW32__
+    #if defined(__MINGW32__) || defined(__mips__) || defined(__mipsel__)
         Char C1[100];
         #if defined (_UNICODE)
             snwprintf (C1, 99, (Ztring(_T("%."))+Ztring::ToZtring(Precision)+_T("f")).c_str(), F);
@@ -767,7 +767,7 @@ Ztring& Ztring::From_Number (const float64 F, int8u Precision, ztring_t Options)
 
 Ztring& Ztring::From_Number (const float80 F, int8u Precision, ztring_t Options)
 {
-    #ifdef __MINGW32__
+    #if defined(__MINGW32__) || defined(__mips__) || defined(__mipsel__)
         Char C1[100];
         #if defined (_UNICODE)
             snwprintf (C1, 99, (Ztring(_T("%."))+Ztring::ToZtring(Precision)+_T("f")).c_str(), F);
