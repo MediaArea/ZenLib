@@ -2,6 +2,7 @@ Version 0.3.6 200
 -------------
 + HTML protocol basic stuff
 + HTTP protocol helpers
+x Crash in Ztring::Trim()
 x Code cleanup
 
 Version 0.3.5 2008-12-09

@@ -1520,7 +1520,7 @@ Ztring &Ztring::MakeUpperCase()
 Ztring &Ztring::TrimLeft(Char ToTrim)
 {
     size_type First=0;
-    while (operator[](First)==ToTrim)
+    while (First<size() && operator[](First)==ToTrim)
         First++;
     assign (c_str()+First);
     return *this;
@@ -1530,8 +1530,11 @@ Ztring &Ztring::TrimLeft(Char ToTrim)
 // Remove trailing whitespaces from a string
 Ztring &Ztring::TrimRight(Char ToTrim)
 {
+    if (size()==0)
+        return *this;
+
     size_type Last=size()-1;
-    while (operator[](Last)==ToTrim)
+    while (Last!=(size_type)-1 && operator[](Last)==ToTrim)
         Last--;
     assign (c_str(), Last+1);
     return *this;
