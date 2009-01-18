@@ -1,4 +1,4 @@
-Version 0.3.6 200
+Version 0.3.6 2009-01-19
 -------------
 + HTML protocol basic stuff
 + HTTP protocol helpers
