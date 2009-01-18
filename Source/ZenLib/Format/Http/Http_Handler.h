@@ -1,5 +1,5 @@
 // ZenLib::Format::Http::Request - A HTTP request
-// Copyright (C) 2008-2008 Jerome Martinez, Zen@MediaArea.net
+// Copyright (C) 2008-2009 Jerome Martinez, Zen@MediaArea.net
 //
 // This software is provided 'as-is', without any express or implied
 // warranty.  In no event will the authors be held liable for any damages

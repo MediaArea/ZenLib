@@ -1,5 +1,5 @@
 // int128u - integer 8 bytes
-// Copyright (C) 2007-2008 Jerome Martinez, Zen@MediaArea.net
+// Copyright (C) 2007-2009 Jerome Martinez, Zen@MediaArea.net
 //
 // This software is provided 'as-is', without any express or implied
 // warranty.  In no event will the authors be held liable for any damages
