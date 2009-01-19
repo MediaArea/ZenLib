@@ -102,12 +102,6 @@ done
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
-* Mon Nov 17 2008 Toni Graffy <toni@links2linux.de> - 0.7.7.8-0.pm.1
-- update to 0.7.7.8
-- added api-doc to devel subpackage
-- instead of ZenLib-config now a pkgconfig file is provided
-* Mon Dec 10 2007 Toni Graffy <toni@links2linux.de> - 0.7.5.6-0.pm.1
-- libZenLib and libMediaInfoLib are renamed to libzen and libmediainfo
-- install *-config files manually
-- added devel-subpackages
-- split off from MediaInfo package
+* Tue Jan 01 2009 Jerome Martinez <zen@mediaarea.net> - 0.3.6-0
+- See History.txt for more info and real dates
+- Previous packages made by Toni Graffy <toni@links2linux.de>
