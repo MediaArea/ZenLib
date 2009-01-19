@@ -374,7 +374,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="..\..\..\Release\MSVCx64\Library\ZenLib.lib"
+				OutputFile="..\..\..\Release\MSVCx64\Library\ZenLibA.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -501,7 +501,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="..\..\..\Release\MSVCx64\Library\ZenLibd.lib"
+				OutputFile="..\..\..\Release\MSVCx64\Library\ZenLibAd.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
