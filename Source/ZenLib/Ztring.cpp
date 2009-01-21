@@ -1042,18 +1042,32 @@ std::string Ztring::To_UTF8 () const
                         return std::string();
                 }
             #else //WINDOWS
-                size_t Size=wcstombs(NULL, c_str(), 0);
-                if (Size!=0 && Size!=(size_t)-1)
+                const Char*   S                =c_str();
+                size_t        S_Size           =size();
+                char*         AnsiString       =new char[S_Size*4+1];
+                              AnsiString[0]    ='\0';
+                char*         AnsiString_Copy  =AnsiString;
+                UTF8*         AnsiString_Begin =(UTF8*)AnsiString_Copy;
+                UTF8*         AnsiString_End   =(UTF8*)(AnsiString+S_Size*4+1);
+                if (sizeof(wchar_t)==2)
                 {
-                    char* AnsiString=new char[Size+1];
-                    Size=wcstombs(AnsiString, c_str(), size());
-                    AnsiString[Size]='\0';
-                    std::string ToReturn(AnsiString, 0, Size);
-                    delete[] AnsiString; //AnsiString=NULL;
-                    return ToReturn;
+                    const UTF16*  S_Begin          =(const UTF16*)S;
+                    const UTF16*  S_End            =(const UTF16*)(S+S_Size+1);
+                    ConvertUTF16toUTF8(&S_Begin, S_End, &AnsiString_Begin, AnsiString_End, lenientConversion);
+                }
+                else if (sizeof(wchar_t)==4)
+                {
+                    const UTF32*  S_Begin          =(const UTF32*)S;
+                    const UTF32*  S_End            =(const UTF32*)(S+S_Size+1);
+                    ConvertUTF32toUTF8(&S_Begin, S_End, &AnsiString_Begin, AnsiString_End, lenientConversion);
                 }
                 else
                     return std::string();
+                size_t Size=strlen(AnsiString);
+                AnsiString[Size]='\0';
+                std::string ToReturn(AnsiString);
+                delete[] AnsiString; //AnsiString=NULL;
+                return ToReturn;
             #endif
         #endif //ZENLIB_USEWX
     #else
@@ -1089,18 +1103,39 @@ std::string Ztring::To_Local () const
                 else
                     return std::string();
             #else //WINDOWS
+                if (empty())
+                    return std::string();
+
                 size_t Size=wcstombs(NULL, c_str(), 0);
                 if (Size!=0 && Size!=(size_t)-1)
                 {
                     char* AnsiString=new char[Size+1];
                     Size=wcstombs(AnsiString, c_str(), Size);
-                    AnsiString[Size]='\0';
-                    std::string ToReturn(AnsiString);
+                    if (Size!=0 && Size!=(size_t)-1)
+                    {
+                        AnsiString[Size]='\0';
+                        std::string ToReturn(AnsiString);
+                        delete[] AnsiString; //AnsiString=NULL;
+                        return ToReturn;
+                    }
+
+                    //Failed
                     delete[] AnsiString; //AnsiString=NULL;
-                    return ToReturn;
                 }
-                else
-                    return std::string();
+
+                //Trying with bad chars
+                char* Result=new char[MB_CUR_MAX];
+                std::string AnsiString;
+                for (size_t Pos=0; Pos<size(); Pos++)
+                {
+                    int Result_Size=wctomb(Result, operator[](Pos));
+                    if (Result_Size>=0)
+                        AnsiString.append(Result, Result_Size);
+                    else
+                        AnsiString+='?';
+                }
+                delete[] Result; //Result=NULL;
+                return AnsiString;
             #endif
         #endif //ZENLIB_USEWX
     #else
