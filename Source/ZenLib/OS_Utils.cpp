@@ -29,8 +29,7 @@
 //---------------------------------------------------------------------------
 #ifdef ZENLIB_USEWX
 #else //ZENLIB_USEWX
-    #ifdef ZENLIB_STANDARD
-    #elif defined WINDOWS
+    #ifdef WINDOWS
         #undef __TEXT
         #include <windows.h>
         #include <shlobj.h>
