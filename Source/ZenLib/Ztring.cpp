@@ -188,7 +188,7 @@ Ztring& Ztring::From_UTF8 (const char* S)
                     }
                     size_t Size=wcslen(WideString);
                     WideString[Size]=L'\0';
-                    assign (WideString);
+                    assign (WideString+(WideString[0]==0xFEFF?1:0));
                     delete[] WideString; //WideString=NULL;
                 }
                 else
@@ -199,24 +199,35 @@ Ztring& Ztring::From_UTF8 (const char* S)
                         Char* WideString=new Char[Size+1];
                         MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, S, -1, WideString, Size);
                         WideString[Size]=L'\0';
-                        assign (WideString);
+                        assign (WideString+(WideString[0]==0xFEFF?1:0));
                         delete[] WideString; //WideString=NULL;
                     }
                     else
                         clear();
                 }
             #else //WINDOWS
-                size_t Size=mbstowcs(NULL, S, 0);
-                if (Size!=0 && Size!=(size_t)-1)
+                const UTF8*  S_Begin          =(const UTF8*)S;
+                size_t       S_Size           =strlen(S);
+                const UTF8*  S_End            =(const UTF8*)(S+S_Size+1);
+                Char*        WideString       =new Char[S_Size+1];
+                             WideString[0]    =_T('\0');
+                Char*        WideString_Copy  =WideString;
+                if (sizeof(wchar_t)==2)
                 {
-                    wchar_t* WideString=new wchar_t[Size+1];
-                    Size=mbstowcs(WideString, S, strlen(S));
-                    WideString[Size]=L'\0';
-                    assign (WideString);
-                    delete[] WideString; //WideString=NULL;
+                    UTF16*   WideString_Begin =(UTF16*)WideString_Copy;
+                    UTF16*   WideString_End   =(UTF16*)(WideString+S_Size+1);
+                    ConvertUTF8toUTF16(&S_Begin, S_End, &WideString_Begin, WideString_End, lenientConversion);
                 }
                 else
-                    clear();
+                {
+                    UTF32*   WideString_Begin =(UTF32*)WideString_Copy;
+                    UTF32*   WideString_End   =(UTF32*)(WideString+S_Size+1);
+                    ConvertUTF8toUTF32(&S_Begin, S_End, &WideString_Begin, WideString_End, lenientConversion);
+                }
+                size_t Size=wcslen(WideString);
+                WideString[Size]=L'\0';
+                assign (WideString+(WideString[0]==0xFEFF?1:0));
+                delete[] WideString; //WideString=NULL;
             #endif
         #else
             assign(S); //Not implemented
