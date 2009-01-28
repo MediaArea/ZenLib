@@ -170,7 +170,7 @@ public :
     Ztring& From_Number  (const int64u,   int8u Radix=10);
         /// @brief convert number into Ztring
     Ztring& From_Number  (const int128u,  int8u Radix=10);
-	/// @brief convert number into Ztring
+    /// @brief convert number into Ztring
     Ztring& From_Number  (const float32,  int8u AfterComma=3, ztring_t Options=Ztring_Nothing);
         /// @brief convert number into Ztring
     Ztring& From_Number  (const float64,  int8u AfterComma=3, ztring_t Options=Ztring_Nothing);
@@ -180,6 +180,8 @@ public :
         /// @brief convert number into Ztring
     Ztring& From_Number  (const size_t,   int8u Radix=10);
     #endif //NEED_SIZET
+        /// @brief convert number (BCD coded) into Ztring
+    Ztring& From_BCD     (const int8u);
         /// @brief convert count of milliseconds into a readable and sortable string
     Ztring& Duration_From_Milliseconds (const int64u Milliseconds);
         /// @brief convert count of seconds since 1601 into a readable and sortable string
@@ -192,6 +194,8 @@ public :
     Ztring& Date_From_Seconds_1970 (const int32u Seconds);
         /// @brief convert a free formated string into a readable and sortable string
     Ztring& Date_From_String (const char* Date, size_type Value_Size=Error);
+        /// @brief convert numbers into a readable and sortable string
+    Ztring& Date_From_Numbers (const int8u Year, const int8u Month, const int8u Day, const int8u Hour, const int8u Minute, const int8u Second);
 
     //Conversions - To
     #ifndef WSTRING_MISSING

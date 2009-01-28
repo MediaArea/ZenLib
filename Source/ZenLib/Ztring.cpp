@@ -814,6 +814,15 @@ Ztring& Ztring::From_Number (const size_t I, int8u Radix)
 }
 #endif //NEED_SIZET
 
+Ztring& Ztring::From_BCD     (const int8u I)
+{
+    toStringStream SS;
+    SS << I/0x10*10;
+    SS << I%0x10;
+    assign(SS.str());
+    return *this;
+}
+
 //---------------------------------------------------------------------------
 Ztring& Ztring::Duration_From_Milliseconds (const int64u Value)
 {
@@ -990,6 +999,31 @@ Ztring& Ztring::Date_From_String (const char* Value, size_t Value_Size)
         else
             From_Local(Value, 0, Value_Size); //Not implemented
     #endif //ZENLIB_USEWX
+    return *this;
+}
+
+Ztring& Ztring::Date_From_Numbers (const int8u Year, const int8u Month, const int8u Day, const int8u Hour, const int8u Minute, const int8u Second)
+{
+    Ztring DateT;
+    Ztring Date=_T("UTC ");
+    DateT.From_Number(Year); if (DateT.size()<2){DateT=Ztring(_T("200"))+Ztring::ToZtring(Year);}; if (DateT.size()<3){DateT=Ztring(_T("20"))+Ztring::ToZtring(Year);}
+    Date+=DateT;
+    Date+=_T("-");
+    DateT.From_Number(Month); if (DateT.size()<2){DateT=Ztring(_T("0"))+Ztring::ToZtring(Month);}
+    Date+=DateT;
+    Date+=_T("-");
+    DateT.From_Number(Day); if (DateT.size()<2){DateT=Ztring(_T("0"))+Ztring::ToZtring(Day);}
+    Date+=DateT;
+    Date+=_T(" ");
+    DateT.From_Number(Hour); if (DateT.size()<2){DateT=Ztring(_T("0"))+Ztring::ToZtring(Hour);}
+    Date+=DateT;
+    Date+=_T(":");
+    DateT=Ztring::ToZtring(Minute); if (DateT.size()<2){DateT=Ztring(_T("0"))+Ztring::ToZtring(Minute);}
+    Date+=DateT;
+    Date+=_T(":");
+    DateT.From_Number(Second); if (DateT.size()<2){DateT=Ztring(_T("0"))+Ztring::ToZtring(Second);}
+    Date+=DateT;
+    assign (Date.c_str());
     return *this;
 }
 

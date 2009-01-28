@@ -1,5 +1,6 @@
 Version 0.3.7 2009-
 -------------
++ Some additional helpers for Ztring
 x Managing transformation from Unicode to local with unsupported characters
 
 Version 0.3.6 2009-01-19
