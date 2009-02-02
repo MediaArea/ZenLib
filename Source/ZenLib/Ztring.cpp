@@ -173,22 +173,22 @@ Ztring& Ztring::From_UTF8 (const char* S)
                 {
                     const UTF8*  S_Begin          =(const UTF8*)S;
                     size_t       S_Size           =strlen(S);
-                    const UTF8*  S_End            =(const UTF8*)(S+S_Size+1);
-                    Char*        WideString       =new Char[S_Size+1];
-                                 WideString[0]    =_T('\0');
-                    Char*        WideString_Copy  =WideString;
-                    UTF16*       WideString_Begin =(UTF16*)WideString_Copy;
-                    UTF16*       WideString_End   =(UTF16*)(WideString+S_Size+1);
+                    const UTF8*  S_End            =(const UTF8*)(S+S_Size);
+                    Char*        WideString       =new Char[S_Size];
+                    size_t       Size;
                     if (sizeof(wchar_t)==2)
-                        ConvertUTF8toUTF16(&S_Begin, S_End, &WideString_Begin, WideString_End, lenientConversion);
-                    else
                     {
-                        clear();
-                        return *this;
+                        UTF16*   WideString_Begin =(UTF16*)WideString;
+                        UTF16*   WideString_End   =(UTF16*)(WideString+S_Size);
+                        ConvertUTF8toUTF16(&S_Begin, S_End, &WideString_Begin, WideString_End, lenientConversion);
+                        Size=((wchar_t*)WideString_Begin-WideString);
                     }
-                    size_t Size=wcslen(WideString);
-                    WideString[Size]=L'\0';
-                    assign (WideString+(WideString[0]==0xFEFF?1:0));
+                    else
+                        Size=0;
+                    if (Size)
+                        assign (WideString+(WideString[0]==0xFEFF?1:0), Size-(WideString[0]==0xFEFF?1:0));
+                    else
+                        clear();
                     delete[] WideString; //WideString=NULL;
                 }
                 else
@@ -208,25 +208,29 @@ Ztring& Ztring::From_UTF8 (const char* S)
             #else //WINDOWS
                 const UTF8*  S_Begin          =(const UTF8*)S;
                 size_t       S_Size           =strlen(S);
-                const UTF8*  S_End            =(const UTF8*)(S+S_Size+1);
-                Char*        WideString       =new Char[S_Size+1];
-                             WideString[0]    =_T('\0');
-                Char*        WideString_Copy  =WideString;
+                const UTF8*  S_End            =(const UTF8*)(S+S_Size);
+                Char*        WideString       =new Char[S_Size];
+                size_t       Size;
                 if (sizeof(wchar_t)==2)
                 {
-                    UTF16*   WideString_Begin =(UTF16*)WideString_Copy;
-                    UTF16*   WideString_End   =(UTF16*)(WideString+S_Size+1);
+                    UTF16*   WideString_Begin =(UTF16*)WideString;
+                    UTF16*   WideString_End   =(UTF16*)(WideString+S_Size);
                     ConvertUTF8toUTF16(&S_Begin, S_End, &WideString_Begin, WideString_End, lenientConversion);
+                    Size=((wchar_t*)WideString_Begin-WideString);
+                }
+                else if (sizeof(wchar_t)==4)
+                {
+                    UTF32*   WideString_Begin =(UTF32*)WideString;
+                    UTF32*   WideString_End   =(UTF32*)(WideString+S_Size);
+                    ConvertUTF8toUTF32(&S_Begin, S_End, &WideString_Begin, WideString_End, lenientConversion);
+                    Size=((wchar_t*)WideString_Begin-WideString);
                 }
                 else
-                {
-                    UTF32*   WideString_Begin =(UTF32*)WideString_Copy;
-                    UTF32*   WideString_End   =(UTF32*)(WideString+S_Size+1);
-                    ConvertUTF8toUTF32(&S_Begin, S_End, &WideString_Begin, WideString_End, lenientConversion);
-                }
-                size_t Size=wcslen(WideString);
-                WideString[Size]=L'\0';
-                assign (WideString+(WideString[0]==0xFEFF?1:0));
+                    Size=0;
+                if (Size)
+                    assign (WideString+(WideString[0]==0xFEFF?1:0), Size-(WideString[0]==0xFEFF?1:0));
+                else
+                    clear();
                 delete[] WideString; //WideString=NULL;
             #endif
         #else
@@ -1053,21 +1057,21 @@ std::string Ztring::To_UTF8 () const
                 if (IsWin9X())
                 {
                     const Char*   S                =c_str();
-                    const UTF16*  S_Begin          =(const UTF16*)S;
                     size_t        S_Size           =size();
-                    const UTF16*  S_End            =(const UTF16*)(S+S_Size+1);
-                    char*         AnsiString       =new char[S_Size*4+1];
-                                  AnsiString[0]    ='\0';
-                    char*         AnsiString_Copy  =AnsiString;
-                    UTF8*         AnsiString_Begin =(UTF8*)AnsiString_Copy;
-                    UTF8*         AnsiString_End   =(UTF8*)(AnsiString+S_Size*4+1);
+                    char*         AnsiString       =new char[S_Size*4];
+                    UTF8*         AnsiString_Begin =(UTF8*)AnsiString;
+                    UTF8*         AnsiString_End   =(UTF8*)(AnsiString+S_Size*4);
+                    size_t        Size;
                     if (sizeof(wchar_t)==2)
+                    {
+                        const UTF16*  S_Begin          =(const UTF16*)S;
+                        const UTF16*  S_End            =(const UTF16*)(S+S_Size);
                         ConvertUTF16toUTF8(&S_Begin, S_End, &AnsiString_Begin, AnsiString_End, lenientConversion);
+                        Size=((char*)AnsiString_Begin-AnsiString);
+                    }
                     else
-                        return std::string();
-                    size_t Size=strlen(AnsiString);
-                    AnsiString[Size]='\0';
-                    std::string ToReturn(AnsiString);
+                        Size=0;
+                    std::string ToReturn(AnsiString, Size);
                     delete[] AnsiString; //AnsiString=NULL;
                     return ToReturn;
                 }
@@ -1089,28 +1093,27 @@ std::string Ztring::To_UTF8 () const
             #else //WINDOWS
                 const Char*   S                =c_str();
                 size_t        S_Size           =size();
-                char*         AnsiString       =new char[S_Size*4+1];
-                              AnsiString[0]    ='\0';
-                char*         AnsiString_Copy  =AnsiString;
-                UTF8*         AnsiString_Begin =(UTF8*)AnsiString_Copy;
-                UTF8*         AnsiString_End   =(UTF8*)(AnsiString+S_Size*4+1);
+                char*         AnsiString       =new char[S_Size*4];
+                UTF8*         AnsiString_Begin =(UTF8*)AnsiString;
+                UTF8*         AnsiString_End   =(UTF8*)(AnsiString+S_Size*4);
+                size_t        Size;
                 if (sizeof(wchar_t)==2)
                 {
                     const UTF16*  S_Begin          =(const UTF16*)S;
-                    const UTF16*  S_End            =(const UTF16*)(S+S_Size+1);
+                    const UTF16*  S_End            =(const UTF16*)(S+S_Size);
                     ConvertUTF16toUTF8(&S_Begin, S_End, &AnsiString_Begin, AnsiString_End, lenientConversion);
+                    Size=((char*)AnsiString_Begin-AnsiString);
                 }
                 else if (sizeof(wchar_t)==4)
                 {
                     const UTF32*  S_Begin          =(const UTF32*)S;
-                    const UTF32*  S_End            =(const UTF32*)(S+S_Size+1);
+                    const UTF32*  S_End            =(const UTF32*)(S+S_Size);
                     ConvertUTF32toUTF8(&S_Begin, S_End, &AnsiString_Begin, AnsiString_End, lenientConversion);
+                    Size=((char*)AnsiString_Begin-AnsiString);
                 }
                 else
-                    return std::string();
-                size_t Size=strlen(AnsiString);
-                AnsiString[Size]='\0';
-                std::string ToReturn(AnsiString);
+                    Size=0;
+                std::string ToReturn(AnsiString, Size);
                 delete[] AnsiString; //AnsiString=NULL;
                 return ToReturn;
             #endif

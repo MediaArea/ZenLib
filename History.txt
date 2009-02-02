@@ -1,6 +1,7 @@
 Version 0.3.8
 -------------
 x Big files seeking on Linux
+x Sometimes memory corruption with Ztring
 
 Version 0.3.7 2009-01-30
 -------------
