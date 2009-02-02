@@ -416,7 +416,7 @@ bool File::GoTo (int64s Position_ToMove, move_t MoveMethod)
                 case FromEnd     : dir=ios_base::end; break;
                 default          : dir=ios_base::beg;
             }
-            ((fstream*)File_Handle)->seekg((long)Position_ToMove, dir);
+            ((fstream*)File_Handle)->seekg((streamoff)Position_ToMove, dir);
             return !((fstream*)File_Handle)->fail();
         #elif defined WINDOWS
             LARGE_INTEGER GoTo; GoTo.QuadPart=Position_ToMove;
