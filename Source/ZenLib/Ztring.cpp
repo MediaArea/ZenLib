@@ -174,7 +174,7 @@ Ztring& Ztring::From_UTF8 (const char* S)
                     const UTF8*  S_Begin          =(const UTF8*)S;
                     size_t       S_Size           =strlen(S);
                     const UTF8*  S_End            =(const UTF8*)(S+S_Size);
-                    Char*        WideString       =new Char[S_Size];
+                    Char*        WideString       =new Char[S_Size+1];
                     size_t       Size;
                     if (sizeof(wchar_t)==2)
                     {
@@ -209,7 +209,7 @@ Ztring& Ztring::From_UTF8 (const char* S)
                 const UTF8*  S_Begin          =(const UTF8*)S;
                 size_t       S_Size           =strlen(S);
                 const UTF8*  S_End            =(const UTF8*)(S+S_Size);
-                Char*        WideString       =new Char[S_Size];
+                Char*        WideString       =new Char[S_Size+1];
                 size_t       Size;
                 if (sizeof(wchar_t)==2)
                 {
@@ -1058,7 +1058,7 @@ std::string Ztring::To_UTF8 () const
                 {
                     const Char*   S                =c_str();
                     size_t        S_Size           =size();
-                    char*         AnsiString       =new char[S_Size*4];
+                    char*         AnsiString       =new char[(S_Size+1)*4];
                     UTF8*         AnsiString_Begin =(UTF8*)AnsiString;
                     UTF8*         AnsiString_End   =(UTF8*)(AnsiString+S_Size*4);
                     size_t        Size;
@@ -1093,7 +1093,7 @@ std::string Ztring::To_UTF8 () const
             #else //WINDOWS
                 const Char*   S                =c_str();
                 size_t        S_Size           =size();
-                char*         AnsiString       =new char[S_Size*4];
+                char*         AnsiString       =new char[(S_Size+1)*4];
                 UTF8*         AnsiString_Begin =(UTF8*)AnsiString;
                 UTF8*         AnsiString_End   =(UTF8*)(AnsiString+S_Size*4);
                 size_t        Size;
