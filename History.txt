@@ -1,5 +1,6 @@
 Version 0.3.8
 -------------
+x UTF-8 conversion replacement (was buggy with Debian Lenny, why?)
 x Big files seeking on Linux
 x Sometimes memory corruption with Ztring
 

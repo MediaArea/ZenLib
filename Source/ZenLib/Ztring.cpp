@@ -57,7 +57,6 @@
 #include <cmath>
 #include "ZenLib/Ztring.h"
 #include "ZenLib/OS_Utils.h"
-#include "ZenLib/ConvertUTF.h"
 using namespace std;
 //---------------------------------------------------------------------------
 
@@ -171,25 +170,30 @@ Ztring& Ztring::From_UTF8 (const char* S)
             #ifdef WINDOWS
                 if (IsWin9X())
                 {
-                    const UTF8*  S_Begin          =(const UTF8*)S;
-                    size_t       S_Size           =strlen(S);
-                    const UTF8*  S_End            =(const UTF8*)(S+S_Size);
-                    Char*        WideString       =new Char[S_Size+1];
-                    size_t       Size;
-                    if (sizeof(wchar_t)==2)
+                    clear();
+                    const int8u* Z=(const int8u*)S;
+                    while (*Z) //0 is end
                     {
-                        UTF16*   WideString_Begin =(UTF16*)WideString;
-                        UTF16*   WideString_End   =(UTF16*)(WideString+S_Size);
-                        ConvertUTF8toUTF16(&S_Begin, S_End, &WideString_Begin, WideString_End, lenientConversion);
-                        Size=((wchar_t*)WideString_Begin-WideString);
+                        //1 byte
+                        if (*Z<0x80)
+                        {
+                            operator += ((wchar_t)(*Z));
+                            Z++;
+                        }
+                        //2 bytes
+                        else if ((*Z&0xE0)==0xC0)
+                        {
+                            if ((*(Z+1)&0xC0)==0x80)
+                            {
+                                operator += ((((wchar_t)(*Z&0x1F))<<6)|(*(Z+1)&0x3F));
+                                Z+=2;
+                            }
+                            else
+                                break; //Bad character
+                        }
+                        else
+                            break; //Bad character (or to be encoded in UTF-16LE, not yet supported)
                     }
-                    else
-                        Size=0;
-                    if (Size)
-                        assign (WideString+(WideString[0]==0xFEFF?1:0), Size-(WideString[0]==0xFEFF?1:0));
-                    else
-                        clear();
-                    delete[] WideString; //WideString=NULL;
                 }
                 else
                 {
@@ -206,32 +210,52 @@ Ztring& Ztring::From_UTF8 (const char* S)
                         clear();
                 }
             #else //WINDOWS
-                const UTF8*  S_Begin          =(const UTF8*)S;
-                size_t       S_Size           =strlen(S);
-                const UTF8*  S_End            =(const UTF8*)(S+S_Size);
-                Char*        WideString       =new Char[S_Size+1];
-                size_t       Size;
-                if (sizeof(wchar_t)==2)
+                clear();
+                const int8u* Z=(const int8u*)S;
+                while (*Z) //0 is end
                 {
-                    UTF16*   WideString_Begin =(UTF16*)WideString;
-                    UTF16*   WideString_End   =(UTF16*)(WideString+S_Size);
-                    ConvertUTF8toUTF16(&S_Begin, S_End, &WideString_Begin, WideString_End, lenientConversion);
-                    Size=((wchar_t*)WideString_Begin-WideString);
+                    //1 byte
+                    if (*Z<0x80)
+                    {
+                        operator += ((wchar_t)(*Z));
+                        Z++;
+                    }
+                    //2 bytes
+                    else if ((*Z&0xE0)==0xC0)
+                    {
+                        if ((*(Z+1)&0xC0)==0x80)
+                        {
+                            operator += ((((wchar_t)(*Z&0x1F))<<6)|(*(Z+1)&0x3F));
+                            Z+=2;
+                        }
+                        else
+                            break; //Bad character
+                    }
+                    //3 bytes
+                    else if ((*Z&0xF0)==0xE0)
+                    {
+                        if ((*(Z+1)&0xC0)==0x80 && (*(Z+2)&0xC0)==0x80)
+                        {
+                            operator += ((((wchar_t)(*Z&0x0F))<<12)|((*(Z+1)&0x3F)<<6)|(*(Z+2)&0x3F));
+                            Z+=3;
+                        }
+                        else
+                            break; //Bad character
+                    }
+                    //4 bytes
+                    else if ((*Z&0xF8)==0xF0)
+                    {
+                        if ((*(Z+1)&0xC0)==0x80 && (*(Z+2)&0xC0)==0x80 && (*(Z+2)&0xC0)==0x80)
+                        {
+                            operator += ((((wchar_t)(*Z&0x0F))<<18)|((*(Z+1)&0x3F)<<12)||((*(Z+2)&0x3F)<<6)|(*(Z+3)&0x3F));
+                            Z+=4;
+                        }
+                        else
+                            break; //Bad character
+                    }
+                    else
+                        break; //Bad character
                 }
-                else if (sizeof(wchar_t)==4)
-                {
-                    UTF32*   WideString_Begin =(UTF32*)WideString;
-                    UTF32*   WideString_End   =(UTF32*)(WideString+S_Size);
-                    ConvertUTF8toUTF32(&S_Begin, S_End, &WideString_Begin, WideString_End, lenientConversion);
-                    Size=((wchar_t*)WideString_Begin-WideString);
-                }
-                else
-                    Size=0;
-                if (Size)
-                    assign (WideString+(WideString[0]==0xFEFF?1:0), Size-(WideString[0]==0xFEFF?1:0));
-                else
-                    clear();
-                delete[] WideString; //WideString=NULL;
             #endif
         #else
             assign(S); //Not implemented
@@ -1056,23 +1080,22 @@ std::string Ztring::To_UTF8 () const
             #ifdef WINDOWS
                 if (IsWin9X())
                 {
-                    const Char*   S                =c_str();
-                    size_t        S_Size           =size();
-                    char*         AnsiString       =new char[(S_Size+1)*4];
-                    UTF8*         AnsiString_Begin =(UTF8*)AnsiString;
-                    UTF8*         AnsiString_End   =(UTF8*)(AnsiString+S_Size*4);
-                    size_t        Size;
-                    if (sizeof(wchar_t)==2)
+                    std::string ToReturn;
+                    const wchar_t* Z=c_str();
+                    while (*Z) //0 is end
                     {
-                        const UTF16*  S_Begin          =(const UTF16*)S;
-                        const UTF16*  S_End            =(const UTF16*)(S+S_Size);
-                        ConvertUTF16toUTF8(&S_Begin, S_End, &AnsiString_Begin, AnsiString_End, lenientConversion);
-                        Size=((char*)AnsiString_Begin-AnsiString);
+                        //1 byte
+                        if (*Z<0x80)
+                            ToReturn += (char)  (*Z);
+                        else if (*Z<0x1000)
+                        {
+                            ToReturn += (char)(((*Z)>> 6)&0x1F);
+                            ToReturn += (char)( (*Z)     &0x3F);
+                        }
+                        else
+                            break; //Bad character (or UTF-16LE, not yet supported)
+                        Z++;
                     }
-                    else
-                        Size=0;
-                    std::string ToReturn(AnsiString, Size);
-                    delete[] AnsiString; //AnsiString=NULL;
                     return ToReturn;
                 }
                 else
@@ -1091,30 +1114,35 @@ std::string Ztring::To_UTF8 () const
                         return std::string();
                 }
             #else //WINDOWS
-                const Char*   S                =c_str();
-                size_t        S_Size           =size();
-                char*         AnsiString       =new char[(S_Size+1)*4];
-                UTF8*         AnsiString_Begin =(UTF8*)AnsiString;
-                UTF8*         AnsiString_End   =(UTF8*)(AnsiString+S_Size*4);
-                size_t        Size;
-                if (sizeof(wchar_t)==2)
+                std::string ToReturn;
+                const wchar_t* Z=c_str();
+                while (*Z) //0 is end
                 {
-                    const UTF16*  S_Begin          =(const UTF16*)S;
-                    const UTF16*  S_End            =(const UTF16*)(S+S_Size);
-                    ConvertUTF16toUTF8(&S_Begin, S_End, &AnsiString_Begin, AnsiString_End, lenientConversion);
-                    Size=((char*)AnsiString_Begin-AnsiString);
+                    //1 byte
+                    if (*Z<0x80)
+                        ToReturn += (char)  (*Z);
+                    else if (*Z<0x1000)
+                    {
+                        ToReturn += (char)(((*Z)>> 6)&0x1F);
+                        ToReturn += (char)( (*Z)     &0x3F);
+                    }
+                    else if (*Z<0x40000)
+                    {
+                        ToReturn += (char)(((*Z)>>12)&0x0F);
+                        ToReturn += (char)(((*Z)>> 6)&0x3F);
+                        ToReturn += (char)( (*Z)     &0x3F);
+                    }
+                    else if (*Z<0x1000000)
+                    {
+                        ToReturn += (char)(((*Z)>>18)&0x07);
+                        ToReturn += (char)(((*Z)>>12)&0x3F);
+                        ToReturn += (char)(((*Z)>> 6)&0x3F);
+                        ToReturn += (char)( (*Z)     &0x3F);
+                    }
+                    else
+                        break; //Bad character
+                    Z++;
                 }
-                else if (sizeof(wchar_t)==4)
-                {
-                    const UTF32*  S_Begin          =(const UTF32*)S;
-                    const UTF32*  S_End            =(const UTF32*)(S+S_Size);
-                    ConvertUTF32toUTF8(&S_Begin, S_End, &AnsiString_Begin, AnsiString_End, lenientConversion);
-                    Size=((char*)AnsiString_Begin-AnsiString);
-                }
-                else
-                    Size=0;
-                std::string ToReturn(AnsiString, Size);
-                delete[] AnsiString; //AnsiString=NULL;
                 return ToReturn;
             #endif
         #endif //ZENLIB_USEWX

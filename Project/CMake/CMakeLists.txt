@@ -6,7 +6,6 @@ add_definitions(-DUNICODE)
 
 set(zenlib_SRCS
 	ZenLib/Conf.cpp
-	ZenLib/ConvertUTF.c
 	ZenLib/CriticalSection.cpp
 	ZenLib/Dir.cpp
 	ZenLib/File.cpp

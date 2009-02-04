@@ -203,7 +203,6 @@
         <FILE FILENAME="..\..\..\Source\ZenLib\HTTP_Client\HTTPClientAuth.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="HTTPClientAuth" FORMNAME="" DESIGNCLASS=""/>
         <FILE FILENAME="..\..\..\Source\ZenLib\HTTP_Client\HTTPClient.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="HTTPClient" FORMNAME="" DESIGNCLASS=""/>
         <FILE FILENAME="..\..\..\Source\ZenLib\Conf.cpp" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="Conf" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\..\..\Source\ZenLib\ConvertUTF.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="ConvertUTF" FORMNAME="" DESIGNCLASS=""/>
         <FILE FILENAME="..\..\..\Source\ZenLib\Dir.cpp" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="Dir" FORMNAME="" DESIGNCLASS=""/>
         <FILE FILENAME="..\..\..\Source\ZenLib\CriticalSection.cpp" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="CriticalSection" FORMNAME="" DESIGNCLASS=""/>
         <FILE FILENAME="..\..\..\Source\ZenLib\InfoMap.cpp" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="InfoMap" FORMNAME="" DESIGNCLASS=""/>
