@@ -1,4 +1,4 @@
-Version 0.3.8
+Version 0.3.8, 2009-02-13
 -------------
 x UTF-8 conversion replacement (was buggy with Debian Lenny, why?)
 x Big files seeking on Linux
