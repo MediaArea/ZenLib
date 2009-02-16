@@ -16,7 +16,7 @@ Summary:		Shared library for libmediainfo and medianfo-*
 Group:			System/Libraries
 License:		BSD
 URL:			http://zenlib.sourceforge.net/
-Source:			libzen_%{version}.tar.bz2
+Source:			libzen_%{version}-1.tar.bz2
 BuildRoot:		%{_tmppath}/%{name}-%{version}-%{release}-root
 BuildRequires:		dos2unix
 BuildRequires:		doxygen
