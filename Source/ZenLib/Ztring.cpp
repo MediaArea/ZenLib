@@ -1221,7 +1221,7 @@ std::string Ztring::To_Local () const
 
 //---------------------------------------------------------------------------
 //Operateur ToInt
-int8s Ztring::To_int8s (ztring_t Options) const
+int8s Ztring::To_int8s (int8u Radix, ztring_t Options) const
 {
     //Integrity
     if (empty())
@@ -1233,7 +1233,7 @@ int8s Ztring::To_int8s (ztring_t Options) const
         I=_ttoi(c_str());
     #else
         tStringStream SS(*this);
-        SS >> I;
+        SS >> setbase(Radix) >> I;
         if (SS.fail())
             return 0;
     #endif
@@ -1252,7 +1252,7 @@ int8s Ztring::To_int8s (ztring_t Options) const
 
 //---------------------------------------------------------------------------
 //Operateur ToInt
-int8u Ztring::To_int8u (ztring_t Options) const
+int8u Ztring::To_int8u (int8u Radix, ztring_t Options) const
 {
     //Integrity
     if (empty())
@@ -1264,7 +1264,7 @@ int8u Ztring::To_int8u (ztring_t Options) const
         I=_ttoi64(c_str()); //TODO : I>0x7FFFFFFF - Replaced by i64 version to support, but not good
     #else
         tStringStream SS(*this);
-        SS >> I;
+        SS >> setbase(Radix) >> I;
         if (SS.fail())
             return 0;
     #endif
@@ -1283,7 +1283,7 @@ int8u Ztring::To_int8u (ztring_t Options) const
 
 //---------------------------------------------------------------------------
 //Operateur ToInt
-int16s Ztring::To_int16s (ztring_t Options) const
+int16s Ztring::To_int16s (int8u Radix, ztring_t Options) const
 {
     //Integrity
     if (empty())
@@ -1295,7 +1295,7 @@ int16s Ztring::To_int16s (ztring_t Options) const
         I=_ttoi(c_str());
     #else
         tStringStream SS(*this);
-        SS >> I;
+        SS >> setbase(Radix) >> I;
         if (SS.fail())
             return 0;
     #endif
@@ -1314,7 +1314,7 @@ int16s Ztring::To_int16s (ztring_t Options) const
 
 //---------------------------------------------------------------------------
 //Operateur ToInt
-int16u Ztring::To_int16u (ztring_t Options) const
+int16u Ztring::To_int16u (int8u Radix, ztring_t Options) const
 {
     //Integrity
     if (empty())
@@ -1326,7 +1326,7 @@ int16u Ztring::To_int16u (ztring_t Options) const
         I=_ttoi64(c_str()); //TODO : I>0x7FFFFFFF - Replaced by i64 version to support, but not good
     #else
         tStringStream SS(*this);
-        SS >> I;
+        SS >> setbase(Radix) >> I;
         if (SS.fail())
             return 0;
     #endif
@@ -1345,7 +1345,7 @@ int16u Ztring::To_int16u (ztring_t Options) const
 
 //---------------------------------------------------------------------------
 //Operateur ToInt
-int32s Ztring::To_int32s (ztring_t Options) const
+int32s Ztring::To_int32s (int8u Radix, ztring_t Options) const
 {
     //Integrity
     if (empty())
@@ -1357,7 +1357,7 @@ int32s Ztring::To_int32s (ztring_t Options) const
         I=_ttoi(c_str());
     #else
         tStringStream SS(*this);
-        SS >> I;
+        SS >> setbase(Radix) >> I;
         if (SS.fail())
             return 0;
     #endif
@@ -1376,7 +1376,7 @@ int32s Ztring::To_int32s (ztring_t Options) const
 
 //---------------------------------------------------------------------------
 //Operateur ToInt
-int32u Ztring::To_int32u (ztring_t Options) const
+int32u Ztring::To_int32u (int8u Radix, ztring_t Options) const
 {
     //Integrity
     if (empty())
@@ -1388,7 +1388,7 @@ int32u Ztring::To_int32u (ztring_t Options) const
         I=_ttoi64(c_str()); //TODO : I>0x7FFFFFFF - Replaced by i64 version to support, but not good
     #else
         tStringStream SS(*this);
-        SS >> I;
+        SS >> setbase(Radix) >> I;
         if (SS.fail())
             return 0;
     #endif
@@ -1407,7 +1407,7 @@ int32u Ztring::To_int32u (ztring_t Options) const
 
 //---------------------------------------------------------------------------
 //Operateur ToInt
-int64s Ztring::To_int64s (ztring_t Options) const
+int64s Ztring::To_int64s (int8u Radix, ztring_t Options) const
 {
     //Integrity
     if (empty())
@@ -1419,7 +1419,7 @@ int64s Ztring::To_int64s (ztring_t Options) const
         I=_ttoi64(c_str());
     #else
         tStringStream SS(*this);
-        SS >> I;
+        SS >> setbase(Radix) >> I;
         if (SS.fail())
             return 0;
     #endif
@@ -1438,7 +1438,7 @@ int64s Ztring::To_int64s (ztring_t Options) const
 
 //---------------------------------------------------------------------------
 //Operateur ToInt
-int64u Ztring::To_int64u (ztring_t Options) const
+int64u Ztring::To_int64u (int8u Radix, ztring_t Options) const
 {
     //Integrity
     if (empty())
@@ -1450,7 +1450,7 @@ int64u Ztring::To_int64u (ztring_t Options) const
         I=_ttoi64(c_str()); //TODO : I>0x7FFFFFFFFFFFFFFF
     #else
         tStringStream SS(*this);
-        SS >> I;
+        SS >> setbase(Radix) >> I;
         if (SS.fail())
             return 0;
     #endif

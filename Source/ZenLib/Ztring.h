@@ -212,35 +212,35 @@ public :
         /// @brief Convert into Int (8 bits)
         /// @return the value corresponding \n
         ///         0 if there is a problem
-    int8s       To_int8s    (ztring_t Options=Ztring_Rounded) const;
+    int8s       To_int8s    (int8u Radix=10, ztring_t Options=Ztring_Rounded) const;
         /// @brief Convert into unsigned Int (8 bits)
         /// @return the value corresponding
         ///         0 if there is a problem
-    int8u       To_int8u    (ztring_t Options=Ztring_Rounded) const;
+    int8u       To_int8u    (int8u Radix=10, ztring_t Options=Ztring_Rounded) const;
         /// @brief Convert into Int (16 bits)
         /// @return the value corresponding \n
         ///         0 if there is a problem
-    int16s      To_int16s   (ztring_t Options=Ztring_Rounded) const;
+    int16s      To_int16s   (int8u Radix=10, ztring_t Options=Ztring_Rounded) const;
         /// @brief Convert into unsigned Int (16 bits)
         /// @return the value corresponding
         ///         0 if there is a problem
-    int16u      To_int16u   (ztring_t Options=Ztring_Rounded) const;
+    int16u      To_int16u   (int8u Radix=10, ztring_t Options=Ztring_Rounded) const;
         /// @brief Convert into Int (32 bits)
         /// @return the value corresponding \n
         ///         0 if there is a problem
-    int32s      To_int32s   (ztring_t Options=Ztring_Rounded) const;
+    int32s      To_int32s   (int8u Radix=10, ztring_t Options=Ztring_Rounded) const;
         /// @brief Convert into unsigned Int (32 bits)
         /// @return the value corresponding
         ///         0 if there is a problem
-    int32u      To_int32u   (ztring_t Options=Ztring_Rounded) const;
+    int32u      To_int32u   (int8u Radix=10, ztring_t Options=Ztring_Rounded) const;
         /// @brief Convert into Int (64 bits)
         /// @return the value corresponding \n
         ///         0 if there is a problem
-    int64s      To_int64s   (ztring_t Options=Ztring_Rounded) const;
+    int64s      To_int64s   (int8u Radix=10, ztring_t Options=Ztring_Rounded) const;
         /// @brief Convert into unsigned Int (64 bits)
         /// @return the value corresponding \n
         ///         0 if there is a problem
-    int64u      To_int64u   (ztring_t Options=Ztring_Rounded) const;
+    int64u      To_int64u   (int8u Radix=10, ztring_t Options=Ztring_Rounded) const;
         /// @brief Convert into float
         /// @return the value corresponding \n
         ///         0 if there is a problem
