@@ -1,4 +1,4 @@
-Version 0.4., 2009-
+Version 0.4.0, 2009-03-20
 -------------
 + Ztring: Radix option for To_xxx() (API incompatible change)
 
