@@ -48,16 +48,17 @@ public :
     /// @brief Options for Open method
     enum dirlist_t
     {
-        Files                       = 1,            ///< Include files
-        Dirs                        = 1,            ///< Include directories
-        Hidden                      = 1,            ///< Include hidden files
-        DotDot                      = 1             ///< Include '.' and '..'
+        Nothing                     = 0x00,             ///<
+        Include_Files               = 0x01,             ///< Include files
+        Include_Dirs                = 0x02,             ///< Include directories
+        Include_Hidden              = 0x04,             ///< Include hidden files
+        Parse_SubDirs               = 0x10              ///< Parse subdirectories
     };
 
     //Constructor/Destructor
 
     //Open/close
-    static ZtringList GetAllFileNames(const Ztring &Dir_Name);
+    static ZtringList GetAllFileNames(const Ztring &Dir_Name, dirlist_t Options=(dirlist_t)(Include_Files|Parse_SubDirs));
 
     //Helpers
     static bool             Exists(const Ztring &Dir_Name);

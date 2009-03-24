@@ -65,7 +65,7 @@ namespace ZenLib
 // Open/Close
 //***************************************************************************
 
-ZtringList Dir::GetAllFileNames(const Ztring &Dir_Name_)
+ZtringList Dir::GetAllFileNames(const Ztring &Dir_Name_, dirlist_t Options)
 {
     ZtringList ToReturn;
     Ztring Dir_Name=Dir_Name_;
@@ -170,7 +170,10 @@ ZtringList Dir::GetAllFileNames(const Ztring &Dir_Name_)
                 {
                     Ztring File_Name_Complete=Path+_T("\\")+File_Name;
                     if (Exists(File_Name_Complete))
-                        ToReturn+=GetAllFileNames(File_Name_Complete); //A SubDir
+                    {
+                        if (Options&Parse_SubDirs)
+                            ToReturn+=GetAllFileNames(File_Name_Complete); //A SubDir
+                    }
                     else
                         ToReturn.push_back(File_Name_Complete); //A file
                 }
