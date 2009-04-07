@@ -1,3 +1,7 @@
+Version 0.4.2, 2009-
+-------------
++ File: Local modified/created date
+
 Version 0.4.1, 2009-04-03
 -------------
 + Dir: Option for GetAllFileNames (API incompatible change)

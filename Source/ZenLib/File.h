@@ -86,7 +86,9 @@ public :
     //Attributes
     int64u Size_Get();
     Ztring Created_Get();
+    Ztring Created_Local_Get();
     Ztring Modified_Get();
+    Ztring Modified_Local_Get();
     bool   Opened_Get();
 
     //Helpers
