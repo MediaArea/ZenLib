@@ -1,4 +1,4 @@
-Version 0.4.2, 2009-
+Version 0.4.2, 2009-04-17
 -------------
 + File: Local modified/created date
 
