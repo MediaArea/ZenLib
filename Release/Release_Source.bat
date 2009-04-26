@@ -5,17 +5,6 @@ del ZenLib_Source.7z
 rmdir ZenLib_Source /S /Q
 mkdir ZenLib_Source
 
-
-rem --- Copying : Documentation ---
-rem mkdir Doc
-rem cd ..\Source\Doc
-rem ..\..\..\Shared\Binary\Windows_i386\Doxygen\Doxygen Doxygen
-rem cd ..\..\Release
-rem mkdir ZenLib_Source\Doc\
-rem xcopy ..\Doc\*.*  ZenLib_Source\Doc\
-rem rmdir ..\Doc /S /Q
-rem xcopy ..\Source\Doc\*.html ZenLib_Source\ /S
-
 @rem --- Copying : Sources ---
 xcopy ..\Source\*.h ZenLib_Source\Source\ /S
 xcopy ..\Source\*.c ZenLib_Source\Source\ /S

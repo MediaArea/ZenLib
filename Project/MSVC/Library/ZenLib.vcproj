@@ -22,7 +22,7 @@
 		<Configuration
 			Name="Debug|Win32"
 			OutputDirectory="$(PlatformName)\$(ConfigurationName)"
-			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
+			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)\Intermediate"
 			ConfigurationType="4"
 			CharacterSet="1"
 			>
@@ -44,13 +44,13 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../../../Source;../../../../Shared/Include"
+				AdditionalIncludeDirectories="../../../Source;../../../../zlib"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
 				UsePrecompiledHeader="0"
-				WarningLevel="3"
+				WarningLevel="4"
 				DebugInformationFormat="4"
 			/>
 			<Tool
@@ -64,7 +64,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="..\..\..\Release\MSVC\Library\ZenLibd.lib"
+				OutputFile="$(OutDir)\ZenLib.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -85,7 +85,7 @@
 		<Configuration
 			Name="Debug|x64"
 			OutputDirectory="$(PlatformName)\$(ConfigurationName)"
-			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
+			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)\Intermediate"
 			ConfigurationType="4"
 			CharacterSet="1"
 			>
@@ -108,13 +108,13 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../../../Source;../../../../Shared/Include"
+				AdditionalIncludeDirectories="../../../Source;../../../../zlib"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;WSTRING_MISSING"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
 				UsePrecompiledHeader="0"
-				WarningLevel="3"
+				WarningLevel="4"
 				DebugInformationFormat="3"
 			/>
 			<Tool
@@ -128,7 +128,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="..\..\..\Release\MSVCx64\Library\ZenLibd.lib"
+				OutputFile="$(OutDir)\ZenLib.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -149,7 +149,7 @@
 		<Configuration
 			Name="Release|Win32"
 			OutputDirectory="$(PlatformName)\$(ConfigurationName)"
-			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
+			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)\Intermediate"
 			ConfigurationType="4"
 			CharacterSet="1"
 			WholeProgramOptimization="1"
@@ -172,11 +172,11 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="2"
-				AdditionalIncludeDirectories="../../../Source;../../../../Shared/Include"
+				AdditionalIncludeDirectories="../../../Source;../../../../zlib"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="0"
-				WarningLevel="3"
+				WarningLevel="4"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -189,7 +189,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="..\..\..\Release\MSVC\Library\ZenLib.lib"
+				OutputFile="$(OutDir)\ZenLib.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -210,7 +210,7 @@
 		<Configuration
 			Name="Release|x64"
 			OutputDirectory="$(PlatformName)\$(ConfigurationName)"
-			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
+			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)\Intermediate"
 			ConfigurationType="4"
 			CharacterSet="1"
 			WholeProgramOptimization="1"
@@ -234,11 +234,11 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="2"
-				AdditionalIncludeDirectories="../../../Source;../../../../Shared/Include"
+				AdditionalIncludeDirectories="../../../Source;../../../../zlib"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="0"
-				WarningLevel="3"
+				WarningLevel="4"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -251,7 +251,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="..\..\..\Release\MSVCx64\Library\ZenLib.lib"
+				OutputFile="$(OutDir)\ZenLib.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -271,8 +271,8 @@
 		</Configuration>
 		<Configuration
 			Name="ReleaseA|Win32"
-			OutputDirectory="$(ConfigurationName)"
-			IntermediateDirectory="$(ConfigurationName)"
+			OutputDirectory="$(PlatformName)\$(ConfigurationName)"
+			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)\Intermediate"
 			ConfigurationType="4"
 			CharacterSet="2"
 			WholeProgramOptimization="1"
@@ -295,11 +295,11 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="2"
-				AdditionalIncludeDirectories="../../../Source;../../../../Shared/Include"
+				AdditionalIncludeDirectories="../../../Source;../../../../zlib"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="0"
-				WarningLevel="3"
+				WarningLevel="4"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -312,7 +312,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="..\..\..\Release\MSVC\Library\ZenLibA.lib"
+				OutputFile="$(OutDir)\ZenLib.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -333,9 +333,9 @@
 		<Configuration
 			Name="ReleaseA|x64"
 			OutputDirectory="$(PlatformName)\$(ConfigurationName)"
-			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
+			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)\Intermediate"
 			ConfigurationType="4"
-			CharacterSet="1"
+			CharacterSet="2"
 			WholeProgramOptimization="1"
 			>
 			<Tool
@@ -357,11 +357,11 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="2"
-				AdditionalIncludeDirectories="../../../Source;../../../../Shared/Include"
+				AdditionalIncludeDirectories="../../../Source;../../../../zlib"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="0"
-				WarningLevel="3"
+				WarningLevel="4"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -374,7 +374,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="..\..\..\Release\MSVCx64\Library\ZenLibA.lib"
+				OutputFile="$(OutDir)\ZenLib.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -394,8 +394,8 @@
 		</Configuration>
 		<Configuration
 			Name="DebugA|Win32"
-			OutputDirectory="$(ConfigurationName)"
-			IntermediateDirectory="$(ConfigurationName)"
+			OutputDirectory="$(PlatformName)\$(ConfigurationName)"
+			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)\Intermediate"
 			ConfigurationType="4"
 			CharacterSet="2"
 			>
@@ -417,13 +417,13 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../../../Source;../../../../Shared/Include"
+				AdditionalIncludeDirectories="../../../Source;../../../../zlib"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
 				UsePrecompiledHeader="0"
-				WarningLevel="3"
+				WarningLevel="4"
 				DebugInformationFormat="4"
 			/>
 			<Tool
@@ -437,7 +437,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="..\..\..\Release\MSVC\Library\ZenLibAd.lib"
+				OutputFile="$(OutDir)\ZenLib.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -458,9 +458,9 @@
 		<Configuration
 			Name="DebugA|x64"
 			OutputDirectory="$(PlatformName)\$(ConfigurationName)"
-			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
+			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)\Intermediate"
 			ConfigurationType="4"
-			CharacterSet="1"
+			CharacterSet="2"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -481,13 +481,13 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../../../Source;../../../../Shared/Include"
+				AdditionalIncludeDirectories="../../../Source;../../../../zlib"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
 				UsePrecompiledHeader="0"
-				WarningLevel="3"
+				WarningLevel="4"
 				DebugInformationFormat="3"
 			/>
 			<Tool
@@ -501,7 +501,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="..\..\..\Release\MSVCx64\Library\ZenLibAd.lib"
+				OutputFile="$(OutDir)\ZenLib.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
