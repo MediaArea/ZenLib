@@ -1228,7 +1228,7 @@ int8s Ztring::To_int8s (int8u Radix, ztring_t Options) const
         return 0;
 
     //Conversion
-    int32s I;
+    int I;
     #ifdef __MINGW32__
         I=_ttoi(c_str());
     #else
@@ -1244,10 +1244,10 @@ int8s Ztring::To_int8s (int8u Radix, ztring_t Options) const
         float80 F=To_float80();
         F-=I;
         if (F>=0.5)
-            return I+1;
+            return (int8s)I+1;
     }
 
-    return I;
+    return (int8s)I;
 }
 
 //---------------------------------------------------------------------------
@@ -1259,7 +1259,7 @@ int8u Ztring::To_int8u (int8u Radix, ztring_t Options) const
         return 0;
 
     //Conversion
-    int32u I;
+    unsigned int I;
     #ifdef __MINGW32__
         I=_ttoi64(c_str()); //TODO : I>0x7FFFFFFF - Replaced by i64 version to support, but not good
     #else
@@ -1275,10 +1275,10 @@ int8u Ztring::To_int8u (int8u Radix, ztring_t Options) const
         float32 F=To_float32();
         F-=I;
         if (F>=0.5)
-            return I+1;
+            return (int8u)I+1;
     }
 
-    return I;
+    return (int8u)I;
 }
 
 //---------------------------------------------------------------------------
@@ -1290,7 +1290,7 @@ int16s Ztring::To_int16s (int8u Radix, ztring_t Options) const
         return 0;
 
     //Conversion
-    int32s I;
+    int I;
     #ifdef __MINGW32__
         I=_ttoi(c_str());
     #else
@@ -1306,10 +1306,10 @@ int16s Ztring::To_int16s (int8u Radix, ztring_t Options) const
         float80 F=To_float80();
         F-=I;
         if (F>=0.5)
-            return I+1;
+            return (int16s)I+1;
     }
 
-    return I;
+    return (int16s)I;
 }
 
 //---------------------------------------------------------------------------
@@ -1321,7 +1321,7 @@ int16u Ztring::To_int16u (int8u Radix, ztring_t Options) const
         return 0;
 
     //Conversion
-    int32u I;
+    unsigned int I;
     #ifdef __MINGW32__
         I=_ttoi64(c_str()); //TODO : I>0x7FFFFFFF - Replaced by i64 version to support, but not good
     #else
@@ -1337,10 +1337,10 @@ int16u Ztring::To_int16u (int8u Radix, ztring_t Options) const
         float32 F=To_float32();
         F-=I;
         if (F>=0.5)
-            return I+1;
+            return (int16u)I+1;
     }
 
-    return I;
+    return (int16u)I;
 }
 
 //---------------------------------------------------------------------------

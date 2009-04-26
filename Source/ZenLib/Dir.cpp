@@ -172,7 +172,7 @@ ZtringList Dir::GetAllFileNames(const Ztring &Dir_Name_, dirlist_t Options)
                     if (Exists(File_Name_Complete))
                     {
                         if (Options&Parse_SubDirs)
-                            ToReturn+=GetAllFileNames(File_Name_Complete); //A SubDir
+                            ToReturn+=GetAllFileNames(File_Name_Complete, Options); //A SubDir
                     }
                     else
                         ToReturn.push_back(File_Name_Complete); //A file
@@ -237,7 +237,10 @@ ZtringList Dir::GetAllFileNames(const Ztring &Dir_Name_, dirlist_t Options)
                     {
                         Ztring File_Name_Complete=Dir_Name+File_Name;
                         if (Exists(File_Name_Complete))
-                            ToReturn+=GetAllFileNames(File_Name_Complete); //A SubDir
+                        {
+                            if (Options&Parse_SubDirs)
+                                ToReturn+=GetAllFileNames(File_Name_Complete, Options); //A SubDir
+                        }
                         else
                             ToReturn.push_back(File_Name_Complete); //A file
                     }
