@@ -37,15 +37,15 @@ namespace ZenLib
 //End of line
 #ifdef WINDOWS
     const Char* EOL=_T("\r\n");
+    const Char  PathSeparator=_T('\\');
 #endif
 #ifdef UNIX
     const Char* EOL=_T("\n");
+    const Char  PathSeparator=_T('/');
 #endif
-#ifdef MACOS
+#if defined (MACOS) || defined (MACOSX)
     const Char* EOL=_T("\r");
-#endif
-#ifdef MACOSX
-    const Char* EOL=_T("\r");
+    const Char  PathSeparator=_T('/');
 #endif
 
 //***************************************************************************

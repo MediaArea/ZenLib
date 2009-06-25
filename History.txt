@@ -1,6 +1,7 @@
 Version 0.4.3, 2009-
 -------------
 + OpenSolaris support
++ Path separator
 
 Version 0.4.2, 2009-04-17
 -------------

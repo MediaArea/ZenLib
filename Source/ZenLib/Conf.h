@@ -242,6 +242,7 @@ namespace ZenLib
 
 //End of line
 extern const Char* EOL;
+extern const Char  PathSeparator;
 
 //***************************************************************************
 // Types
