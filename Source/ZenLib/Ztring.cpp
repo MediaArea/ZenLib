@@ -1060,6 +1060,12 @@ Ztring& Ztring::Date_From_String (const char* Value, size_t Value_Size)
             assign(_T("UTC "));
             append(DateS);
         }
+        else if (DateS.size()==23 && DateS[4]==_T('-') && DateS[7]==_T('-') && DateS[10]==_T(' ') && DateS[14]==_T(' ') && DateS[17]==_T(':') && DateS[20]==_T(':'))
+        {
+            DateS.erase(10, 4);
+            //assign(_T("UTC ")); //Is not UTC
+            append(DateS);
+        }
         else
             From_Local(Value, 0, Value_Size); //Not implemented
     #endif //ZENLIB_USEWX
