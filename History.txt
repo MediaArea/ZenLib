@@ -1,4 +1,4 @@
-Version 0.4.3, 2009-
+Version 0.4.3, 2009-07-03
 -------------
 + OpenSolaris support
 + Path separator
