@@ -421,7 +421,6 @@ float32 BigEndian2float32(const char* Liste)
 {
     //sign          1 bit
     //exponent      8 bit
-    //integer?      0 bit
     //significand  23 bit
 
     //Retrieving data
@@ -449,7 +448,6 @@ float64 BigEndian2float64(const char* Liste)
 {
     //sign          1 bit
     //exponent     11 bit
-    //integer?      0 bit
     //significand  52 bit
 
     //Retrieving data
