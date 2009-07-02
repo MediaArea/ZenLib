@@ -126,6 +126,8 @@ public :
     Ztring& From_Local   (const char  *S, size_type Start,  size_type Length);
         /// @brief convert an Local encoded string into Ztring
     Ztring& From_Local   (const char  *S, size_type Length)                     {return From_Local(S, 0, Length);};
+        /// @brief convert an 16 byte GUID into Ztring
+    Ztring& From_GUID    (const int128u S);
         /// @brief convert an 16 byte UUID into Ztring
     Ztring& From_UUID    (const int128u S);
         /// @brief convert an 4 Character Code into Ztring
