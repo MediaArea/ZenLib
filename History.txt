@@ -3,6 +3,8 @@ Version 0.4.3, 2009-
 + OpenSolaris support
 + Path separator
 + Ztring: handling of another format of date
++ Ztring: Changed UUID to GUID, Added UUID (in the right order)
++ Mac OS X: Creation of universal and 10.4 compatible binaries option
 
 Version 0.4.2, 2009-04-17
 -------------
