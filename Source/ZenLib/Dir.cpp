@@ -51,6 +51,7 @@
 #include "ZenLib/FileName.h"
 #include "ZenLib/ZtringList.h"
 #include "ZenLib/OS_Utils.h"
+#include <iostream>
 //---------------------------------------------------------------------------
 
 namespace ZenLib
@@ -199,18 +200,7 @@ ZtringList Dir::GetAllFileNames(const Ztring &Dir_Name_, dirlist_t Options)
 
             //A dir?
             if (!Dir::Exists(Dir_Name))
-            {
-                //TODO: change this!
-                #ifdef __WINDOWS__
-                    size_t NewSize=Dir_Name.rfind('\\');
-                #else
-                    size_t NewSize=Dir_Name.rfind('/');
-                #endif
-                if (NewSize!=std::string::npos)
-                    Dir_Name.resize(NewSize);
-                if (!Dir::Exists(Dir_Name))
-                    return ToReturn; //Does not exist
-            }
+                return ToReturn; //Does not exist
 
             //open
             #ifdef UNICODE
@@ -221,7 +211,7 @@ ZtringList Dir::GetAllFileNames(const Ztring &Dir_Name_, dirlist_t Options)
             if (Dir)
             {
                 //This is a dir
-                //Normalizing dir (the / at the end
+                //Normalizing dir (the / at the end)
                 size_t Dir_Pos=Dir_Name.rfind(FileName_PathSeparator);
                 if (Dir_Pos==std::string::npos)
                     Dir_Name+=FileName_PathSeparator;
