@@ -31,7 +31,6 @@ cp ../ReadMe.txt ZenLib_GNU_FromSource/
 # Copying : Sources
 mkdir -p ZenLib_GNU_FromSource/Source/ZenLib
 cp -r ../Source/ZenLib/*.h ZenLib_GNU_FromSource/Source/ZenLib/
-cp -r ../Source/ZenLib/*.c ZenLib_GNU_FromSource/Source/ZenLib/
 cp -r ../Source/ZenLib/*.cpp ZenLib_GNU_FromSource/Source/ZenLib/
 mkdir ZenLib_GNU_FromSource/Source/ZenLib/HTTP_Client
 cp -r ../Source/ZenLib/HTTP_Client/*.h ZenLib_GNU_FromSource/Source/ZenLib/HTTP_Client
