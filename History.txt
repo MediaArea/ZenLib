@@ -1,5 +1,8 @@
 Version 0.4.4, 2009-09-01
 -------------
++ More permissive license for redistribution only
+  Redistribution license is intended for companies
+  with legal issues (if they can not deal with LGPL)
 + Dir::GetAllFileNames() was listing all dir if filename does not exist
 
 Version 0.4.3, 2009-07-03
