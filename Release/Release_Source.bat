@@ -56,7 +56,6 @@ xcopy GCC_Linux_i386\*.txt ZenLib_Source\Release\GCC_Linux_i386\ /S
 
 rem --- Copying : Information files ---
 copy ..\*.txt ZenLib_Source\
-copy ..\*.html ZenLib_Source\
 
 rem --- Copying : CVS files ---
 copy ..\*.cvsignore ZenLib_Source\
