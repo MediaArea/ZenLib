@@ -44,7 +44,8 @@
 #ifdef __BORLANDC__
     #define fmodf fmod
 #endif
-#if defined (__MONTAVISTA__) || defined (__ARMEL__)     || \
+#if defined (__NO_LONG_DOUBLE_MATH) || \
+    defined (__MONTAVISTA__) || defined (__ARMEL__)     || \
     defined (__FreeBSD__)    || defined (__OpenBSD__)   || \
     defined (__NetBSD__)     || defined (__DragonFly__) || \
     defined (__sparc__)      || defined (__sparc64__)
