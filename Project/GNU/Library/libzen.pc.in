@@ -4,10 +4,10 @@ libdir=@libdir@
 includedir=@includedir@
 Unicode=@ZenLib_Unicode@
 WstringMissing=@ZenLib_WstringMissing@
-Libs_Static=@ZenLib_LIBS_Static@
+Libs_Static=@libdir@/libzen.a -lpthread
 
 Name: libzen
 Version: @PACKAGE_VERSION@
 Description: ZenLib
-Libs: @ZenLib_LIBS@
-Cflags: @ZenLib_CXXFLAGS@
+Libs: -L@libdir@ -lzen -lpthread
+Cflags: -I${includedir}
