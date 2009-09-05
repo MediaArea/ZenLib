@@ -1,3 +1,7 @@
+Version 0.4.5, 2009-09-05
+-------------
++ libzen.pc correction
+
 Version 0.4.4, 2009-09-01
 -------------
 + Dir::GetAllFileNames() was listing all dir if filename does not exist
