@@ -9,7 +9,7 @@ Homepage: http://mediainfo.sourceforge.net
 Package: libzen0-dev
 Section: libdevel
 Architecture: any
-Depends: libzen0 (>=0.4.4)
+Depends: libzen0 (>=0.4.5)
 Description: libmediainfo mandatory library (dev)
  This package includes the development support files
 
