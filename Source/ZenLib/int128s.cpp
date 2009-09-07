@@ -71,7 +71,7 @@ const char * int128::toString (unsigned int radix) const throw () {
 
     while (!!ii && i) {
         ii = ii.div (radix, r);
-        sz [--i] = r.toInt () + ((r.toInt () > 9) ? 'A' - 10 : '0');
+        sz [--i] = (char) (r.toInt () + ((r.toInt () > 9) ? 'A' - 10 : '0'));
     };
 
     if (*this < 0)

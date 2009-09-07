@@ -43,6 +43,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				AdditionalOptions="/analyze"
 				Optimization="0"
 				AdditionalIncludeDirectories="../../../Source;../../../../zlib"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB"
@@ -52,6 +53,7 @@
 				UsePrecompiledHeader="0"
 				WarningLevel="4"
 				DebugInformationFormat="4"
+				EnablePREfast="true"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -116,6 +118,7 @@
 				UsePrecompiledHeader="0"
 				WarningLevel="4"
 				DebugInformationFormat="3"
+				EnablePREfast="true"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -177,6 +180,7 @@
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="0"
 				WarningLevel="4"
+				EnablePREfast="true"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -239,6 +243,7 @@
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="0"
 				WarningLevel="4"
+				EnablePREfast="true"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -300,6 +305,7 @@
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="0"
 				WarningLevel="4"
+				EnablePREfast="true"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -362,6 +368,7 @@
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="0"
 				WarningLevel="4"
+				EnablePREfast="true"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -425,6 +432,7 @@
 				UsePrecompiledHeader="0"
 				WarningLevel="4"
 				DebugInformationFormat="4"
+				EnablePREfast="true"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -489,6 +497,7 @@
 				UsePrecompiledHeader="0"
 				WarningLevel="4"
 				DebugInformationFormat="3"
+				EnablePREfast="true"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -559,10 +568,74 @@
 			<File
 				RelativePath="..\..\..\Source\ZenLib\int128s.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						DisableSpecificWarnings="4127"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						DisableSpecificWarnings="4127"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="ReleaseA|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						DisableSpecificWarnings="4127"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="DebugA|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						DisableSpecificWarnings="4127"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\Source\ZenLib\int128u.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						DisableSpecificWarnings="4127"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						DisableSpecificWarnings="4127"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="ReleaseA|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						DisableSpecificWarnings="4127"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="DebugA|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						DisableSpecificWarnings="4127"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\Source\ZenLib\MemoryDebug.cpp"
@@ -609,6 +682,70 @@
 					<File
 						RelativePath="..\..\..\Source\ZenLib\Format\Http\Http_Cookies.cpp"
 						>
+						<FileConfiguration
+							Name="Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								DisableSpecificWarnings="4996"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								DisableSpecificWarnings="4996"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								DisableSpecificWarnings="4996"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								DisableSpecificWarnings="4996"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="ReleaseA|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								DisableSpecificWarnings="4996"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="ReleaseA|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								DisableSpecificWarnings="4996"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="DebugA|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								DisableSpecificWarnings="4996"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="DebugA|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								DisableSpecificWarnings="4996"
+							/>
+						</FileConfiguration>
 					</File>
 					<File
 						RelativePath="..\..\..\Source\ZenLib\Format\Http\Http_Handler.cpp"

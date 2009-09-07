@@ -115,17 +115,20 @@ Ztring HTTP_Client::Read ()
     if (Handle==0)
         return Ztring();
 
-    char Buffer[16384];
+    char* Buffer=new char[16384];
     int32u Size=0;
 
     int32u ReturnValue=HTTPClientReadData(Handle, Buffer, 16384, 0, &Size);
     if (ReturnValue!=0 && ReturnValue!=1000) //End of stream
     {
         Close();
+        delete[] Buffer;
         return Ztring();
     }
 
-    return Ztring().From_Local(Buffer, Size);
+    Ztring ToReturn; ToReturn.From_Local(Buffer, Size);
+    delete[] Buffer;
+    return ToReturn;
 }
 
 } //namespace
