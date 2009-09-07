@@ -1,3 +1,7 @@
+Version 0.4.6, 2009-
+-------------
+x Correcting some warnings
+
 Version 0.4.5, 2009-09-05
 -------------
 + libzen.pc correction

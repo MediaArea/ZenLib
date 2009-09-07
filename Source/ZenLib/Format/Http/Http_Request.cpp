@@ -131,19 +131,19 @@ bool Request::Http_Begin(std::istream &In, std::ostream &Out)
                         string::size_type Cookie_Pos=Cookie.rfind(';');
                         if (Cookie_Pos==string::npos)
                             Cookie_Pos=(string::size_type)-1;
-                        string Line=Cookie.substr(Cookie_Pos+1, string::npos);
-                        TrimLeft(Line, ' ');
+                        string Line2=Cookie.substr(Cookie_Pos+1, string::npos);
+                        TrimLeft(Line2, ' ');
                         if (Cookie_Pos!=(string::size_type)-1)
                         {
                             Cookie.resize(Cookie_Pos);
-                            TrimLeft(Line, ' ');
+                            TrimLeft(Line2, ' ');
                         }
                         else
                             Cookie.clear();
                             
-                        string::size_type Separator_Pos=Line.find('=');
-                        if (Separator_Pos!=string::npos)
-                            Http->Request_Cookies[Line.substr(0, Separator_Pos)]=Format::Http::URL_Encoded_Decode(Line.substr(Separator_Pos+1, string::npos));
+                        string::size_type Separator_Pos2=Line2.find('=');
+                        if (Separator_Pos2!=string::npos)
+                            Http->Request_Cookies[Line2.substr(0, Separator_Pos2)]=Format::Http::URL_Encoded_Decode(Line2.substr(Separator_Pos2+1, string::npos));
                     }
                 }
                 else
@@ -205,15 +205,15 @@ bool Request::Http_Begin(std::istream &In, std::ostream &Out)
                 string::size_type Content_Pos=Content.rfind('&');
                 if (Content_Pos==string::npos)
                     Content_Pos=(string::size_type)-1;
-                std::string Line=Content.substr(Content_Pos+1, string::npos);
+                std::string Line2=Content.substr(Content_Pos+1, string::npos);
                 if (Content_Pos!=(string::size_type)-1)
                     Content.resize(Content_Pos);
                 else
                     Content.clear();
                     
-                string::size_type Separator_Pos=Line.find('=');
+                string::size_type Separator_Pos=Line2.find('=');
                 if (Separator_Pos!=string::npos)
-                    Http->Request_Queries[Line.substr(0, Separator_Pos)]=Format::Http::URL_Encoded_Decode(Line.substr(Separator_Pos+1, string::npos));
+                    Http->Request_Queries[Line2.substr(0, Separator_Pos)]=Format::Http::URL_Encoded_Decode(Line2.substr(Separator_Pos+1, string::npos));
             }
         }
         while (!Line.empty());

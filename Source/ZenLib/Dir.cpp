@@ -120,7 +120,7 @@ ZtringList Dir::GetAllFileNames(const Ztring &Dir_Name_, dirlist_t Options)
                         char* PathTemp=new char[Path_Size+1];
                         if (GetFullPathNameA(Dir_Name.To_Local().c_str(), Path_Size+1, PathTemp, NULL))
                             Path=FileName::Path_Get(PathTemp);
-                        delete PathTemp; //PathTemp=NULL;
+                        delete [] PathTemp; //PathTemp=NULL;
                     }
                     else
                     {
@@ -128,14 +128,14 @@ ZtringList Dir::GetAllFileNames(const Ztring &Dir_Name_, dirlist_t Options)
                         Char* PathTemp=new Char[Path_Size+1];
                         if (GetFullPathNameW(Dir_Name.c_str(), Path_Size+1, PathTemp, NULL))
                             Path=FileName::Path_Get(PathTemp);
-                        delete PathTemp; //PathTemp=NULL;
+                        delete [] PathTemp; //PathTemp=NULL;
                     }
                 #else
                     DWORD Path_Size=GetFullPathName(Dir_Name.c_str(), 0, NULL, NULL);
                     Char* PathTemp=new Char[Path_Size+1];
                     if (GetFullPathName(Dir_Name.c_str(), Path_Size+1, PathTemp, NULL))
                         Path=FileName::Path_Get(PathTemp);
-                    delete PathTemp; //PathTemp=NULL;
+                    delete [] PathTemp; //PathTemp=NULL;
                 #endif //UNICODE
             }
 
