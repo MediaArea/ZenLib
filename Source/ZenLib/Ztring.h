@@ -211,6 +211,14 @@ public :
         /// @brief Convert into char* (Local encoded)
         /// @return the string corresponding \n
     std::string To_Local    () const;
+        /// @brief Convert into 16 byte UUID number
+        /// @return the value corresponding \n
+        ///         0 if there is a problem
+    int128u     To_UUID    () const;
+        /// @brief Convert into a 4 Character Code
+        /// @return the value corresponding \n
+        ///         0 if there is a problem
+    int32u      To_CC4    () const;
         /// @brief Convert into Int (8 bits)
         /// @return the value corresponding \n
         ///         0 if there is a problem

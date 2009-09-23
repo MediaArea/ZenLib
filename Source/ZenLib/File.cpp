@@ -33,6 +33,10 @@
     #include <wx/utils.h>
 #else //ZENLIB_USEWX
     #ifdef ZENLIB_STANDARD
+        #ifdef WINDOWS
+        #else
+            #include <cstdio>
+        #endif
         /*
         #ifdef WINDOWS
             #include <io.h>
@@ -304,6 +308,8 @@ void File::Close ()
             CloseHandle(File_Handle); File_Handle=NULL;
         #endif
     #endif //ZENLIB_USEWX
+    Position=(int64u)-1;
+    Size=(int64u)-1;
 }
 
 //***************************************************************************
@@ -743,21 +749,23 @@ bool File::Copy(const Ztring &Source, const Ztring &Destination, bool OverWrite)
 //---------------------------------------------------------------------------
 bool File::Move(const Ztring &Source, const Ztring &Destination, bool OverWrite)
 {
+    if (OverWrite && Exists(Source))
+        Delete(Destination);
     #ifdef ZENLIB_USEWX
         if (OverWrite && Exists(Destination))
             wxRemoveFile(Destination.c_str());
         return wxRenameFile(Source.c_str(), Destination.c_str());
     #else //ZENLIB_USEWX
         #ifdef ZENLIB_STANDARD
-            return false;
+            return !std::rename(Source.To_Local().c_str(), Destination.To_Local().c_str());
         #elif defined WINDOWS
             #ifdef UNICODE
                 if (IsWin9X())
-                    return CopyFileA(Source.To_Local().c_str(), Destination.To_Local().c_str(), !OverWrite)!=0;
+                    return MoveFileA(Source.To_Local().c_str(), Destination.To_Local().c_str())!=0;
                 else
-                    return CopyFileW(Source.c_str(), Destination.c_str(), !OverWrite)!=0;
+                    return MoveFileW(Source.c_str(), Destination.c_str())!=0;
             #else
-                return CopyFile(Source.c_str(), Destination.c_str(), !OverWrite)!=0;
+                return MoveFile(Source.c_str(), Destination.c_str())!=0;
             #endif //UNICODE
         #endif
     #endif //ZENLIB_USEWX

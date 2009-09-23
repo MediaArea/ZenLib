@@ -308,7 +308,36 @@ void ZtringListList::Write(const Ztring &ToWrite)
 
     do
     {
-        C1=ToWrite.SubString(_T(""), Separator[0], PosC, Ztring_AddLastItem);
+        //Searching end of line, but it must not be in quotes
+        bool InQuotes=false;
+        Ztring CharsToFind=Separator[0]+Quote;
+        size_t Pos_End=PosC;
+        while (Pos_End<ToWrite.size())
+        {
+            Pos_End=ToWrite.find_first_of(CharsToFind, Pos_End);
+            if (Pos_End!=string::npos)
+            {
+                if (Pos_End+Quote.size()<ToWrite.size() && ToWrite[Pos_End]==Quote[0] && ToWrite[Pos_End+1]!=Quote[0])
+                {
+                    InQuotes=!InQuotes; //This is not double quotes, so this is a normal quote
+                    /*if (!InQuotes)
+                    {
+                        C1=ToWrite.substr(PosC, Pos_End-PosC); 
+                        break;
+                    }*/
+                }
+
+                if (!InQuotes && Pos_End+Separator[0].size()<=ToWrite.size() && ToWrite[Pos_End]==Separator[0][0])
+                {
+                    C1=ToWrite.substr(PosC, Pos_End-PosC); 
+                    break;
+                }
+                Pos_End++;
+            }
+        }
+        if (Pos_End>=ToWrite.size())
+            C1=ToWrite.substr(PosC, string::npos);
+
         ZL1.Write(C1);
         push_back(ZL1);
         PosC+=C1.size()+Separator[0].size();

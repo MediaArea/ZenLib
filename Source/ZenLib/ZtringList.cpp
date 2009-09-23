@@ -164,12 +164,22 @@ Ztring ZtringList::Read () const
         return _T("");
 
     Ztring Retour;
+    Ztring ToFind=Separator[0]+_T("\r\n");
     for (size_type Pos=0; Pos<size(); Pos++)
     {
-        if (operator[](Pos).find(Separator[0])==std::string::npos)
+        if (operator[](Pos).find_first_of(ToFind)==std::string::npos)
             Retour+=operator[](Pos)+Separator[0];
         else
-            Retour+=Quote+operator[](Pos)+Quote+Separator[0];
+        {
+            if (operator[](Pos).find(Quote)==std::string::npos)
+                Retour+=Quote+operator[](Pos)+Quote+Separator[0];
+            else
+            {
+                Ztring Value=operator[](Pos);
+                Value.FindAndReplace(Quote, Quote+Quote, 0, Ztring_Recursive);
+                Retour+=Quote+Value+Quote+Separator[0];
+            }
+        }
     }
 
     //delete all useless separators at the end
@@ -205,31 +215,32 @@ void ZtringList::Write(const Ztring &ToWrite)
     Ztring DelimiterR;
     do
     {
-        if (ToWrite.size()>PosC && Quote.size()>0 && ToWrite[PosC]==Quote[0] && ToWrite.substr(PosC, Quote.size())==Quote) //Quote found (ToWrite[PosC]==Quote[0] is here for optimization
+        //Searching quotes
+        if (ToWrite[PosC]==Quote[0])
         {
-            DelimiterL=Quote;
-            DelimiterR=Quote+Separator[0];
+            size_t Pos_End=PosC+1;
+            while (Pos_End<ToWrite.size())
+            {
+                if (ToWrite[Pos_End]==Quote[0] && (Pos_End+1>=ToWrite.size() || ToWrite[Pos_End+1]!=Quote[0]))
+                    break;
+                Pos_End++;
+            }
+            C1=ToWrite.substr(PosC+Quote.size(), Pos_End-PosC);
+            PosC+=C1.size()+Quote.size();
+            if (C1.size()>0 && C1[C1.size()-1]==Quote[0])
+            {
+                C1.resize(C1.size()-1);
+                PosC+=Quote.size();
+            }
         }
-        else
+        else //Normal
         {
-            DelimiterL.clear();
-            DelimiterR=Separator[0];
+            C1=ToWrite.SubString(string(), Separator[0], PosC, Ztring_AddLastItem);
+            PosC+=C1.size()+Separator[0].size();
         }
-
-        C1=ToWrite.SubString(DelimiterL, DelimiterR, PosC, Ztring_AddLastItem);
-        if (DelimiterR.size()>Separator[0].size() && C1.size()==ToWrite.size()-Quote.size()-PosC) //This is the last item of the line, we must suppress the Quote at the end
-            C1.resize(C1.size()-Quote.size());
-
+        C1.FindAndReplace(Quote+Quote, Quote, 0, Ztring_Recursive);
         if (size()<Max[0])
             push_back(C1);
-        else
-        {
-            //No more adding is permit, we add to the last element (with the separator)
-            at(size()-1)+=Separator[0];
-            at(size()-1)+=C1;
-        }
-
-        PosC+=C1.size()+DelimiterL.size()+DelimiterR.size();
         if (PosC>=ToWrite.size())
             Fini=true;
     }
@@ -244,7 +255,7 @@ void ZtringList::Write(const Ztring &ToWrite, size_type Pos)
         return;
     if (Pos>=size())
     {
-        //Ressource reservation
+        //Resource reservation
         size_t ToReserve=1;
         while (ToReserve<Pos)
             ToReserve*=2;
