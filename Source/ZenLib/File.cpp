@@ -98,7 +98,7 @@ File::~File()
 //***************************************************************************
 
 //---------------------------------------------------------------------------
-bool File::Open (Ztring File_Name, access_t Access)
+bool File::Open (const tstring &File_Name, access_t Access)
 {
     #ifdef ZENLIB_USEWX
         File_Handle=(void*)new wxFile();
@@ -139,7 +139,7 @@ bool File::Open (Ztring File_Name, access_t Access)
                 default                  :                           ; break;
             }
             #ifdef UNICODE
-                File_Handle=new fstream(File_Name.To_Local().c_str(), mode);
+                File_Handle=new fstream(Ztring(File_Name).To_Local().c_str(), mode);
             #else
                 File_Handle=new fstream(File_Name.c_str(), mode);
             #endif //UNICODE
@@ -161,7 +161,7 @@ bool File::Open (Ztring File_Name, access_t Access)
 
             #ifdef UNICODE
                 if (IsWin9X())
-                    File_Handle=CreateFileA(File_Name.To_Local().c_str(), dwDesiredAccess, dwShareMode, NULL, dwCreationDisposition, 0, NULL);
+                    File_Handle=CreateFileA(Ztring(File_Name).To_Local().c_str(), dwDesiredAccess, dwShareMode, NULL, dwCreationDisposition, 0, NULL);
                 else
                     File_Handle=CreateFileW(File_Name.c_str(), dwDesiredAccess, dwShareMode, NULL, dwCreationDisposition, 0, NULL);
             #else
@@ -184,7 +184,7 @@ bool File::Open (Ztring File_Name, access_t Access)
                 Sleep(1000);
                 #ifdef UNICODE
                     if (IsWin9X())
-                        File_Handle=CreateFileA(File_Name.To_Local().c_str(), dwDesiredAccess, dwShareMode, NULL, dwCreationDisposition, 0, NULL);
+                        File_Handle=CreateFileA(Ztring(File_Name).To_Local().c_str(), dwDesiredAccess, dwShareMode, NULL, dwCreationDisposition, 0, NULL);
                     else
                         File_Handle=CreateFileW(File_Name.c_str(), dwDesiredAccess, dwShareMode, NULL, dwCreationDisposition, 0, NULL);
                 #else
@@ -205,7 +205,7 @@ bool File::Open (Ztring File_Name, access_t Access)
 }
 
 //---------------------------------------------------------------------------
-bool File::Create (Ztring File_Name, bool OverWrite)
+bool File::Create (const Ztring &File_Name, bool OverWrite)
 {
     #ifdef ZENLIB_USEWX
         File_Handle=(void*)new wxFile();
@@ -379,7 +379,7 @@ size_t File::Write (const int8u* Buffer, size_t Buffer_Size)
 }
 
 //---------------------------------------------------------------------------
-size_t File::Write (Ztring ToWrite)
+size_t File::Write (const Ztring &ToWrite)
 {
     std::string AnsiString=ToWrite.To_UTF8();
     return Write((const int8u*)AnsiString.c_str(), AnsiString.size());

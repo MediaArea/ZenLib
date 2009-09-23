@@ -66,6 +66,29 @@ float32 LittleEndian2float32 (const char* List);
 float64 LittleEndian2float64 (const char* List);
 float80 LittleEndian2float80 (const char* List);
 
+void   int8s2LittleEndian     (char* List, int8s  Value);
+void   int8u2LittleEndian     (char* List, int8u  Value);
+void   int16s2LittleEndian    (char* List, int16s Value);
+void   int16u2LittleEndian    (char* List, int16u Value);
+void   int24s2LittleEndian    (char* List, int32s Value);
+void   int24u2LittleEndian    (char* List, int32u Value);
+void   int32s2LittleEndian    (char* List, int32s Value);
+void   int32u2LittleEndian    (char* List, int32u Value);
+#if (MAXTYPE_INT >= 64)
+void   int40s2LittleEndian    (char* List, int64s Value);
+void   int40u2LittleEndian    (char* List, int64u Value);
+void   int48s2LittleEndian    (char* List, int64s Value);
+void   int48u2LittleEndian    (char* List, int64u Value);
+void   int56s2LittleEndian    (char* List, int64s Value);
+void   int56u2LittleEndian    (char* List, int64u Value);
+void   int64s2LittleEndian    (char* List, int64s Value);
+void   int64u2LittleEndian    (char* List, int64u Value);
+void   int128u2LittleEndian   (char* List, int128u Value);
+#endif
+void   float322LittleEndian   (char* List, float32 Value);
+void   float642LittleEndian   (char* List, float64 Value);
+void   float802LittleEndian   (char* List, float80 Value);
+
 #ifndef __BORLANDC__
 inline int8s  LittleEndian2int8s  (const int8u* List) {return LittleEndian2int8s  ((const char*)List);}
 inline int8u  LittleEndian2int8u  (const int8u* List) {return LittleEndian2int8u  ((const char*)List);}
@@ -85,11 +108,35 @@ inline int64u LittleEndian2int56u (const int8u* List) {return LittleEndian2int56
 inline int64s LittleEndian2int64s (const int8u* List) {return LittleEndian2int64s ((const char*)List);}
 inline int64u LittleEndian2int64u (const int8u* List) {return LittleEndian2int64u ((const char*)List);}
 inline int128u LittleEndian2int128u (const int8u* List) {return LittleEndian2int64u ((const char*)List);}
+#endif
 inline float32 LittleEndian2float32 (const int8u* List) {return LittleEndian2float32 ((const char*)List);}
 inline float64 LittleEndian2float64 (const int8u* List) {return LittleEndian2float64 ((const char*)List);}
 inline float80 LittleEndian2float80 (const int8u* List) {return LittleEndian2float80 ((const char*)List);}
+
+inline void   int8s2LittleEndian     (int8u* List, int8s  Value) {return int8s2LittleEndian    ((char*)List, Value);}
+inline void   int8u2LittleEndian     (int8u* List, int8u  Value) {return int8u2LittleEndian    ((char*)List, Value);}
+inline void   int16s2LittleEndian    (int8u* List, int16s Value) {return int16s2LittleEndian   ((char*)List, Value);}
+inline void   int16u2LittleEndian    (int8u* List, int16u Value) {return int16u2LittleEndian   ((char*)List, Value);}
+inline void   int24s2LittleEndian    (int8u* List, int32s Value) {return int24s2LittleEndian   ((char*)List, Value);}
+inline void   int24u2LittleEndian    (int8u* List, int32u Value) {return int24u2LittleEndian   ((char*)List, Value);}
+inline void   int32s2LittleEndian    (int8u* List, int32s Value) {return int32s2LittleEndian   ((char*)List, Value);}
+inline void   int32u2LittleEndian    (int8u* List, int32u Value) {return int32u2LittleEndian   ((char*)List, Value);}
+#if (MAXTYPE_INT >= 64)
+inline void   int40s2LittleEndian    (int8u* List, int64s Value) {return int40s2LittleEndian   ((char*)List, Value);}
+inline void   int40u2LittleEndian    (int8u* List, int64u Value) {return int40u2LittleEndian   ((char*)List, Value);}
+inline void   int48s2LittleEndian    (int8u* List, int64s Value) {return int48s2LittleEndian   ((char*)List, Value);}
+inline void   int48u2LittleEndian    (int8u* List, int64u Value) {return int48u2LittleEndian   ((char*)List, Value);}
+inline void   int56s2LittleEndian    (int8u* List, int64s Value) {return int56s2LittleEndian   ((char*)List, Value);}
+inline void   int56u2LittleEndian    (int8u* List, int64u Value) {return int56u2LittleEndian   ((char*)List, Value);}
+inline void   int64s2LittleEndian    (int8u* List, int64s Value) {return int64s2LittleEndian   ((char*)List, Value);}
+inline void   int64u2LittleEndian    (int8u* List, int64u Value) {return int64u2LittleEndian   ((char*)List, Value);}
+inline void   int128u2LittleEndian   (int8u* List, int128u Value) {return int128u2LittleEndian ((char*)List, Value);}
 #endif
+inline void   float322LittleEndian   (int8u* List, float32 Value) {return float322LittleEndian ((char*)List, Value);}
+inline void   float642LittleEndian   (int8u* List, float64 Value) {return float642LittleEndian ((char*)List, Value);}
+inline void   float802LittleEndian   (int8u* List, float80 Value) {return float802LittleEndian ((char*)List, Value);}
 #endif //__BORLANDC__
+
 //---------------------------------------------------------------------------
 //Big Endians
 int8s  BigEndian2int8s     (const char* List);

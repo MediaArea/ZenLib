@@ -236,6 +236,170 @@ float80 LittleEndian2float80(const char*)
 }
 
 //***************************************************************************
+// Transformations - Something to Little Endian
+//***************************************************************************
+
+//---------------------------------------------------------------------------
+// Little Endian - 8 bits
+void int8s2LittleEndian     (char* List, int8s Value)
+{
+    List[0]=(char)Value;
+}
+
+void int8u2LittleEndian     (char* List, int8u Value)
+{
+    List[0]=(char)Value;
+}
+
+//---------------------------------------------------------------------------
+// Little Endian - 16 bits
+void int16s2LittleEndian    (char* List, int16s Value)
+{
+    List[0]=(char) Value;
+    List[1]=(char)(Value>> 8);
+}
+
+void int16u2LittleEndian    (char* List, int16u Value)
+{
+    List[0]=(char) Value;
+    List[1]=(char)(Value>> 8);
+}
+
+//---------------------------------------------------------------------------
+// Little Endian - 24 bits
+void int24s2LittleEndian    (char* List, int32s Value)
+{
+    List[0]=(char) Value;
+    List[1]=(char)(Value>> 8);
+    List[2]=(char)(Value>>16);
+}
+
+void int24u2LittleEndian    (char* List, int32u Value)
+{
+    List[0]=(char) Value;
+    List[1]=(char)(Value>> 8);
+    List[2]=(char)(Value>>16);
+}
+
+//---------------------------------------------------------------------------
+// Little Endian - 32 bits
+void int32s2LittleEndian    (char* List, int32s Value)
+{
+    List[0]=(char) Value;
+    List[1]=(char)(Value>> 8);
+    List[2]=(char)(Value>>16);
+    List[3]=(char)(Value>>24);
+}
+
+void int32u2LittleEndian    (char* List, int32u Value)
+{
+    List[0]=(char) Value;
+    List[1]=(char)(Value>> 8);
+    List[2]=(char)(Value>>16);
+    List[3]=(char)(Value>>24);
+}
+
+//---------------------------------------------------------------------------
+// Little Endian - 40 bits
+void int40s2LittleEndian    (char* List, int64s Value)
+{
+    List[0]=(char) Value;
+    List[1]=(char)(Value>> 8);
+    List[2]=(char)(Value>>16);
+    List[3]=(char)(Value>>24);
+    List[4]=(char)(Value>>32);
+}
+
+void int40u2LittleEndian    (char* List, int64u Value)
+{
+    List[0]=(char) Value;
+    List[1]=(char)(Value>> 8);
+    List[2]=(char)(Value>>16);
+    List[3]=(char)(Value>>24);
+    List[4]=(char)(Value>>32);
+}
+
+//---------------------------------------------------------------------------
+// Little Endian - 48 bits
+void int48s2LittleEndian    (char* List, int64s Value)
+{
+    List[0]=(char) Value;
+    List[1]=(char)(Value>> 8);
+    List[2]=(char)(Value>>16);
+    List[3]=(char)(Value>>24);
+    List[4]=(char)(Value>>32);
+    List[5]=(char)(Value>>40);
+}
+
+void int48u2LittleEndian    (char* List, int64u Value)
+{
+    List[0]=(char) Value;
+    List[1]=(char)(Value>> 8);
+    List[2]=(char)(Value>>16);
+    List[3]=(char)(Value>>24);
+    List[4]=(char)(Value>>32);
+    List[5]=(char)(Value>>40);
+}
+
+//---------------------------------------------------------------------------
+// Little Endian - 56 bits
+void int56s2LittleEndian    (char* List, int64s Value)
+{
+    List[0]=(char) Value;
+    List[1]=(char)(Value>> 8);
+    List[2]=(char)(Value>>16);
+    List[3]=(char)(Value>>24);
+    List[4]=(char)(Value>>32);
+    List[5]=(char)(Value>>40);
+    List[6]=(char)(Value>>48);
+}
+
+void int56u2LittleEndian    (char* List, int64u Value)
+{
+    List[0]=(char) Value;
+    List[1]=(char)(Value>> 8);
+    List[2]=(char)(Value>>16);
+    List[3]=(char)(Value>>24);
+    List[4]=(char)(Value>>32);
+    List[5]=(char)(Value>>40);
+    List[6]=(char)(Value>>48);
+}
+
+//---------------------------------------------------------------------------
+// Little Endian - 64 bits
+void int64s2LittleEndian    (char* List, int64s Value)
+{
+    List[0]=(char) Value;
+    List[1]=(char)(Value>> 8);
+    List[2]=(char)(Value>>16);
+    List[3]=(char)(Value>>24);
+    List[4]=(char)(Value>>32);
+    List[5]=(char)(Value>>40);
+    List[6]=(char)(Value>>48);
+    List[7]=(char)(Value>>56);
+}
+
+void int64u2LittleEndian    (char* List, int64u Value)
+{
+    List[0]=(char) Value;
+    List[1]=(char)(Value>> 8);
+    List[2]=(char)(Value>>16);
+    List[3]=(char)(Value>>24);
+    List[4]=(char)(Value>>32);
+    List[5]=(char)(Value>>40);
+    List[6]=(char)(Value>>48);
+    List[7]=(char)(Value>>56);
+}
+
+//---------------------------------------------------------------------------
+// Little Endian - 128 bits
+void int128u2LittleEndian(char* List, int128u Value)
+{
+    int64u2LittleEndian(List+8, Value.lo);
+    int64u2LittleEndian(List  , Value.hi);
+}
+
+//***************************************************************************
 // Transformations - Big Endian to something
 //***************************************************************************
 

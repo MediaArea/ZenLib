@@ -175,7 +175,7 @@ ZtringList Dir::GetAllFileNames(const Ztring &Dir_Name_, dirlist_t Options)
                         if (Options&Parse_SubDirs)
                             ToReturn+=GetAllFileNames(File_Name_Complete, Options); //A SubDir
                     }
-                    else
+                    else if ((Options&Include_Hidden) || (!File_Name.empty() && File_Name[0]!=_T('.')))
                         ToReturn.push_back(File_Name_Complete); //A file
                 }
                 #ifdef UNICODE
@@ -231,7 +231,7 @@ ZtringList Dir::GetAllFileNames(const Ztring &Dir_Name_, dirlist_t Options)
                             if (Options&Parse_SubDirs)
                                 ToReturn+=GetAllFileNames(File_Name_Complete, Options); //A SubDir
                         }
-                        else
+                        else if ((Options&Include_Hidden) || (!File_Name.empty() && File_Name[0]!=_T('.')))
                             ToReturn.push_back(File_Name_Complete); //A file
                     }
                 }

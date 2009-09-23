@@ -1,5 +1,8 @@
 Version 0.4.6, 2009-
 -------------
++ File: ignoring hidden files
+x File, Open: const input
+x intxToLittleEndian
 x Correcting some warnings
 
 Version 0.4.5, 2009-09-05

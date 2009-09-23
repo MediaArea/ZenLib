@@ -70,14 +70,14 @@ public :
     ~File ();
 
     //Open/close
-    bool Open  (ZenLib::Ztring File_Name, access_t Access=Access_Read);
-    bool Create(ZenLib::Ztring File_Name, bool OverWrite=true);
+    bool Open  (const tstring &File_Name, access_t Access=Access_Read);
+    bool Create(const ZenLib::Ztring &File_Name, bool OverWrite=true);
     void Close ();
 
     //Read/Write
     size_t Read  (int8u* Buffer, size_t Buffer_Size);
     size_t Write (const int8u* Buffer, size_t Buffer_Size);
-    size_t Write (Ztring ToWrite);
+    size_t Write (const Ztring &ToWrite);
 
     //Moving
     bool GoTo (int64s Position, move_t MoveMethod=FromBegin);
