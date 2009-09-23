@@ -235,7 +235,7 @@ void ZtringList::Write(const Ztring &ToWrite)
         }
         else //Normal
         {
-            C1=ToWrite.SubString(string(), Separator[0], PosC, Ztring_AddLastItem);
+            C1=ToWrite.SubString(tstring(), Separator[0], PosC, Ztring_AddLastItem);
             PosC+=C1.size()+Separator[0].size();
         }
         C1.FindAndReplace(Quote+Quote, Quote, 0, Ztring_Recursive);
