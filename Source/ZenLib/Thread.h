@@ -29,7 +29,10 @@
 #define ZenLib_ThreadH
 //---------------------------------------------------------------------------
 #include "ZenLib/Conf.h"
-#undef Yield
+#include "ZenLib/CriticalSection.h"
+#ifdef _WINDOWS
+    #undef Yield
+#endif
 //---------------------------------------------------------------------------
 
 namespace ZenLib
@@ -44,23 +47,32 @@ class Thread
 public :
     //Constructor/Destructor
     Thread  ();
-    ~Thread ();
+    virtual ~Thread ();
 
     //Control
-    void    Run();
-    void    Pause();
-    void    Stop();
-    bool    IsRunning();
+    enum returnvalue
+    {
+        Ok,
+        IsNotRunning,
+    };
+    returnvalue Run();
+    returnvalue Pause();
+    returnvalue Terminate();
+    returnvalue Kill();
+
+    //Status
+    bool        IsRunning();
 
     //Configuration
-    void    Priority_Set(int8s Priority); //-100 to +100
+    void        Priority_Set(int8s Priority); //-100 to +100
 
     //Main Entry
     virtual void Entry();
 
+    //Internal
+    returnvalue Internal_Exit(); //Do not use it
+
 protected :
-    //Control
-    bool    WantToStop_Get();
 
     //Communicating
     void    Sleep(size_t Millisecond);
@@ -69,7 +81,18 @@ protected :
 private :
     //Internal
     void*   ThreadPointer;
-    bool    WantToStop;
+
+    //The possible states of the thread ("-->" shows all possible transitions from this state)
+    enum state
+    {
+        State_New,              // didn't start execution yet (--> Running)
+        State_Running,          // thread is running (=> Paused, Terminating)
+        State_Paused,           // thread is temporarily suspended (=> Running)
+        State_Terminating,      // thread should terminate a.s.a.p. (=> Exited)
+        State_Exited,           // thread is terminating
+    };
+    state State;
+    CriticalSection C;
 };
 
 } //NameSpace
