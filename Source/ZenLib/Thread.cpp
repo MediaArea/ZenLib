@@ -345,6 +345,10 @@ Thread::returnvalue Thread::Internal_Exit()
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 //---------------------------------------------------------------------------
+//Source: http://www.yolinux.com/TUTORIALS/LinuxTutorialPosixThreads.html
+//---------------------------------------------------------------------------
+
+//---------------------------------------------------------------------------
 #include <pthread.h>
 #include <unistd.h>
 #ifdef _POSIX_PRIORITY_SCHEDULING
@@ -417,6 +421,7 @@ Thread::returnvalue Thread::Run()
 
 Thread::returnvalue Thread::Pause()
 {
+    //pthread_cond_wait
     return Ok;
 }
 
