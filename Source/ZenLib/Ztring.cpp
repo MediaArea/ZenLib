@@ -985,13 +985,13 @@ Ztring& Ztring::Date_From_Seconds_1904 (const int64u Value)
 
         assign (ToReturn.c_str());
         */ //WxDateTime is buggy???
-        if (Value>=2082844800 && Value<2082844800+0x100000000LL) //Values <1970 and >2038 are not supported
+        if (Value>2082844800 && Value<2082844800+0x100000000LL) //Values <1970 and >2038 are not supported, 1970-01-01 00:00:00 is considered as not possible too
             Date_From_Seconds_1970((int32u)(Value-2082844800));
         else
             clear(); //Not supported
 
     #else //ZENLIB_USEWX
-        if (Value>=2082844800 && Value<2082844800+0x100000000LL) //Values <1970 and >2038 are not supported
+        if (Value>2082844800 && Value<2082844800+0x100000000LL) //Values <1970 and >2038 are not supported, 1970-01-01 00:00:00 is considered as not possible too
             Date_From_Seconds_1970((int32u)(Value-2082844800));
         else
             clear(); //Not supported
