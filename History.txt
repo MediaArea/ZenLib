@@ -1,4 +1,4 @@
-Version 0.4.6, 2009-
+Version 0.4.6, 2009-09-25
 -------------
 + File: ignoring hidden files
 + Ztring: To_CC4, To_UUID
