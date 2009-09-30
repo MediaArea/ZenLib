@@ -47,9 +47,10 @@ AC_ARG_ENABLE(gprof,            AC_HELP_STRING([--enable-gprof],            [Ena
 AC_ARG_ENABLE(universal_binary, AC_HELP_STRING([--enable-universal_binary], [Create Mac PPC/i386 Universal binary]),      , enable_universal_binary)
 AC_ARG_ENABLE(arch-ppc,         AC_HELP_STRING([--with-arch-ppc],           [Create Mac PPC Universal binary]),           , enable_arch_ppc=no)
 AC_ARG_ENABLE(arch-i386,        AC_HELP_STRING([--with-arch-i386],          [Create Mac i386 Universal binary]),          , enable_arch_i386=no)
-AC_ARG_ENABLE(unicode,      AC_HELP_STRING([--disable-unicode],     [Disable Unicode]),                         , enable_unicode=yes)
-AC_ARG_ENABLE(wstringmissing, AC_HELP_STRING([--enable-wstringmissing], [Disable wstring support (old compilers)]), , enable_wstringmissing=no)
-AC_ARG_ENABLE(large_files,  AC_HELP_STRING([--disable-large-files], [Disable Large files support]),             , enable_large_files=yes)
+AC_ARG_ENABLE(unicode,          AC_HELP_STRING([--disable-unicode],         [Disable unicode]),                           , enable_unicode=yes)
+AC_ARG_ENABLE(wstringmissing,   AC_HELP_STRING([--enable-wstringmissing],   [Disable wstring support (old compilers)]),   , enable_wstringmissing=no)
+AC_ARG_ENABLE(large_files,      AC_HELP_STRING([--disable-large-files],     [Disable large files support]),               , enable_large_files=yes)
+dnl AC_ARG_ENABLE(threads,          AC_HELP_STRING([--disable-threads],         [Disable threads support]),                   , enable_threads=yes)
 
 dnl -------------------------------------------------------------------------
 dnl With
@@ -264,6 +265,10 @@ if test "$enable_large_files" = "yes"; then
 else
 	ZenLib_LargeFiles="no"
 fi
+
+dnl -------------------------------------------------------------------------
+dnl Threads
+dnl
 
 dnl -------------------------------------------------------------------------
 dnl GNU compiler
