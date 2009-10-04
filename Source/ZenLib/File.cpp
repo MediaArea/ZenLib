@@ -487,6 +487,8 @@ int64u File::Size_Get()
             return Size;
         #elif defined WINDOWS
             DWORD High;DWORD Low=GetFileSize(File_Handle, &High);
+            if (Low==INVALID_FILE_SIZE && GetLastError()!=NO_ERROR)
+                return (int64u)-1;    
             Size=0x100000000ULL*High+Low;
             return Size;
         #endif
@@ -661,7 +663,7 @@ bool File::Opened_Get()
             //return File_Handle!=-1;
             return File_Handle!=NULL && ((fstream*)File_Handle)->is_open();
         #elif defined WINDOWS
-            return File_Handle!=NULL;
+            return File_Handle!=(void*)-1;
         #endif
     #endif //ZENLIB_USEWX
 }
