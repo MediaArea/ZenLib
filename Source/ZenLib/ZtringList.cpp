@@ -221,9 +221,14 @@ void ZtringList::Write(const Ztring &ToWrite)
             size_t Pos_End=PosC+1;
             while (Pos_End<ToWrite.size())
             {
-                if (ToWrite[Pos_End]==Quote[0] && (Pos_End+1>=ToWrite.size() || ToWrite[Pos_End+1]!=Quote[0]))
-                    break;
-                Pos_End++;
+                if (ToWrite[Pos_End]==Quote[0] && Pos_End+1<ToWrite.size() && ToWrite[Pos_End+1]==Quote[0])
+                    Pos_End+=2; //Double quote, skipping
+                else
+                {
+                    if (ToWrite[Pos_End]==Quote[0])
+                        break;
+                    Pos_End++;
+                }
             }
             C1=ToWrite.substr(PosC+Quote.size(), Pos_End-PosC);
             PosC+=C1.size()+Quote.size();
