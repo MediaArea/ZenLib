@@ -512,10 +512,14 @@ Ztring& Ztring::From_Local (const char* S, size_type Start, size_type Length)
 Ztring& Ztring::From_GUID (const int128u S)
 {
     Ztring S1;
-    S1.From_CC2((int16u)((S.hi&0xFFFF000000000000LL)>>48)); append(S1);
-    S1.From_CC2((int16u)((S.hi&0x0000FFFF00000000LL)>>32)); append(S1); append(_T("-"));
-    S1.From_CC2((int16u)((S.hi&0x00000000FFFF0000LL)>>16)); assign(S1); append(_T("-"));
-    S1.From_CC2((int16u)( S.hi&0x000000000000FFFFLL     )); append(S1); append(_T("-"));
+    S1.From_CC1((int8u) ((S.hi&0x000000FF00000000LL)>>32)); append(S1);
+    S1.From_CC1((int8u) ((S.hi&0x0000FF0000000000LL)>>40)); append(S1);
+    S1.From_CC1((int8u) ((S.hi&0x00FF000000000000LL)>>48)); append(S1);
+    S1.From_CC1((int8u) ((S.hi&0xFF00000000000000LL)>>56)); append(S1); append(_T("-"));
+    S1.From_CC1((int8u) ((S.hi&0x0000000000FF0000LL)>>16)); append(S1);
+    S1.From_CC1((int8u) ((S.hi&0x00000000FF000000LL)>>24)); append(S1); append(_T("-"));
+    S1.From_CC1((int8u) ( S.hi&0x00000000000000FFLL     )); append(S1);
+    S1.From_CC1((int8u) ((S.hi&0x000000000000FF00LL)>> 8)); append(S1); append(_T("-"));
     S1.From_CC2((int16u)((S.lo&0xFFFF000000000000LL)>>48)); append(S1); append(_T("-"));
     S1.From_CC2((int16u)((S.lo&0x0000FFFF00000000LL)>>32)); append(S1);
     S1.From_CC2((int16u)((S.lo&0x00000000FFFF0000LL)>>16)); append(S1);

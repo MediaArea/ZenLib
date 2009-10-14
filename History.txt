@@ -1,6 +1,7 @@
 Version 0.4.7, 2009-
 -------------
 + Better universal binary building (Mac OS X)
+x Ztring: GUID to string was wrong
 x Linux build script were a bit broken
 x File: file existence test was broken
 
