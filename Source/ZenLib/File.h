@@ -101,9 +101,10 @@ public :
     static bool             Delete(const Ztring &File_Name);
 
     //Temp
-    void*  File_Handle;
+    Ztring File_Name;
     int64u Position; //Position is saved, may be not good because position may change
     int64u Size; //Size is saved, may be not good because size may change
+    void*  File_Handle;
 };
 
 } //NameSpace

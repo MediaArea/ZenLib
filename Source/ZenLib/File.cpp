@@ -66,6 +66,7 @@
 #include "ZenLib/File.h"
 #include "ZenLib/OS_Utils.h"
 #include <map>
+#include <iostream>
 //---------------------------------------------------------------------------
 
 namespace ZenLib
@@ -102,8 +103,10 @@ File::~File()
 //***************************************************************************
 
 //---------------------------------------------------------------------------
-bool File::Open (const tstring &File_Name, access_t Access)
+bool File::Open (const tstring &File_Name_, access_t Access)
 {
+    File_Name=File_Name_;
+
     #ifdef ZENLIB_USEWX
         File_Handle=(void*)new wxFile();
         if (((wxFile*)File_Handle)->Open(File_Name.c_str(), (wxFile::OpenMode)Access)==0)
@@ -143,7 +146,7 @@ bool File::Open (const tstring &File_Name, access_t Access)
                 default                  :                           ; break;
             }
             #ifdef UNICODE
-                File_Handle=new fstream(Ztring(File_Name).To_Local().c_str(), mode);
+                File_Handle=new fstream(File_Name.To_Local().c_str(), mode);
             #else
                 File_Handle=new fstream(File_Name.c_str(), mode);
             #endif //UNICODE
@@ -165,7 +168,7 @@ bool File::Open (const tstring &File_Name, access_t Access)
 
             #ifdef UNICODE
                 if (IsWin9X())
-                    File_Handle=CreateFileA(Ztring(File_Name).To_Local().c_str(), dwDesiredAccess, dwShareMode, NULL, dwCreationDisposition, 0, NULL);
+                    File_Handle=CreateFileA(File_Name.To_Local().c_str(), dwDesiredAccess, dwShareMode, NULL, dwCreationDisposition, 0, NULL);
                 else
                     File_Handle=CreateFileW(File_Name.c_str(), dwDesiredAccess, dwShareMode, NULL, dwCreationDisposition, 0, NULL);
             #else
@@ -581,7 +584,6 @@ Ztring File::Modified_Get()
         if (File_Handle==NULL)
     #else //ZENLIB_USEWX
         #ifdef ZENLIB_STANDARD
-            //if (File_Handle==-1)
             if (File_Handle==NULL)
         #elif defined WINDOWS
             if (File_Handle==NULL)
@@ -593,7 +595,12 @@ Ztring File::Modified_Get()
         return _T(""); //Not implemented
     #else //ZENLIB_USEWX
         #ifdef ZENLIB_STANDARD
-            return _T(""); //Not implemented
+            struct stat Stat;
+            int Result=stat(File_Name.To_Local().c_str(), &Stat);
+            if (Result<0)
+                return _T(""); //Error
+            Ztring Time; Time.Date_From_Seconds_1970(Stat.st_mtime);
+            return Time;
         #elif defined WINDOWS
             FILETIME TimeFT;
             if (GetFileTime(File_Handle, NULL, NULL, &TimeFT))
@@ -627,7 +634,12 @@ Ztring File::Modified_Local_Get()
         return _T(""); //Not implemented
     #else //ZENLIB_USEWX
         #ifdef ZENLIB_STANDARD
-            return _T(""); //Not implemented
+            struct stat Stat;
+            int Result=stat(File_Name.To_Local().c_str(), &Stat);
+            if (Result<0)
+                return _T(""); //Error
+            Ztring Time; Time.Date_From_Seconds_1970_Local(Stat.st_mtime);
+            return Time;
         #elif defined WINDOWS
             FILETIME TimeFT;
             if (GetFileTime(File_Handle, NULL, NULL, &TimeFT))

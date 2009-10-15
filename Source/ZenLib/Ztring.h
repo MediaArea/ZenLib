@@ -194,6 +194,8 @@ public :
     Ztring& Date_From_Seconds_1904 (const int64u Seconds);
         /// @brief convert count of seconds since 1970 into a readable and sortable string
     Ztring& Date_From_Seconds_1970 (const int32u Seconds);
+        /// @brief convert count of seconds since 1970 into a readable and sortable string (in local time)
+    Ztring& Date_From_Seconds_1970_Local (const int32u Seconds);
         /// @brief convert a free formated string into a readable and sortable string
     Ztring& Date_From_String (const char* Date, size_type Value_Size=Error);
         /// @brief convert numbers into a readable and sortable string
