@@ -6,6 +6,7 @@ x ZtringListList: CSV write with quoted strings was wrong
 x Ztring: GUID to string was wrong
 x Linux build script were a bit broken
 x File: file existence test was broken
+x FindAndReplace was hanging up if ToFind is empty
 
 Version 0.4.6, 2009-09-25
 -------------

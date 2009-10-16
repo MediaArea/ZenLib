@@ -1814,14 +1814,17 @@ Ztring Ztring::SubString (const tstring &Begin, const tstring &End, size_type Po
 //FindAndReplace
 Ztring::size_type Ztring::FindAndReplace (const ZenLib::tstring &ToFind, const ZenLib::tstring &ReplaceBy, size_type Pos, ZenLib::ztring_t Options)
 {
-   size_type Count=0;
-   size_type Middle=Pos;
-   while (!(Count==1 && !(Options&Ztring_Recursive)) && (Middle=find(ToFind, Middle))!=npos)
-   {
-      replace(Middle, ToFind.length(), ReplaceBy);
-      Middle += ReplaceBy.length();
-      Count++;
-   }
+    if (ToFind.empty())
+        return 0;
+
+    size_type Count=0;
+    size_type Middle=Pos;
+    while (!(Count==1 && !(Options&Ztring_Recursive)) && (Middle=find(ToFind, Middle))!=npos)
+    {
+        replace(Middle, ToFind.length(), ReplaceBy);
+        Middle += ReplaceBy.length();
+        Count++;
+    }
 
     return Count;
 }
