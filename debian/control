@@ -5,6 +5,8 @@ Build-Depends: debhelper (>= 5), doxygen, tofrodos, automake, autoconf, libtool
 Standards-Version: 3.7.3
 Section: libs
 Homepage: http://mediainfo.sourceforge.net
+Vcs-Svn: https://zenlib.svn.sourceforge.net/svnroot/zenlib/ZenLib/
+Vcs-Browser: http://zenlib.svn.sourceforge.net/viewvc/zenlib/ZenLib/
 
 Package: libzen0-dev
 Section: libdevel
