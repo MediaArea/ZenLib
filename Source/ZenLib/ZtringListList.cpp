@@ -332,7 +332,11 @@ void ZtringListList::Write(const Ztring &ToWrite)
                     C1=ToWrite.substr(PosC, Pos_End-PosC); 
                     break;
                 }
-                Pos_End++;
+                
+                if (InQuotes && Pos_End+Quote.size()*2<ToWrite.size() && ToWrite[Pos_End]==Quote[0] && ToWrite[Pos_End+1]==Quote[0])
+                    Pos_End+=2;
+                else
+                    Pos_End++;
             }
         }
         if (Pos_End>=ToWrite.size())

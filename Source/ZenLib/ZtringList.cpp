@@ -164,7 +164,7 @@ Ztring ZtringList::Read () const
         return _T("");
 
     Ztring Retour;
-    Ztring ToFind=Separator[0]+_T("\r\n");
+    Ztring ToFind=Separator[0]+Quote[0]+_T("\r\n");
     for (size_type Pos=0; Pos<size(); Pos++)
     {
         if (operator[](Pos).find_first_of(ToFind)==std::string::npos)
