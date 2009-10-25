@@ -85,8 +85,31 @@ std::string URL_Encoded_Encode (const std::string& URL)
     for (Pos=0; Pos<URL.size(); Pos++)
     {
         if ((URL[Pos]>='\x00' && URL[Pos]<='\x20')
-         || URL[Pos]==','
-         || URL[Pos]==';')
+         || URL[Pos]=='\0x7F'
+         || URL[Pos]==' '
+         || URL[Pos]=='<'
+         || URL[Pos]=='>'
+         || URL[Pos]=='#'
+         || URL[Pos]=='%'
+         || URL[Pos]=='\"'
+         || URL[Pos]=='{'
+         || URL[Pos]=='}'
+         || URL[Pos]=='|'
+         || URL[Pos]=='\\'
+         || URL[Pos]=='^'
+         || URL[Pos]=='['
+         || URL[Pos]==']'
+         || URL[Pos]=='`'
+         /*|| URL[Pos]==';'
+         || URL[Pos]=='/'
+         || URL[Pos]=='?'
+         || URL[Pos]==':'
+         || URL[Pos]=='@'
+         || URL[Pos]=='&'
+         || URL[Pos]=='='
+         || URL[Pos]=='+'
+         || URL[Pos]=='$'
+         || URL[Pos]==','*/)
             Result+='%'+Hex2Char(URL[Pos]);
         else
             Result+=URL[Pos];
