@@ -66,7 +66,6 @@
 #include "ZenLib/File.h"
 #include "ZenLib/OS_Utils.h"
 #include <map>
-#include <iostream>
 //---------------------------------------------------------------------------
 
 namespace ZenLib
@@ -336,7 +335,7 @@ size_t File::Read (int8u* Buffer, size_t Buffer_Size_Max)
                 Position_Get();
             if (Size==(int64u)-1)
                 Size_Get();
-            if (Position+Buffer_Size_Max>Size)
+            if (Position!=(int64u)-1 && Position+Buffer_Size_Max>Size)
                 Buffer_Size_Max=(size_t)(Size-Position); //We don't want to enable eofbit (impossible to seek after)
             ((fstream*)File_Handle)->read((char*)Buffer, Buffer_Size_Max);
             size_t ByteRead=((fstream*)File_Handle)->gcount();
@@ -484,9 +483,14 @@ int64u File::Size_Get()
             lseek(File_Handle, CurrentPos, SEEK_SET);
             */
             streampos CurrentPos=((fstream*)File_Handle)->tellg();
-            ((fstream*)File_Handle)->seekg(0, ios_base::end);
-            Size=((fstream*)File_Handle)->tellg();
-            ((fstream*)File_Handle)->seekg(CurrentPos, ios_base::beg);
+            if (CurrentPos!=(streampos)-1)
+            {
+                ((fstream*)File_Handle)->seekg(0, ios_base::end);
+                Size=((fstream*)File_Handle)->tellg();
+                ((fstream*)File_Handle)->seekg(CurrentPos, ios_base::beg);
+            }
+            else
+                Size=(int64u)-1;
             return Size;
         #elif defined WINDOWS
             DWORD High;DWORD Low=GetFileSize(File_Handle, &High);
