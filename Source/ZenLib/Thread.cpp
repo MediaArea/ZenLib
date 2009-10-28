@@ -200,8 +200,42 @@ THREAD_RETVAL THREAD_CALLCONV Thread_Start(void *param)
 //---------------------------------------------------------------------------
 Thread::Thread()
 {
-    State=State_New;
+    C.Enter();
 
+    State=State_New;
+    ThreadPointer=NULL;
+
+    C.Leave();
+}
+
+//---------------------------------------------------------------------------
+Thread::~Thread()
+{
+    C.Enter();
+
+    if (ThreadPointer!=NULL)
+        CloseHandle((HANDLE)ThreadPointer); //ThreadPointer=NULL
+
+    C.Leave();
+}
+
+//***************************************************************************
+// Control
+//***************************************************************************
+
+//---------------------------------------------------------------------------
+Thread::returnvalue Thread::Run()
+{
+    C.Enter();
+
+    //Coherency
+    if (State!=State_New || ThreadPointer!=NULL)
+    {
+        C.Leave();
+        return Incoherent;
+    }
+
+    //Creating
     #ifdef USING_BEGINTHREAD
         #ifdef __WATCOMC__
             const unsigned stksize=10240; //Watcom is reported to not like 0 stack size (which means "use default")
@@ -213,51 +247,73 @@ Thread::Thread()
     #else
         ThreadPointer=(void*)CreateThread   (NULL,       0, Thread_Start, this, CREATE_SUSPENDED, NULL);
     #endif //USING_BEGINTHREAD
-}
+    if (ThreadPointer==NULL)
+    {
+        C.Leave();
+        return Ressource;
+    }
 
-//---------------------------------------------------------------------------
-Thread::~Thread()
-{
-    CloseHandle((HANDLE)ThreadPointer);
-}
-
-//***************************************************************************
-// Control
-//***************************************************************************
-
-//---------------------------------------------------------------------------
-Thread::returnvalue Thread::Run()
-{
+    //Running
     ResumeThread((HANDLE)ThreadPointer);
 
-    C.Enter();
+    //Configuring
     State=State_Running;
+
     C.Leave();
     return Ok;
+}
+
+//---------------------------------------------------------------------------
+Thread::returnvalue Thread::RunAgain()
+{
+    //Coherency
+    C.Enter();
+
+    //Coherency
+    if (State!=State_New
+     && State!=State_Terminated)
+    {
+        C.Leave();
+        return Incoherent;
+    }
+
+    //Configuring
+    if (State==State_Terminated)
+        State=State_New;
+
+    C.Leave();
+
+    return Run();
 }
 
 //---------------------------------------------------------------------------
 Thread::returnvalue Thread::Pause()
 {
+    C.Enter();
+
+    //Pausing
     SuspendThread((HANDLE)ThreadPointer);
 
-    C.Enter();
+    //Configuring
     State=State_Paused;
+
     C.Leave();
     return Ok;
 }
 
 //---------------------------------------------------------------------------
-Thread::returnvalue Thread::Terminate()
+Thread::returnvalue Thread::RequestTerminate()
 {
     C.Enter();
 
+    //Coherency
     if (State!=State_Running)
     {
         C.Leave();
         return IsNotRunning;
     }
 
+    //Configuring
     State=State_Terminating;
 
     C.Leave();
@@ -265,12 +321,16 @@ Thread::returnvalue Thread::Terminate()
 }
 
 //---------------------------------------------------------------------------
-Thread::returnvalue Thread::Kill()
+Thread::returnvalue Thread::ForceTerminate()
 {
-    //TerminateThread((HANDLE)ThreadPointer, 1);
-
     C.Enter();
-    State=State_Exited;
+
+    //Terminating (not clean)
+    TerminateThread((HANDLE)ThreadPointer, 1); ThreadPointer=NULL;
+
+    //Configuring
+    State=State_Terminated;
+
     C.Leave();
     return Ok;
 }
@@ -283,6 +343,24 @@ bool Thread::IsRunning()
 {
     C.Enter();
     bool ToReturn=State==State_Running;
+    C.Leave();
+    return ToReturn;
+}
+
+//---------------------------------------------------------------------------
+bool Thread::IsTerminating()
+{
+    C.Enter();
+    bool ToReturn=State==State_Terminating;
+    C.Leave();
+    return ToReturn;
+}
+
+//---------------------------------------------------------------------------
+bool Thread::IsExited()
+{
+    C.Enter();
+    bool ToReturn=State==State_New || State==State_Terminating;
     C.Leave();
     return ToReturn;
 }
@@ -320,6 +398,7 @@ Thread::returnvalue Thread::Internal_Exit()
 {
     C.Enter();
 
+    //Coherency
     if (State!=State_Running
      && State!=State_Terminating)
     {
@@ -327,7 +406,11 @@ Thread::returnvalue Thread::Internal_Exit()
         return IsNotRunning;
     }
 
-    State=State_Exited;
+    //Closing old handle
+    CloseHandle((HANDLE)ThreadPointer); ThreadPointer=NULL;
+
+    //Configuring
+    State=State_Terminated;
 
     C.Leave();
     return Ok;
@@ -375,16 +458,18 @@ void *Thread_Start(void *param)
 //---------------------------------------------------------------------------
 Thread::Thread()
 {
-    ThreadPointer=NULL;
+    C.Enter();
 
     State=State_New;
+    ThreadPointer=NULL;
+
+    C.Leave();
+
 }
 
 //---------------------------------------------------------------------------
 Thread::~Thread()
 {
-    Terminate();
-    Kill();
 }
 
 //***************************************************************************
@@ -401,22 +486,50 @@ void Thread::Entry()
 
 Thread::returnvalue Thread::Run()
 {
-    if (ThreadPointer==NULL)
+    C.Enter();
+
+    //Coherency
+    if (State!=State_New || ThreadPointer!=NULL)
     {
-        //Configuration
-        pthread_attr_t Attr;
-        pthread_attr_init(&Attr);
-
-        pthread_attr_setdetachstate(&Attr, PTHREAD_CREATE_DETACHED);
-
-        pthread_create((pthread_t*)&ThreadPointer, &Attr, Thread_Start, (void*)this);
-
-        C.Enter();
-        State=State_Running;
         C.Leave();
+        return Incoherent;
     }
 
+    //Creating
+    pthread_attr_t Attr;
+    pthread_attr_init(&Attr);
+    pthread_attr_setdetachstate(&Attr, PTHREAD_CREATE_DETACHED);
+    
+    //Running
+    pthread_create((pthread_t*)&ThreadPointer, &Attr, Thread_Start, (void*)this);
+
+    //Configuring
+    State=State_Running;
+
+    C.Leave();
     return Ok;
+}
+
+Thread::returnvalue Thread::RunAgain()
+{
+    //Coherency
+    C.Enter();
+
+    //Coherency
+    if (State!=State_New
+     && State!=State_Terminated)
+    {
+        C.Leave();
+        return Incoherent;
+    }
+
+    //Configuring
+    if (State==State_Terminated)
+        State=State_New;
+
+    C.Leave();
+
+    return Run();
 }
 
 Thread::returnvalue Thread::Pause()
@@ -425,7 +538,7 @@ Thread::returnvalue Thread::Pause()
     return Ok;
 }
 
-Thread::returnvalue Thread::Terminate()
+Thread::returnvalue Thread::RequestTerminate()
 {
     C.Enter();
 
@@ -441,8 +554,13 @@ Thread::returnvalue Thread::Terminate()
     return Ok;
 }
 
-Thread::returnvalue Thread::Kill()
+Thread::returnvalue Thread::ForceTerminate()
 {
+    //Terminating (not clean)
+
+    //Configuring
+    State=State_Terminated;
+
     return Ok;
 }
 
@@ -450,10 +568,29 @@ Thread::returnvalue Thread::Kill()
 // Status
 //***************************************************************************
 
+//---------------------------------------------------------------------------
 bool Thread::IsRunning()
 {
     C.Enter();
     bool ToReturn=State==State_Running;
+    C.Leave();
+    return ToReturn;
+}
+
+//---------------------------------------------------------------------------
+bool Thread::IsTerminating()
+{
+    C.Enter();
+    bool ToReturn=State==State_Terminating;
+    C.Leave();
+    return ToReturn;
+}
+
+//---------------------------------------------------------------------------
+bool Thread::IsExited()
+{
+    C.Enter();
+    bool ToReturn=State==State_New || State==State_Terminating;
     C.Leave();
     return ToReturn;
 }
@@ -481,6 +618,7 @@ Thread::returnvalue Thread::Internal_Exit()
 {
     C.Enter();
 
+    //Coherency
     if (State!=State_Running
      && State!=State_Terminating)
     {
@@ -488,7 +626,11 @@ Thread::returnvalue Thread::Internal_Exit()
         return IsNotRunning;
     }
 
-    State=State_Exited;
+    //Closing old handle
+    ; ThreadPointer=NULL;
+
+    //Configuring
+    State=State_Terminated;
 
     C.Leave();
     return Ok;

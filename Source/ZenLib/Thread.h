@@ -54,14 +54,19 @@ public :
     {
         Ok,
         IsNotRunning,
+        Incoherent,
+        Ressource,
     };
     returnvalue Run();
+    returnvalue RunAgain();
     returnvalue Pause();
-    returnvalue Terminate();
-    returnvalue Kill();
+    returnvalue RequestTerminate();
+    returnvalue ForceTerminate();
 
     //Status
     bool        IsRunning();
+    bool        IsTerminating();
+    bool        IsExited();
 
     //Configuration
     void        Priority_Set(int8s Priority); //-100 to +100
@@ -86,10 +91,10 @@ private :
     enum state
     {
         State_New,              // didn't start execution yet (--> Running)
-        State_Running,          // thread is running (=> Paused, Terminating)
-        State_Paused,           // thread is temporarily suspended (=> Running)
-        State_Terminating,      // thread should terminate a.s.a.p. (=> Exited)
-        State_Exited,           // thread is terminating
+        State_Running,          // thread is running (--> Paused, Terminating)
+        State_Paused,           // thread is temporarily suspended (--> Running)
+        State_Terminating,      // thread should terminate a.s.a.p. (--> Terminated)
+        State_Terminated,       // thread is terminated
     };
     state State;
     CriticalSection C;

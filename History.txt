@@ -1,5 +1,6 @@
 Version 0.4.8, 2009-
 -------------
++ Thread: reorganization, better support
 x File: Support of non-seekable files
 x ZtringListList: CSV write with quoted strings was wrong (again)
 
