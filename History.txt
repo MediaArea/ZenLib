@@ -1,4 +1,4 @@
-Version 0.4.8, 2009-
+Version 0.4.8, 2009-10-30
 -------------
 + Thread: reorganization, better support
 x File: Support of non-seekable files
