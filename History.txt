@@ -1,3 +1,7 @@
+Version 0.4.9, 2009
+-------------
++ File: bug in Open()
+
 Version 0.4.8, 2009-10-30
 -------------
 + Thread: reorganization, better support
