@@ -6,31 +6,31 @@
 
 # norootforbuild
 
-%define _prefix	/usr
-%define _SO_nr	0
+%define libzen_version			0.4.8
 
-Name:			libzen%{_SO_nr}
-Version:		0.4.8
+Name:			libzen0
+Version:		%libzen_version
 Release:		1
-Summary:		Shared library for libmediainfo and medianfo-*
+Summary:		Shared library for libmediainfo and medianfo*
 Group:			System/Libraries
 License:		BSD
 URL:			http://zenlib.sourceforge.net/
+Packager:		Jerome Martinez <zen@mediaarea.net>
 Source:			libzen_%{version}-1.tar.gz
 BuildRoot:		%{_tmppath}/%{name}-%{version}-%{release}-root
-BuildRequires:		dos2unix
-BuildRequires:		doxygen
-BuildRequires:		gcc-c++
+BuildRequires:	dos2unix
+BuildRequires:	doxygen
+BuildRequires:	gcc-c++
 
 %description
 Shared library for libmediainfo and medianfo-*.
 
-%package -n libzen%{_SO_nr}-devel
+%package -n libzen0-devel
 Summary:	Include files and mandatory libraries for development
 Group:		Development/Libraries/C and C++
-Requires:	libzen%{_SO_nr} = %{version}
+Requires:	libzen0 = %{version}
 
-%description -n libzen%{_SO_nr}-devel
+%description -n libzen0-devel
 Include files and mandatory libraries for development.
 
 %prep
@@ -81,16 +81,16 @@ done
 %clean
 [ -d "%{buildroot}" -a "%{buildroot}" != "" ] && %__rm -rf "%{buildroot}"
 
-%post -n libzen%{_SO_nr} -p /sbin/ldconfig
+%post -n libzen0 -p /sbin/ldconfig
 
-%postun -n libzen%{_SO_nr} -p /sbin/ldconfig
+%postun -n libzen0 -p /sbin/ldconfig
 
 %files
 %defattr(-,root,root,-)
 %doc History.txt License.txt ReadMe.txt
 %{_libdir}/libzen.so.*
 
-%files -n libzen%{_SO_nr}-devel
+%files -n libzen0-devel
 %defattr(-,root,root,-)
 %doc Documentation.html
 %doc Doc/*
