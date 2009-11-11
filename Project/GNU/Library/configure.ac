@@ -83,7 +83,7 @@ WxBuiltInCompile()
 	if test -e ../../../../Shared/Project/WxWidgets/Compile.sh; then
 		cd ../../../../Shared/Project/WxWidgets
 		chmod u+x Compile.sh
-		./Compile.sh --enable-unicode=$enable_unicode --enable-static=yes --enable-gui=$with_wx_gui --host=$host
+		./Compile.sh --enable-unicode=$enable_unicode --enable-static=yes --enable-gui=$with_wx_gui --build=$build
 		cd $Home
 		if test -e ../../../../Shared/Source/WxWidgets/Compile/wx-config; then
 			if test "x$(../../../../Shared/Source/WxWidgets/Compile/wx-config --unicode=$enable_unicode --version)" = "x"; then
@@ -166,7 +166,7 @@ dnl ### Compiler specific
 dnl #########################################################################
 
 dnl -------------------------------------------------------------------------
-case "${host}" in
+case "${build}" in
   powerpc-montavista* )
     CFLAGS="$CFLAGS -D__MONTAVISTA__"
     CXXFLAGS="$CXXFLAGS -D__MONTAVISTA__"
@@ -326,7 +326,7 @@ dnl ### Report how we have been configured
 dnl #########################################################################
 
 echo ""
-echo "Configured ZenLib for '$host'"
+echo "Configured ZenLib for '$build'"
 echo ""
 echo "  Unicode?                                                $enable_unicode"
 echo "  wstring missing support?                                $ZenLib_WstringMissing"
