@@ -32,7 +32,6 @@
     #include <wx/filename.h>
     #include <wx/utils.h>
     #include <wx/dir.h>
-    #include <glob.h>
 #else //ZENLIB_USEWX
     #ifdef ZENLIB_STANDARD
         #undef WINDOWS
@@ -45,6 +44,7 @@
         #include <sys/types.h>
         #undef __TEXT //dirent include windows.h on Windows/Borland
         #include <dirent.h>
+        #include <glob.h>
     #endif
 #endif //ZENLIB_USEWX
 #include "ZenLib/Dir.h"
