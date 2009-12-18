@@ -125,7 +125,7 @@ bool Ztring::Assign_FromFile (const Ztring &FileName)
     Buffer[Buffer_Offset]='\0';
 
     //Filling
-    assign((const char*)Buffer);
+    assign((const Char*)Buffer);
     delete[] Buffer;
 
     return true;
