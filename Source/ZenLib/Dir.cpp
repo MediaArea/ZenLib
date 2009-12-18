@@ -32,6 +32,7 @@
     #include <wx/filename.h>
     #include <wx/utils.h>
     #include <wx/dir.h>
+    #include <glob.h>
 #else //ZENLIB_USEWX
     #ifdef ZENLIB_STANDARD
         #undef WINDOWS
@@ -239,6 +240,15 @@ ZtringList Dir::GetAllFileNames(const Ztring &Dir_Name_, dirlist_t Options)
                 //Close it
                 closedir(Dir);
             }
+            else
+            {
+                glob_t globbuf;
+                if (glob(Dir_Name.c_str(), GLOB_NOSORT, NULL, &globbuf)==0)
+                {
+                    for (int Pos=0; Pos<globbuf.gl_pathc; Pos++)
+                        ToReturn.push_back(globbuf.gl_pathv[Pos]);
+                }
+            }
         #endif
     #endif //ZENLIB_USEWX
 
@@ -296,8 +306,8 @@ bool Dir::Create(const Ztring &File_Name)
                 return CreateDirectory(File_Name.c_str(), NULL)!=0;
             #endif //UNICODE
         #else //WINDOWS
-            return false;
-        #endif
+            return mkdir(File_Name.To_Local().c_str(), 0700)==0;
+        #endif //WINDOWS
     #endif //ZENLIB_USEWX
 }
 
