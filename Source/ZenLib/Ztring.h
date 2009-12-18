@@ -81,6 +81,9 @@ public :
         ///Same as [], but resize the string if Pos doesn't exist yet
     Char &operator () (size_type Pos);
 
+    //Assign
+    bool Assign_FromFile (const Ztring &FileName);
+
     //Conversions - From
     #ifndef WSTRING_MISSING
         /// @brief convert an Unicode encoded string into Ztring

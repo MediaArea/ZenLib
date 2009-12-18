@@ -60,6 +60,7 @@
 #include <cmath>
 #include "ZenLib/Ztring.h"
 #include "ZenLib/OS_Utils.h"
+#include "ZenLib/File.h"
 using namespace std;
 //---------------------------------------------------------------------------
 
@@ -92,6 +93,42 @@ Char &Ztring::operator() (size_type Pos)
     if (Pos>size())
         resize(Pos);
     return operator[] (Pos);
+}
+
+//***************************************************************************
+// Assign
+//***************************************************************************
+
+bool Ztring::Assign_FromFile (const Ztring &FileName)
+{
+    File F;
+    if (!F.Open(FileName))
+        return false;
+    int64u F_Size=F.Size_Get();
+    if (F_Size>((size_t)-1)-1)
+        return false;
+
+    //Creating buffer
+    int8u* Buffer=new int8u[(size_t)F_Size+1];
+    size_t Buffer_Offset=0;
+
+    //Reading the file
+    while(Buffer_Offset<F_Size)
+    {
+        size_t BytesRead=F.Read(Buffer+Buffer_Offset, (size_t)F_Size-Buffer_Offset);
+        if (BytesRead==0)
+            break; //Read is finished
+        Buffer_Offset+=BytesRead;
+    }
+    if (Buffer_Offset<F_Size)
+        return false;
+    Buffer[Buffer_Offset]='\0';
+
+    //Filling
+    assign((const char*)Buffer);
+    delete[] Buffer;
+
+    return true;
 }
 
 //***************************************************************************
@@ -1309,44 +1346,39 @@ std::string Ztring::To_Local () const
 //---------------------------------------------------------------------------
 int128u Ztring::To_UUID () const
 {
-    if (size()!=36
-     || at( 0)< _T('0') || at( 0)> _T('9')
-     || at( 1)< _T('0') || at( 1)> _T('9')
-     || at( 2)< _T('0') || at( 2)> _T('9')
-     || at( 3)< _T('0') || at( 3)> _T('9')
-     || at( 4)< _T('0') || at( 4)> _T('9')
-     || at( 5)< _T('0') || at( 5)> _T('9')
-     || at( 6)< _T('0') || at( 6)> _T('9')
-     || at( 7)< _T('0') || at( 7)> _T('9')
-     || at( 8)!=_T('-')
-     || at( 9)< _T('0') || at( 9)> _T('9')
-     || at(10)< _T('0') || at(10)> _T('9')
-     || at(11)< _T('0') || at(11)> _T('9')
-     || at(12)< _T('0') || at(12)> _T('9')
-     || at(13)!=_T('-')
-     || at(14)< _T('0') || at(14)> _T('9')
-     || at(15)< _T('0') || at(15)> _T('9')
-     || at(16)< _T('0') || at(16)> _T('9')
-     || at(17)< _T('0') || at(17)> _T('9')
-     || at(18)!=_T('-')
-     || at(19)< _T('0') || at(19)> _T('9')
-     || at(20)< _T('0') || at(20)> _T('9')
-     || at(21)< _T('0') || at(21)> _T('9')
-     || at(22)< _T('0') || at(22)> _T('9')
-     || at(23)!=_T('-')
-     || at(24)< _T('0') || at(24)> _T('9')
-     || at(25)< _T('0') || at(25)> _T('9')
-     || at(26)< _T('0') || at(26)> _T('9')
-     || at(27)< _T('0') || at(27)> _T('9')
-     || at(28)< _T('0') || at(28)> _T('9')
-     || at(29)< _T('0') || at(29)> _T('9')
-     || at(30)< _T('0') || at(30)> _T('9')
-     || at(31)< _T('0') || at(31)> _T('9')
-     || at(32)< _T('0') || at(32)> _T('9')
-     || at(33)< _T('0') || at(33)> _T('9')
-     || at(34)< _T('0') || at(34)> _T('9')
-     || at(35)< _T('0') || at(35)> _T('9'))
+    if (size()!=36)
         return 0;
+
+    Ztring Temp=*this;
+
+    for (size_t Pos=0; Pos<36; Pos++)
+    {
+        if ((Temp[Pos]< _T('0') || Temp[Pos]> _T('9'))
+         && (Temp[Pos]< _T('A') || Temp[Pos]> _T('F'))
+         && (Temp[Pos]< _T('a') || Temp[Pos]> _T('f')))
+            return 0;
+        if (Temp[Pos]>=_T('A') && Temp[Pos]<=_T('F'))
+        {
+            Temp[Pos]-=_T('A');
+            Temp[Pos]-=_T('9')+1;
+        }
+        if (Temp[Pos]>=_T('a') && Temp[Pos]<=_T('f'))
+        {
+            Temp[Pos]-=_T('a');
+            Temp[Pos]-=_T('9')+1;
+        }
+
+        switch(Pos)
+        {
+            case  7 :
+            case 12 :
+            case 17 :
+            case 22 :
+                        if (at(Pos+1)!=_T('-'))
+                            return 0;
+                        Pos++; //Skipping dash in the test
+        }
+    }
     
     int128u I;
     I.hi=((int64u)((int8u)(at( 0)-'0'))<<60)
