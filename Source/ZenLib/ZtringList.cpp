@@ -169,6 +169,11 @@ Ztring ZtringList::Read () const
     {
         if (operator[](Pos).find_first_of(ToFind)==std::string::npos)
             Retour+=operator[](Pos)+Separator[0];
+        else if (operator[](Pos).find(Separator[0])==std::string::npos
+              && operator[](Pos).find(Quote)==std::string::npos
+              && operator[](Pos).find('\r')==std::string::npos
+              && operator[](Pos).find('\n')==std::string::npos)
+            Retour+=operator[](Pos)+Separator[0];
         else
         {
             if (operator[](Pos).find(Quote)==std::string::npos)
