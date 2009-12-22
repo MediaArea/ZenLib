@@ -142,8 +142,12 @@ bool File::Open (const tstring &File_Name_, access_t Access)
                 case Access_Read         : mode=ios_base::binary|ios_base::in; break;
                 case Access_Write        : mode=ios_base::binary|ios_base::out; break;
                 case Access_Read_Write   : mode=ios_base::binary|ios_base::in|ios_base::out; break;
-                case Access_Write_Append : mode=ios_base::binary|ios_base::in|ios_base::app; break; //Fail with Linux
-                default                  : break;
+                case Access_Write_Append : if (!Exists(File_Name))
+                                                mode=ios_base::binary|ios_base::out;
+                                           else
+                                                mode=ios_base::binary|ios_base::out|ios_base::app;
+                                           break;
+                default                  : ;
             }
             #ifdef UNICODE
                 File_Handle=new fstream(File_Name.To_Local().c_str(), mode);

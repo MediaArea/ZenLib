@@ -3,6 +3,7 @@ Version 0.4.10,
 + Ztring: From a file
 x UUID: better validation
 x ZtringList: better handling of CSV import
+x File: Write append on Linux/Mac
 x File: No read/write on Linux/Mac
 x Dir: No dir test and creation on Mac/Linux
 
