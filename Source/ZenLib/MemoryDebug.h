@@ -1,5 +1,5 @@
 // ZenLib::MemoryDebug - To debug memory leaks
-// Copyright (C) 2002-2009 Jerome Martinez, Zen@MediaArea.net
+// Copyright (C) 2002-2010 MediaArea.net SARL, Info@MediaArea.net
 //
 // This software is provided 'as-is', without any express or implied
 // warranty.  In no event will the authors be held liable for any damages
@@ -25,12 +25,6 @@
 // Provide "new" and "delete" overloadings to be able to detect memory leaks
 // Based on http://loulou.developpez.com/tutoriels/moteur3d/partie1/ 2.2.1
 //
-//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-//
-// 2005-08-18, Zen@MediaArea.net
-// First version
-//
-//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 //---------------------------------------------------------------------------

@@ -1,0 +1,48 @@
+﻿	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+		<PropertyGroup>
+			<ProjectGuid>{6207A6E9-41E0-4B6C-9AF6-FC5260D43FE5}</ProjectGuid>
+		</PropertyGroup>
+		<ItemGroup>
+			<Projects Include="Library\ZenLib.cbproj">
+				<Dependencies/>
+			</Projects>
+			<Projects Include="Example\ZenLib_Test.cbproj">
+				<Dependencies/>
+			</Projects>
+		</ItemGroup>
+		<ProjectExtensions>
+			<Borland.Personality>Default.Personality.12</Borland.Personality>
+			<Borland.ProjectType/>
+			<BorlandProject>
+				<Default.Personality/>
+			</BorlandProject>
+		</ProjectExtensions>
+		<Target Name="ZenLib">
+			<MSBuild Projects="Library\ZenLib.cbproj"/>
+		</Target>
+		<Target Name="ZenLib:Clean">
+			<MSBuild Targets="Clean" Projects="Library\ZenLib.cbproj"/>
+		</Target>
+		<Target Name="ZenLib:Make">
+			<MSBuild Targets="Make" Projects="Library\ZenLib.cbproj"/>
+		</Target>
+		<Target Name="ZenLib_Test">
+			<MSBuild Projects="Example\ZenLib_Test.cbproj"/>
+		</Target>
+		<Target Name="ZenLib_Test:Clean">
+			<MSBuild Targets="Clean" Projects="Example\ZenLib_Test.cbproj"/>
+		</Target>
+		<Target Name="ZenLib_Test:Make">
+			<MSBuild Targets="Make" Projects="Example\ZenLib_Test.cbproj"/>
+		</Target>
+		<Target Name="Build">
+			<CallTarget Targets="ZenLib;ZenLib_Test"/>
+		</Target>
+		<Target Name="Clean">
+			<CallTarget Targets="ZenLib:Clean;ZenLib_Test:Clean"/>
+		</Target>
+		<Target Name="Make">
+			<CallTarget Targets="ZenLib:Make;ZenLib_Test:Make"/>
+		</Target>
+		<Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+	</Project>

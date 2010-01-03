@@ -17,7 +17,7 @@ cd ..\..\Release
 
 @rem GCC ---
 cd ..\Project\GCC
-Ccall leanUp
+call CleanUp
 cd ..\..\Release
 
 @rem MS Visual Studio ---
