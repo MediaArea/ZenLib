@@ -188,6 +188,8 @@ public :
         /// @brief convert number (BCD coded) into Ztring
     Ztring& From_BCD     (const int8u);
         /// @brief convert count of milliseconds into a readable and sortable string
+    Ztring& Duration_From_Milliseconds (const int64s Milliseconds);
+        /// @deprecated replaced by the int64s version
     Ztring& Duration_From_Milliseconds (const int64u Milliseconds);
         /// @brief convert count of seconds since 1601 into a readable and sortable string
     Ztring& Date_From_Milliseconds_1601 (const int64u Milliseconds);

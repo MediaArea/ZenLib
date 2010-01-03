@@ -1,11 +1,13 @@
-Version 0.4.10, 
+Version 0.4.10, 2010-01-03
 -------------
 + Ztring: From a file
++ Ztring::Duration_From_Milliseconds: handling of negative values
 x UUID: better validation
 x ZtringList: better handling of CSV import
 x File: Write append on Linux/Mac
 x File: No read/write on Linux/Mac
 x Dir: No dir test and creation on Mac/Linux
+x float64_int64s: handling of big integers
 
 Version 0.4.9, 2009-11-13
 -------------

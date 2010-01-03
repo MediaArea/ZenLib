@@ -944,6 +944,44 @@ Ztring& Ztring::From_BCD     (const int8u I)
 }
 
 //---------------------------------------------------------------------------
+Ztring& Ztring::Duration_From_Milliseconds (const int64s Value_)
+{
+    int64s Value=Value_;
+    bool Negative=false;
+    if (Value<0)
+    {
+        Value=-Value;
+        Negative=true;
+    }
+
+    int64u HH=(int8u)(Value/1000/60/60);
+    int64u MM=Value/1000/60   -((HH*60));
+    int64u SS=Value/1000      -((HH*60+MM)*60);
+    int64u MS=Value           -((HH*60+MM)*60+SS)*1000;
+    Ztring DateT;
+    Ztring Date;
+    DateT.From_Number(HH); if (DateT.size()<2){DateT=Ztring(_T("0"))+DateT;}
+    Date+=DateT;
+    Date+=_T(":");
+    DateT.From_Number(MM); if (DateT.size()<2){DateT=Ztring(_T("0"))+DateT;}
+    Date+=DateT;
+    Date+=_T(":");
+    DateT.From_Number(SS); if (DateT.size()<2){DateT=Ztring(_T("0"))+DateT;}
+    Date+=DateT;
+    Date+=_T(".");
+    DateT.From_Number(MS); if (DateT.size()<2){DateT=Ztring(_T("00"))+DateT;} else if (DateT.size()<3){DateT=Ztring(_T("0"))+DateT;}
+    Date+=DateT;
+    if (Negative)
+    {
+        assign(_T("-"));
+        append(Date);
+    }
+    else
+        assign (Date.c_str());
+    return *this;
+}
+
+//---------------------------------------------------------------------------
 Ztring& Ztring::Duration_From_Milliseconds (const int64u Value)
 {
     int64u HH=(int8u)(Value/1000/60/60);
