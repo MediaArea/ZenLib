@@ -1772,6 +1772,69 @@ int64u Ztring::To_int64u (int8u Radix, ztring_t Options) const
 }
 
 //---------------------------------------------------------------------------
+int128u Ztring::To_int128u (int8u Radix, ztring_t Options) const
+{
+    if (size()!=32)
+        return 0;
+
+    Ztring Temp=*this;
+
+    for (size_t Pos=0; Pos<32; Pos++)
+    {
+        if ((Temp[Pos]< _T('0') || Temp[Pos]> _T('9'))
+         && (Temp[Pos]< _T('A') || Temp[Pos]> _T('F'))
+         && (Temp[Pos]< _T('a') || Temp[Pos]> _T('f')))
+            return 0;
+        if (Temp[Pos]>=_T('A') && Temp[Pos]<=_T('F'))
+        {
+            Temp[Pos]-=_T('A');
+            Temp[Pos]+=_T('9')+1;
+        }
+        if (Temp[Pos]>=_T('a') && Temp[Pos]<=_T('f'))
+        {
+            Temp[Pos]-=_T('a');
+            Temp[Pos]+=_T('9')+1;
+        }
+    }
+    
+    int128u I;
+    I.hi=((int64u)((int8u)(Temp[ 0]-'0'))<<60)
+       | ((int64u)((int8u)(Temp[ 1]-'0'))<<56)
+       | ((int64u)((int8u)(Temp[ 2]-'0'))<<52)
+       | ((int64u)((int8u)(Temp[ 3]-'0'))<<48)
+       | ((int64u)((int8u)(Temp[ 4]-'0'))<<44)
+       | ((int64u)((int8u)(Temp[ 5]-'0'))<<40)
+       | ((int64u)((int8u)(Temp[ 6]-'0'))<<36)
+       | ((int64u)((int8u)(Temp[ 7]-'0'))<<32)
+       | ((int64u)((int8u)(Temp[ 8]-'0'))<<28)
+       | ((int64u)((int8u)(Temp[ 9]-'0'))<<24)
+       | ((int64u)((int8u)(Temp[10]-'0'))<<20)
+       | ((int64u)((int8u)(Temp[11]-'0'))<<16)
+       | ((int64u)((int8u)(Temp[12]-'0'))<<12)
+       | ((int64u)((int8u)(Temp[13]-'0'))<< 8)
+       | ((int64u)((int8u)(Temp[14]-'0'))<< 4)
+       | ((int64u)((int8u)(Temp[15]-'0'))    );
+    I.lo=((int64u)((int8u)(Temp[16]-'0'))<<60)
+       | ((int64u)((int8u)(Temp[17]-'0'))<<56)
+       | ((int64u)((int8u)(Temp[18]-'0'))<<52)
+       | ((int64u)((int8u)(Temp[19]-'0'))<<48)
+       | ((int64u)((int8u)(Temp[20]-'0'))<<44)
+       | ((int64u)((int8u)(Temp[21]-'0'))<<40)
+       | ((int64u)((int8u)(Temp[22]-'0'))<<36)
+       | ((int64u)((int8u)(Temp[23]-'0'))<<32)
+       | ((int64u)((int8u)(Temp[24]-'0'))<<28)
+       | ((int64u)((int8u)(Temp[25]-'0'))<<24)
+       | ((int64u)((int8u)(Temp[26]-'0'))<<20)
+       | ((int64u)((int8u)(Temp[27]-'0'))<<16)
+       | ((int64u)((int8u)(Temp[28]-'0'))<<12)
+       | ((int64u)((int8u)(Temp[29]-'0'))<< 8)
+       | ((int64u)((int8u)(Temp[30]-'0'))<< 4)
+       | ((int64u)((int8u)(Temp[31]-'0'))    );
+
+    return I;
+}
+
+//---------------------------------------------------------------------------
 //Operateur ToFloat
 float32 Ztring::To_float32(ztring_t) const
 {

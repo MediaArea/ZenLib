@@ -258,6 +258,11 @@ public :
         /// @return the value corresponding \n
         ///         0 if there is a problem
     int64u      To_int64u   (int8u Radix=10, ztring_t Options=Ztring_Rounded) const;
+        /// @brief Convert into unsigned Int (64 bits)
+        /// @warning only hexadecimal and no rounding are currenlty supported \n
+        /// @return the value corresponding \n
+        ///         0 if there is a problem
+    int128u     To_int128u   (int8u Radix=10, ztring_t Options=Ztring_Rounded) const;
         /// @brief Convert into float
         /// @return the value corresponding \n
         ///         0 if there is a problem

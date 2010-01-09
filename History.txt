@@ -1,3 +1,7 @@
+Version 0.4.11, 2010-
+-------------
++ Ztring: To_int128u()
+
 Version 0.4.10, 2010-01-03
 -------------
 + Ztring: From a file
