@@ -1,6 +1,8 @@
 Version 0.4.11, 2010-
 -------------
 + Ztring: To_int128u()
+x File::Open(): no Access_Read_Write (Windows)
+x BigEndian2int128u()
 
 Version 0.4.10, 2010-01-03
 -------------
