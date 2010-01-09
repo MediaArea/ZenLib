@@ -1398,12 +1398,12 @@ int128u Ztring::To_UUID () const
         if (Temp[Pos]>=_T('A') && Temp[Pos]<=_T('F'))
         {
             Temp[Pos]-=_T('A');
-            Temp[Pos]-=_T('9')+1;
+            Temp[Pos]+=_T('9')+1;
         }
         if (Temp[Pos]>=_T('a') && Temp[Pos]<=_T('f'))
         {
             Temp[Pos]-=_T('a');
-            Temp[Pos]-=_T('9')+1;
+            Temp[Pos]+=_T('9')+1;
         }
 
         switch(Pos)
@@ -1419,38 +1419,38 @@ int128u Ztring::To_UUID () const
     }
     
     int128u I;
-    I.hi=((int64u)((int8u)(at( 0)-'0'))<<60)
-       | ((int64u)((int8u)(at( 1)-'0'))<<56)
-       | ((int64u)((int8u)(at( 2)-'0'))<<52)
-       | ((int64u)((int8u)(at( 3)-'0'))<<48)
-       | ((int64u)((int8u)(at( 4)-'0'))<<44)
-       | ((int64u)((int8u)(at( 5)-'0'))<<40)
-       | ((int64u)((int8u)(at( 6)-'0'))<<36)
-       | ((int64u)((int8u)(at( 7)-'0'))<<32)
-       | ((int64u)((int8u)(at( 9)-'0'))<<28)
-       | ((int64u)((int8u)(at(10)-'0'))<<24)
-       | ((int64u)((int8u)(at(11)-'0'))<<20)
-       | ((int64u)((int8u)(at(12)-'0'))<<16)
-       | ((int64u)((int8u)(at(14)-'0'))<<12)
-       | ((int64u)((int8u)(at(15)-'0'))<< 8)
-       | ((int64u)((int8u)(at(16)-'0'))<< 4)
-       | ((int64u)((int8u)(at(17)-'0'))    );
-    I.lo=((int64u)((int8u)(at(19)-'0'))<<60)
-       | ((int64u)((int8u)(at(20)-'0'))<<56)
-       | ((int64u)((int8u)(at(21)-'0'))<<52)
-       | ((int64u)((int8u)(at(22)-'0'))<<48)
-       | ((int64u)((int8u)(at(24)-'0'))<<44)
-       | ((int64u)((int8u)(at(25)-'0'))<<40)
-       | ((int64u)((int8u)(at(26)-'0'))<<36)
-       | ((int64u)((int8u)(at(27)-'0'))<<32)
-       | ((int64u)((int8u)(at(28)-'0'))<<28)
-       | ((int64u)((int8u)(at(29)-'0'))<<24)
-       | ((int64u)((int8u)(at(30)-'0'))<<20)
-       | ((int64u)((int8u)(at(31)-'0'))<<16)
-       | ((int64u)((int8u)(at(32)-'0'))<<12)
-       | ((int64u)((int8u)(at(33)-'0'))<< 8)
-       | ((int64u)((int8u)(at(34)-'0'))<< 4)
-       | ((int64u)((int8u)(at(35)-'0'))    );
+    I.hi=((int64u)((int8u)(Temp[ 0]-'0'))<<60)
+       | ((int64u)((int8u)(Temp[ 1]-'0'))<<56)
+       | ((int64u)((int8u)(Temp[ 2]-'0'))<<52)
+       | ((int64u)((int8u)(Temp[ 3]-'0'))<<48)
+       | ((int64u)((int8u)(Temp[ 4]-'0'))<<44)
+       | ((int64u)((int8u)(Temp[ 5]-'0'))<<40)
+       | ((int64u)((int8u)(Temp[ 6]-'0'))<<36)
+       | ((int64u)((int8u)(Temp[ 7]-'0'))<<32)
+       | ((int64u)((int8u)(Temp[ 9]-'0'))<<28)
+       | ((int64u)((int8u)(Temp[10]-'0'))<<24)
+       | ((int64u)((int8u)(Temp[11]-'0'))<<20)
+       | ((int64u)((int8u)(Temp[12]-'0'))<<16)
+       | ((int64u)((int8u)(Temp[14]-'0'))<<12)
+       | ((int64u)((int8u)(Temp[15]-'0'))<< 8)
+       | ((int64u)((int8u)(Temp[16]-'0'))<< 4)
+       | ((int64u)((int8u)(Temp[17]-'0'))    );
+    I.lo=((int64u)((int8u)(Temp[19]-'0'))<<60)
+       | ((int64u)((int8u)(Temp[20]-'0'))<<56)
+       | ((int64u)((int8u)(Temp[21]-'0'))<<52)
+       | ((int64u)((int8u)(Temp[22]-'0'))<<48)
+       | ((int64u)((int8u)(Temp[24]-'0'))<<44)
+       | ((int64u)((int8u)(Temp[25]-'0'))<<40)
+       | ((int64u)((int8u)(Temp[26]-'0'))<<36)
+       | ((int64u)((int8u)(Temp[27]-'0'))<<32)
+       | ((int64u)((int8u)(Temp[28]-'0'))<<28)
+       | ((int64u)((int8u)(Temp[29]-'0'))<<24)
+       | ((int64u)((int8u)(Temp[30]-'0'))<<20)
+       | ((int64u)((int8u)(Temp[31]-'0'))<<16)
+       | ((int64u)((int8u)(Temp[32]-'0'))<<12)
+       | ((int64u)((int8u)(Temp[33]-'0'))<< 8)
+       | ((int64u)((int8u)(Temp[34]-'0'))<< 4)
+       | ((int64u)((int8u)(Temp[35]-'0'))    );
 
     return I;
 }
