@@ -1,6 +1,7 @@
 Version 0.4.11, 2010-
 -------------
 + Ztring: To_int128u()
++ Ztring: ISO_8859_1()
 x File::Open(): no Access_Read_Write (Windows)
 x BigEndian2int128u()
 x Ztring::To_UUID(): wrong transformation text to UUID in some cases

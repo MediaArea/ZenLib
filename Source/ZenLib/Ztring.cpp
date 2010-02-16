@@ -546,6 +546,40 @@ Ztring& Ztring::From_Local (const char* S, size_type Start, size_type Length)
     return *this;
 }
 
+Ztring& Ztring::From_ISO_8859_1(const char* S)
+{
+    size_t Length = strlen(S);
+    wchar_t* Temp = new wchar_t[Length +1];
+
+    for (size_t Pos=0; Pos<Length+1; Pos++)
+        Temp[Pos]=(wchar_t)S[Pos];
+
+    assign(Temp);
+    delete[] Temp;
+    return *this;
+}
+
+Ztring& Ztring::From_ISO_8859_1(const char* S, size_type Start, size_type Length)
+{
+    if (S==NULL)
+        return *this;
+
+    if (Length==Error)
+        Length=strlen(S+Start);
+    #ifdef _UNICODE
+        char* Temp = new char[Length+1];
+        strncpy(Temp, S +Start, Length);
+        Temp[Length] = '\0';
+        From_ISO_8859_1(Temp);
+        delete[] Temp;
+    #else
+        assign(S +Start, Length);
+        if (find(_T('\0')) != std::string::npos)
+            resize(find(_T('\0')));
+    #endif
+    return *this;
+}
+
 Ztring& Ztring::From_GUID (const int128u S)
 {
     Ztring S1;
@@ -2111,3 +2145,4 @@ bool Ztring::Compare (const Ztring &ToCompare, const Ztring &Comparator, ztring_
 }
 
 } //namespace
+
