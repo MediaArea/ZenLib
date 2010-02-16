@@ -552,7 +552,7 @@ Ztring& Ztring::From_ISO_8859_1(const char* S)
     wchar_t* Temp = new wchar_t[Length +1];
 
     for (size_t Pos=0; Pos<Length+1; Pos++)
-        Temp[Pos]=(wchar_t)S[Pos];
+        Temp[Pos]=(wchar_t)((int8u)S[Pos]);
 
     assign(Temp);
     delete[] Temp;
