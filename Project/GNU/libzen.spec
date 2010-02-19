@@ -6,7 +6,7 @@
 
 # norootforbuild
 
-%define libzen_version			0.4.10
+%define libzen_version			0.4.11
 
 Name:			libzen0
 Version:		%libzen_version
