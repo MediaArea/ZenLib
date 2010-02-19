@@ -1,4 +1,4 @@
-Version 0.4.11, 2010-
+Version 0.4.11, 2010-02-19
 -------------
 + Ztring: To_int128u()
 + Ztring: ISO_8859_1()
