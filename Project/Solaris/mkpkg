@@ -14,8 +14,8 @@ fi
 #Compile and install
 Home=`pwd`
 cd ../GNU/Library
-#./configure --prefix=/usr --enable-shared --disable-static
-#make
+./configure --prefix=/usr --enable-shared --disable-static
+make
 make install
 cd $Home
 #include
