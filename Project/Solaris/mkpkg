@@ -22,20 +22,20 @@ cd $Home
 install -d -m 755 /usr/include/ZenLib
 cp ../../Source/ZenLib/*.h /usr/include/ZenLib/
 install -d -m 755 /usr/include/ZenLib/Base64
-cp ../../Source/ZenLib/*.h /usr/include/ZenLib/Base64
+cp ../../Source/ZenLib/Base64/*.h /usr/include/ZenLib/Base64
 install -d -m 755 /usr/include/ZenLib/HTTP_Client
-cp ../../Source/ZenLib/*.h /usr/include/ZenLib/HTTP_Client
+cp ../../Source/ZenLib/HTTP_Client/*.h /usr/include/ZenLib/HTTP_Client
 install -d -m 755 /usr/include/ZenLib/Format/Html
-cp ../../Source/ZenLib/*.h /usr/include/ZenLib/Format/Html
+cp ../../Source/ZenLib/Html/*.h /usr/include/ZenLib/Format/Html
 install -d -m 755 /usr/include/ZenLib/Format/Http
-cp ../../Source/ZenLib/*.h /usr/include/ZenLib/Format/Http
+cp ../../Source/ZenLib/Http/*.h /usr/include/ZenLib/Format/Http
 chown -R root /usr/include/ZenLib
 chgrp -R bin /usr/include/ZenLib
 #doc
 install -d -m 755 /usr/share/doc/libzen0
 cp ../../*.txt /usr/share/doc/libzen0
-chown -R root /usr/share/doc
-chgrp -R bin /usr/share/doc
+chown -R root /usr/share/doc/libzen0
+chgrp -R bin /usr/share/doc/libzen0
 #bin
 cp ../GNU/Library/libzen-config /usr/bin
 chown -R root /usr/bin/libzen*
