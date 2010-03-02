@@ -1,0 +1,11 @@
+PKG=libzen0-devel
+VERSION=0.4.11
+ARCH=i386
+NAME=libzen-devel 0.4.11 i386 Solaris 10
+DESC=Base library for some other projects, devel
+CLASSES=none
+CATEGORY=utility
+VENDOR=MediaArea.net
+EMAIL=Info@MediaArea.net
+BASEDIR=/
+

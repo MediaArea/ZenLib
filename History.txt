@@ -1,3 +1,7 @@
+Version 0.4.12, 2010-
+-------------
++ Solaris package creation files
+
 Version 0.4.11, 2010-02-19
 -------------
 + Ztring: To_int128u()

@@ -1,0 +1,65 @@
+#!/bin/sh
+
+#Config
+pkg=libzen0
+pkgfile=$pkg-0.4.11-Solaris_10.i386.pkg.tgz
+pkgfiledevel=$pkg-devel-0.4.11-Solaris_10.i386.pkg.tgz
+
+#Must be root
+if [ "$(id -u)" != "0" ]; then
+    echo "$0 must be run as root"
+    exit 1
+fi
+
+#Compile and install
+Home=`pwd`
+cd ../GNU/Library
+#./configure --prefix=/usr --enable-shared --disable-static
+#make
+make install
+cd $Home
+#include
+install -d -m 755 /usr/include/ZenLib
+cp ../../Source/ZenLib/*.h /usr/include/ZenLib/
+install -d -m 755 /usr/include/ZenLib/Base64
+cp ../../Source/ZenLib/*.h /usr/include/ZenLib/Base64
+install -d -m 755 /usr/include/ZenLib/HTTP_Client
+cp ../../Source/ZenLib/*.h /usr/include/ZenLib/HTTP_Client
+install -d -m 755 /usr/include/ZenLib/Format/Html
+cp ../../Source/ZenLib/*.h /usr/include/ZenLib/Format/Html
+install -d -m 755 /usr/include/ZenLib/Format/Http
+cp ../../Source/ZenLib/*.h /usr/include/ZenLib/Format/Http
+chown -R root /usr/include/ZenLib
+chgrp -R bin /usr/include/ZenLib
+#doc
+install -d -m 755 /usr/share/doc/libzen0
+cp ../../*.txt /usr/share/doc/libzen0
+chown -R root /usr/share/doc
+chgrp -R bin /usr/share/doc
+#bin
+cp ../GNU/Library/libzen-config /usr/bin
+chown -R root /usr/bin/libzen*
+chgrp -R bin /usr/bin/libzen*
+
+#Packaging
+rm -r packages
+mkdir packages
+pkgmk -o -r / -d ./packages -f libzen0/prototype
+pkgmk -o -r / -d ./packages -f libzen0-devel/prototype
+#pkgtrans -s ./ ./ libzen0
+cd packages
+tar -cf - $pkg | gzip -9 -c >$pkgfile
+tar -cf - $pkg-devel | gzip -9 -c >$pkgfiledevel
+cd ..
+mv packages/*.tgz ./
+
+#removing files
+rm -r /usr/include/ZenLib
+rm /usr/bin/libzen*
+rm /usr/lib/libzen*
+rm -r /usr/share/doc/libzen0
+rm -r packages
+
+#hints
+#install: pkgadd -d./ libzen0
+#remove: pkgrm libzen0, remove /var/spool/pkg/libze0
