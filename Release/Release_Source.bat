@@ -45,6 +45,7 @@ xcopy ..\Project\CMake\*.txt ZenLib_Source\Project\CMake\ /S
 xcopy ..\Project\MSVC\*.h ZenLib_Source\Project\MSVC\ /S
 xcopy ..\Project\MSVC\*.rc ZenLib_Source\Project\MSVC\ /S
 xcopy ..\Project\GNU\* ZenLib_Source\Project\GNU\ /S
+xcopy ..\Project\Solaris\* ZenLib_Source\Project\Solaris\ /S
 
 @rem --- Copying : Release ---
 xcopy *.txt ZenLib_Source\Release\

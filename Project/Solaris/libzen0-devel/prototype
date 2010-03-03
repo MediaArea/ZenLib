@@ -1,6 +1,11 @@
 i pkginfo
 i depend
 i checkinstall
+d none /usr ? ? ?
+d none /usr/bin ? ? ?
+f none /usr/bin/libzen-config 0744 root bin
+d none /usr ? ? ?
+d none /usr/include ? ? ?
 d none /usr/include/ZenLib 0755 root bin
 f none /usr/include/ZenLib/HTTP_Client.h 0644 root bin
 f none /usr/include/ZenLib/Conf.h 0644 root bin

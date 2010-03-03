@@ -14,6 +14,7 @@ fi
 #Compile and install
 Home=`pwd`
 cd ../GNU/Library
+./autogen
 ./configure --prefix=/usr --enable-shared --disable-static
 make
 make install
@@ -26,9 +27,9 @@ cp ../../Source/ZenLib/Base64/*.h /usr/include/ZenLib/Base64
 install -d -m 755 /usr/include/ZenLib/HTTP_Client
 cp ../../Source/ZenLib/HTTP_Client/*.h /usr/include/ZenLib/HTTP_Client
 install -d -m 755 /usr/include/ZenLib/Format/Html
-cp ../../Source/ZenLib/Html/*.h /usr/include/ZenLib/Format/Html
+cp ../../Source/ZenLib/Format/Html/*.h /usr/include/ZenLib/Format/Html
 install -d -m 755 /usr/include/ZenLib/Format/Http
-cp ../../Source/ZenLib/Http/*.h /usr/include/ZenLib/Format/Http
+cp ../../Source/ZenLib/Format/Http/*.h /usr/include/ZenLib/Format/Http
 chown -R root /usr/include/ZenLib
 chgrp -R bin /usr/include/ZenLib
 #doc
