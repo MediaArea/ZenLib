@@ -1806,7 +1806,7 @@ int64u Ztring::To_int64u (int8u Radix, ztring_t Options) const
 }
 
 //---------------------------------------------------------------------------
-int128u Ztring::To_int128u (int8u Radix, ztring_t Options) const
+int128u Ztring::To_int128u (int8u, ztring_t) const
 {
     if (size()!=32)
         return 0;
