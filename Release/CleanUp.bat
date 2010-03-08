@@ -15,11 +15,6 @@ cd ..\Project\CodeBlocks
 call CleanUp
 cd ..\..\Release
 
-@rem GCC ---
-cd ..\Project\GCC
-call CleanUp
-cd ..\..\Release
-
 @rem MS Visual Studio ---
 cd ..\Project\MSVC
 call CleanUp
