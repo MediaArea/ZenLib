@@ -2,8 +2,8 @@
 
 #Config
 pkg=libzen0
-pkgfile=$pkg-0.4.11-Solaris_10.i386.pkg.tgz
-pkgfiledevel=$pkg-devel-0.4.11-Solaris_10.i386.pkg.tgz
+pkgfile=$pkg-0.4.12-Solaris_10.i386.pkg.tgz
+pkgfiledevel=$pkg-devel-0.4.12-Solaris_10.i386.pkg.tgz
 
 #Must be root
 if [ "$(id -u)" != "0" ]; then
