@@ -37,6 +37,8 @@ xcopy ..\Project\*.vb ZenLib_Source\Project\ /S
 xcopy ..\Project\*.vbproj ZenLib_Source\Project\ /S
 xcopy ..\Project\*.vc ZenLib_Source\Project\ /S
 xcopy ..\Project\*.vcproj ZenLib_Source\Project\ /S
+xcopy ..\Project\*.vcxproj ZenLib_Source\Project\ /S
+xcopy ..\Project\*.vcxproj.filters ZenLib_Source\Project\ /S
 xcopy ..\Project\*.ico ZenLib_Source\Project\ /S
 xcopy ..\Project\*.workspace ZenLib_Source\Project\ /S
 xcopy ..\Project\*.cbp ZenLib_Source\Project\ /S
