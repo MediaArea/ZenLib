@@ -803,9 +803,9 @@ bool File::Delete(const Ztring &File_Name)
     #else //ZENLIB_USEWX
         #ifdef ZENLIB_STANDARD
             #ifdef UNICODE
-                return unlink(File_Name.To_Local().c_str())==0;
+                return remove(File_Name.To_Local().c_str())==0;
             #else
-                return unlink(File_Name.c_str())==0;
+                return remove(File_Name.c_str())==0;
             #endif //UNICODE
         #elif defined WINDOWS
             #ifdef UNICODE

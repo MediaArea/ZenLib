@@ -41,14 +41,15 @@
 #include <memory>
 #include <cmath>
 #include <cstring>
-#ifdef __BORLANDC__
+#if defined (__BORLANDC__) || defined (__SUNPRO_CC)
     #define fmodf fmod
 #endif
 #if defined (__NO_LONG_DOUBLE_MATH) || \
     defined (__MONTAVISTA__) || defined (__ARMEL__)     || \
     defined (__FreeBSD__)    || defined (__OpenBSD__)   || \
     defined (__NetBSD__)     || defined (__DragonFly__) || \
-    defined (__sparc__)      || defined (__sparc64__)
+    defined (__sparc__)      || defined (__sparc64__)   || \
+    defined (__SUNPRO_CC)
     #define fmodl fmod
 #endif
 using namespace std;
