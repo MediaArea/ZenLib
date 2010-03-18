@@ -1,3 +1,8 @@
+Version 0.4.13, 2010-0
+-------------
++ MSVC2010 project files update
++ Solaris package creation files update (with relocation)
+
 Version 0.4.12, 2010-03-08
 -------------
 + MSVC2010 project files

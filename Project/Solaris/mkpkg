@@ -1,66 +1,88 @@
 #!/bin/sh
 
 #Config
-pkg=libzen0
-pkgfile=$pkg-0.4.12-Solaris_10.i386.pkg.tgz
-pkgfiledevel=$pkg-devel-0.4.12-Solaris_10.i386.pkg.tgz
+user=`id -un`
+group=`id -gn`
+processor=`uname -p`
+operatingsystem=`uname -o`
+release=`uname -r`
 
-#Must be root
-if [ "$(id -u)" != "0" ]; then
-    echo "$0 must be run as root"
-    exit 1
-fi
+#Creation of known directories and filenames
+name="libzen0"
+version="0.4.12"
+
+name="libzen0"
+pkgversion="0.4.12"
+pkgdevelname="${name}-devel"
+Home=`pwd`
+pkgdevelfilename=${name}-devel-${pkgversion}-${operatingsystem}_${release}.${processor}.pkg.tgz
+install_prefix=${Home}/mk_package
+packagecreation_prefix=${Home}/create_package
+
+#Common code
+. ./mkpkg.sub
 
 #Compile and install
-Home=`pwd`
 cd ../GNU/Library
-./autogen
-./configure --prefix=/usr --enable-shared --disable-static
-make
-make install
-cd $Home
+#./autogen
+#./configure --prefix=${install_prefix} --enable-shared --disable-static $*
+#make
+#make install
+
+#****************************************************************************
+# Release 
+#****************************************************************************
+
+cd ${Home}
+mkdir -p ${install_prefix}
+
+#Copying useful files
+install -d -m 755 ${install_prefix}/lib
+cp -rP ../GNU/Library/.libs/*.so* ${install_prefix}/lib
+install -d -m 755 ${install_prefix}/share/doc/${name}
+cp ../../*.txt ${install_prefix}/share/doc/${name}
+chmod 644 ${install_prefix}/share/doc/${name}/*.txt
+
+#Creation of package
+pkgname="${name}"
+PackageCreate
+
+#****************************************************************************
+# Devel 
+#****************************************************************************
+
+cd ${Home}
+mkdir -p ${install_prefix}
+
 #include
-install -d -m 755 /usr/include/ZenLib
-cp ../../Source/ZenLib/*.h /usr/include/ZenLib/
-install -d -m 755 /usr/include/ZenLib/Base64
-cp ../../Source/ZenLib/Base64/*.h /usr/include/ZenLib/Base64
-install -d -m 755 /usr/include/ZenLib/HTTP_Client
-cp ../../Source/ZenLib/HTTP_Client/*.h /usr/include/ZenLib/HTTP_Client
-install -d -m 755 /usr/include/ZenLib/Format/Html
-cp ../../Source/ZenLib/Format/Html/*.h /usr/include/ZenLib/Format/Html
-install -d -m 755 /usr/include/ZenLib/Format/Http
-cp ../../Source/ZenLib/Format/Http/*.h /usr/include/ZenLib/Format/Http
-chown -R root /usr/include/ZenLib
-chgrp -R bin /usr/include/ZenLib
-#doc
-install -d -m 755 /usr/share/doc/libzen0
-cp ../../*.txt /usr/share/doc/libzen0
-chown -R root /usr/share/doc/libzen0
-chgrp -R bin /usr/share/doc/libzen0
-#bin
-cp ../GNU/Library/libzen-config /usr/bin
-chown -R root /usr/bin/libzen*
-chgrp -R bin /usr/bin/libzen*
+install -d -m 755 ${install_prefix}/include/ZenLib
+cp ../../Source/ZenLib/*.h ${install_prefix}/include/ZenLib/
+chmod 644 ${install_prefix}/include/ZenLib/*.h
+install -d -m 755 ${install_prefix}/include/ZenLib/Base64
+cp ../../Source/ZenLib/Base64/*.h ${install_prefix}/include/ZenLib/Base64
+chmod 644 ${install_prefix}/include/ZenLib/Base64/*.h
+install -d -m 755 ${install_prefix}/include/ZenLib/HTTP_Client
+cp ../../Source/ZenLib/HTTP_Client/*.h ${install_prefix}/include/ZenLib/HTTP_Client
+chmod 644 ${install_prefix}/include/ZenLib/HTTP_Client/*.h
+install -d -m 755 ${install_prefix}/include/ZenLib/Format/Html
+cp ../../Source/ZenLib/Format/Html/*.h ${install_prefix}/include/ZenLib/Format/Html
+chmod 644 ${install_prefix}/include/ZenLib/Format/Html/*.h
+install -d -m 755 ${install_prefix}/include/ZenLib/Format/Http
+cp ../../Source/ZenLib/Format/Http/*.h ${install_prefix}/include/ZenLib/Format/Http
+chmod 644 ${install_prefix}/include/ZenLib/Format/Http/*.h
+install -d -m 755 ${install_prefix}/bin
+cp ../GNU/Library/libzen-config ${install_prefix}/bin
+chmod 755 ${install_prefix}/bin/*
 
-#Packaging
-rm -r packages
-mkdir packages
-pkgmk -o -r / -d ./packages -f libzen0/prototype
-pkgmk -o -r / -d ./packages -f libzen0-devel/prototype
-#pkgtrans -s ./ ./ libzen0
-cd packages
-tar -cf - $pkg | gzip -9 -c >$pkgfile
-tar -cf - $pkg-devel | gzip -9 -c >$pkgfiledevel
-cd ..
-mv packages/*.tgz ./
+#depend file
+mkdir -p ${packagecreation_prefix}
+echo "P ${name}" > ${packagecreation_prefix}/depend
 
-#removing files
-rm -r /usr/include/ZenLib
-rm /usr/bin/libzen*
-rm /usr/lib/libzen*
-rm -r /usr/share/doc/libzen0
-rm -r packages
+pkgname="${name}-devel"
+PackageCreate
+
+exit 0
 
 #hints
-#install: pkgadd -d./ libzen0
-#remove: pkgrm libzen0, remove /var/spool/pkg/libze0
+#install: pkgadd -R /opt/libzen0 -d./ libzen0
+#remove: pkgrm libzen0, remove /var/spool/name/libzen0
