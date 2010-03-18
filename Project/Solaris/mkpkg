@@ -24,10 +24,15 @@ packagecreation_prefix=${Home}/create_package
 
 #Compile and install
 cd ../GNU/Library
-#./autogen
-#./configure --prefix=${install_prefix} --enable-shared --disable-static $*
-#make
-#make install
+./autogen
+./configure --prefix=${install_prefix} --enable-shared --disable-static $*
+make
+if test -e ../GNU/Library/.libs/libzen0.so; then
+  echo "Compilation OK"
+else
+  echo "Compilation problem"
+  exit 1
+fi
 
 #****************************************************************************
 # Release 
