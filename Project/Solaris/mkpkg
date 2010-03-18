@@ -27,7 +27,7 @@ cd ../GNU/Library
 ./autogen
 ./configure --prefix=${install_prefix} --enable-shared --disable-static $*
 make
-if test -e ../GNU/Library/.libs/libzen0.so; then
+if test -e .libs/libzen.so; then
   echo "Compilation OK"
 else
   echo "Compilation problem"
