@@ -4,18 +4,13 @@
 user=`id -un`
 group=`id -gn`
 processor=`uname -p`
-operatingsystem=`uname -o`
+kernel=`uname -s`
 release=`uname -r`
 
 #Creation of known directories and filenames
 name="libzen0"
 version="0.4.12"
-
-name="libzen0"
-pkgversion="0.4.12"
-pkgdevelname="${name}-devel"
 Home=`pwd`
-pkgdevelfilename=${name}-devel-${pkgversion}-${operatingsystem}_${release}.${processor}.pkg.tgz
 install_prefix=${Home}/mk_package
 packagecreation_prefix=${Home}/create_package
 
