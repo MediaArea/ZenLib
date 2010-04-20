@@ -313,6 +313,9 @@
     <ClCompile Include="..\..\..\Source\ZenLib\MemoryDebug.cpp" />
     <ClCompile Include="..\..\..\Source\ZenLib\OS_Utils.cpp" />
     <ClCompile Include="..\..\..\Source\ZenLib\Thread.cpp" />
+    <ClCompile Include="..\..\..\Source\ZenLib\TinyXml\tinyxml.cpp" />
+    <ClCompile Include="..\..\..\Source\ZenLib\TinyXml\tinyxmlerror.cpp" />
+    <ClCompile Include="..\..\..\Source\ZenLib\TinyXml\tinyxmlparser.cpp" />
     <ClCompile Include="..\..\..\Source\ZenLib\Translation.cpp" />
     <ClCompile Include="..\..\..\Source\ZenLib\Utils.cpp" />
     <ClCompile Include="..\..\..\Source\ZenLib\Ztring.cpp" />
@@ -351,6 +354,7 @@
     <ClInclude Include="..\..\..\Source\ZenLib\MemoryDebug.h" />
     <ClInclude Include="..\..\..\Source\ZenLib\OS_Utils.h" />
     <ClInclude Include="..\..\..\Source\ZenLib\Thread.h" />
+    <ClInclude Include="..\..\..\Source\ZenLib\TinyXml\tinyxml.h" />
     <ClInclude Include="..\..\..\Source\ZenLib\Trace.h" />
     <ClInclude Include="..\..\..\Source\ZenLib\Translation.h" />
     <ClInclude Include="..\..\..\Source\ZenLib\Utils.h" />

@@ -29,6 +29,9 @@ set(zenlib_SRCS
 	ZenLib/Format/Http/Http_Handler.cpp
 	ZenLib/Format/Http/Http_Request.cpp
 	ZenLib/Format/Http/Http_Utils.cpp
+	ZenLib/Format/TinyXml/tinyxml.cpp
+	ZenLib/Format/TinyXml/tinyxmlerror.cpp
+	ZenLib/Format/TinyXml/tinyxmlparser.cpp
 )
 
 add_library(zenlib STATIC ${zenlib_SRCS})

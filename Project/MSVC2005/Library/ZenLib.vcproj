@@ -191,6 +191,22 @@
 					</File>
 				</Filter>
 			</Filter>
+			<Filter
+				Name="TinyXml"
+				>
+				<File
+					RelativePath="..\..\..\Source\ZenLib\TinyXml\tinyxml.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\Source\ZenLib\TinyXml\tinyxmlerror.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\Source\ZenLib\TinyXml\tinyxmlparser.cpp"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -316,6 +332,14 @@
 						>
 					</File>
 				</Filter>
+			</Filter>
+			<Filter
+				Name="TinyXml"
+				>
+				<File
+					RelativePath="..\..\..\Source\ZenLib\TinyXml\tinyxml.h"
+					>
+				</File>
 			</Filter>
 		</Filter>
 		<Filter
