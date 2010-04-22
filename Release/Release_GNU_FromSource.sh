@@ -44,6 +44,9 @@ cp -r ../Source/ZenLib/Format/Html/*.cpp ZenLib_GNU_FromSource/Source/ZenLib/For
 mkdir ZenLib_GNU_FromSource/Source/ZenLib/Format/Http
 cp -r ../Source/ZenLib/Format/Http/*.h ZenLib_GNU_FromSource/Source/ZenLib/Format/Http
 cp -r ../Source/ZenLib/Format/Http/*.cpp ZenLib_GNU_FromSource/Source/ZenLib/Format/Http
+mkdir ZenLib_GNU_FromSource/Source/ZenLib/TinyXml
+cp -r ../Source/ZenLib/TinyXml/*.h ZenLib_GNU_FromSource/Source/ZenLib/TinyXml
+cp -r ../Source/ZenLib/TinyXml/*.cpp ZenLib_GNU_FromSource/Source/ZenLib/TinyXml
 
 #-----------------------------------------------------------------------
 # Copying : Projects

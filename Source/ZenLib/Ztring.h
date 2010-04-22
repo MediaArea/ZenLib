@@ -71,7 +71,7 @@ public :
     Ztring (const tstring& str, size_type pos, size_type n=npos)                : tstring(str, pos, n){};
     Ztring (const Char* s, size_type n)                                         : tstring(s, n){};
     Ztring (const Char* s)                                                      : tstring(s){};
-    Ztring (size_type n, char c)                                                : tstring(n, c){};
+    Ztring (size_type n, Char c)                                                : tstring(n, c){};
     #ifdef UNICODE
     Ztring (const char* S)                                                      : tstring(){From_UTF8(S);};
     Ztring (const char* S, size_type n)                                         : tstring(){From_UTF8(S, 0, n);};
