@@ -161,7 +161,7 @@ ZtringList &ZtringListList::operator() (size_type Pos0)
 {
     //Integrity
     if (Pos0>=size())
-        Write(_T(""), Pos0);
+        Write(Ztring(), Pos0);
 
     return operator[](Pos0);
 }
@@ -170,7 +170,7 @@ Ztring &ZtringListList::operator() (size_type Pos0, size_type Pos1)
 {
     //Integrity
     if (Pos0>=size())
-        Write(_T(""), Pos0);
+        Write(Ztring(), Pos0);
 
     return operator[](Pos0).operator()(Pos1);
 }
@@ -203,7 +203,7 @@ Ztring ZtringListList::Read () const
 {
     //Integrity
     if (size()==0)
-        return _T("");
+        return Ztring();
 
     Ztring ToReturn;
     size_type Size=size()-1;
@@ -367,7 +367,7 @@ void ZtringListList::Write(const ZtringList &ToWrite, size_type Pos)
             reserve(capacity()*2);
 
         while (Pos>size())
-            push_back (_T(""));
+            push_back (Ztring());
         push_back(ToWrite);
     }
     else
@@ -377,7 +377,7 @@ void ZtringListList::Write(const ZtringList &ToWrite, size_type Pos)
 void ZtringListList::Write(const Ztring &ToWrite, size_type Pos0, size_type Pos1)
 {
     if (Pos0>=size())
-        Write(_T(""), Pos0);
+        Write(Ztring(), Pos0);
 
     operator[](Pos0).Write(ToWrite, Pos1);
 }
@@ -438,7 +438,7 @@ void ZtringListList::Swap (size_type Pos0_A, size_type Pos0_B)
     else
         Pos_Max=Pos0_A;
     if (Pos_Max>=size())
-        Write(_T(""), Pos_Max);
+        Write(Ztring(), Pos_Max);
 
     operator [] (Pos0_A).swap(operator [] (Pos0_B));
 }
@@ -500,7 +500,7 @@ Ztring ZtringListList::FindValue (const Ztring &ToFind, size_type Pos1Value, siz
 {
     size_type Pos0=Find(ToFind, Pos1, Pos0Begin, Comparator);
     if (Pos0==Error)
-        return _T("");
+        return Ztring();
 
     return Read(Pos0, Pos1Value);
 }

@@ -52,8 +52,8 @@ public :
     #endif
 
     //File management
-    bool   Load   (const Ztring &FileName=_T(""));
-    bool   Save   (const Ztring &FileName=_T(""));
+    bool   Load   (const Ztring &FileName=Ztring());
+    bool   Save   (const Ztring &FileName=Ztring());
     bool   Cancel ();
 
     //Configuration
