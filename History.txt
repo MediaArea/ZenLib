@@ -1,4 +1,4 @@
-Version 0.4.14, 2010-
+Version 0.4.14, 2010-05-02
 -------------
 + Ztring: better compatibility with std::string
 + TinyXml import
