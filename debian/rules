@@ -63,6 +63,8 @@ install: build
 	install -m 644 Source/ZenLib/Format/Html/*.h $(CURDIR)/debian/tmp/usr/include/ZenLib/Format/Html
 	install -dm 755 $(CURDIR)/debian/tmp/usr/include/ZenLib/Format/Http
 	install -m 644 Source/ZenLib/Format/Http/*.h $(CURDIR)/debian/tmp/usr/include/ZenLib/Format/Http
+	install -dm 755 $(CURDIR)/debian/tmp/usr/include/ZenLib/TinyXml
+	install -m 644 Source/ZenLib/TinyXml/*.h $(CURDIR)/debian/tmp/usr/include/ZenLib/TinyXml
 
 	sed -i -e 's|Version: |Version: %{version}|g' Project/GNU/Library/libzen.pc
 	install -dm 755 $(CURDIR)/debian/tmp/usr/lib/pkgconfig

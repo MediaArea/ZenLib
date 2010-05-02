@@ -7,5 +7,6 @@ usr/include/ZenLib/Base64/*
 usr/include/ZenLib/HTTP_Client/*
 usr/include/ZenLib/Format/Html/*
 usr/include/ZenLib/Format/Http/*
+usr/include/ZenLib/TinyXml/*
 usr/share/doc/libzen0-dev/Documentation.html
 usr/share/doc/libzen0-dev/Doc/*
