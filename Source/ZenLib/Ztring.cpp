@@ -679,7 +679,7 @@ Ztring& Ztring::From_Number (const int8s I, int8u Radix)
         #ifdef __MINGW32__
             _itot (I, C1, Radix);
         #else
-            _tnprintf(C1, 32, Radix==10?_T("%d"):(Radix==16?_T("%x"):(Radix==8?_T("%o"):Ztring())), I);
+            _tnprintf(C1, 32, Radix==10?_T("%d"):(Radix==16?_T("%x"):(Radix==8?_T("%o"):_T(""))), I);
         #endif
         assign (C1);
         delete[] C1; //C1=NULL;
@@ -708,7 +708,7 @@ Ztring& Ztring::From_Number (const int8u I, int8u Radix)
         #ifdef __MINGW32__
             _ultot (I, C1, Radix);
         #else
-            _tnprintf(C1, 32, Radix==10?_T("%d"):(Radix==16?_T("%x"):(Radix==8?_T("%o"):Ztring())), I);
+            _tnprintf(C1, 32, Radix==10?_T("%d"):(Radix==16?_T("%x"):(Radix==8?_T("%o"):_T(""))), I);
         #endif
         assign (C1);
         delete[] C1; //C1=NULL;
@@ -737,7 +737,7 @@ Ztring& Ztring::From_Number (const int16s I, int8u Radix)
         #ifdef __MINGW32__
             _itot (I, C1, Radix);
         #else
-            _tnprintf(C1, 32, Radix==10?_T("%d"):(Radix==16?_T("%x"):(Radix==8?_T("%o"):Ztring())), I);
+            _tnprintf(C1, 32, Radix==10?_T("%d"):(Radix==16?_T("%x"):(Radix==8?_T("%o"):_T(""))), I);
         #endif
         assign (C1);
         delete[] C1; //C1=NULL;
@@ -762,7 +762,7 @@ Ztring& Ztring::From_Number (const int16u I, int8u Radix)
         #ifdef __MINGW32__
             _ultot (I, C1, Radix);
         #else
-            _tnprintf(C1, 32, Radix==10?_T("%d"):(Radix==16?_T("%x"):(Radix==8?_T("%o"):Ztring())), I);
+            _tnprintf(C1, 32, Radix==10?_T("%d"):(Radix==16?_T("%x"):(Radix==8?_T("%o"):_T(""))), I);
         #endif
         assign (C1);
         delete[] C1; //C1=NULL;
@@ -787,7 +787,7 @@ Ztring& Ztring::From_Number (const int32s I, int8u Radix)
         #ifdef __MINGW32__
             _itot (I, C1, Radix);
         #else
-            _tnprintf(C1, 32, Radix==10?_T("%d"):(Radix==16?_T("%x"):(Radix==8?_T("%o"):Ztring())), I);
+            _tnprintf(C1, 32, Radix==10?_T("%d"):(Radix==16?_T("%x"):(Radix==8?_T("%o"):_T(""))), I);
         #endif
         assign (C1);
         delete[] C1; //C1=NULL;
@@ -812,7 +812,7 @@ Ztring& Ztring::From_Number (const int32u I, int8u Radix)
         #ifdef __MINGW32__
             _ultot (I, C1, Radix);
         #else
-            _tnprintf(C1, 32, Radix==10?_T("%d"):(Radix==16?_T("%x"):(Radix==8?_T("%o"):Ztring())), I);
+            _tnprintf(C1, 32, Radix==10?_T("%d"):(Radix==16?_T("%x"):(Radix==8?_T("%o"):_T(""))), I);
         #endif
         assign (C1);
         delete[] C1; //C1=NULL;
@@ -837,7 +837,7 @@ Ztring& Ztring::From_Number (const int64s I, int8u Radix)
         #ifdef __MINGW32__
             _i64tot (I, C1, Radix);
         #else
-            _tnprintf(C1, 32, Radix==10?_T("%d"):(Radix==16?_T("%x"):(Radix==8?_T("%o"):Ztring())), I); //TODO : int64s (this is int32s only)
+            _tnprintf(C1, 32, Radix==10?_T("%d"):(Radix==16?_T("%x"):(Radix==8?_T("%o"):_T(""))), I); //TODO : int64s (this is int32s only)
         #endif
         assign (C1);
         delete[] C1; //C1=NULL;
@@ -862,7 +862,7 @@ Ztring& Ztring::From_Number (const int64u I, int8u Radix)
         #ifdef __MINGW32__
             _ui64tot (I, C1, Radix);
         #else
-            _tnprintf(C1, 32, Radix==10?_T("%d"):(Radix==16?_T("%x"):(Radix==8?_T("%o"):Ztring())), I); //TODO : int64u (this is int32u only)
+            _tnprintf(C1, 32, Radix==10?_T("%d"):(Radix==16?_T("%x"):(Radix==8?_T("%o"):_T(""))), I); //TODO : int64u (this is int32u only)
         #endif
         assign (C1);
         delete[] C1; //C1=NULL;

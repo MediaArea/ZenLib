@@ -1,3 +1,8 @@
+Version 0.4.15, 2010-
+-------------
+x Ztring: Solaris compatibility was broken
+x Solaris: pkgtrans packages, with optional default directory as script parameter
+
 Version 0.4.14, 2010-05-02
 -------------
 + Ztring: better compatibility with std::string

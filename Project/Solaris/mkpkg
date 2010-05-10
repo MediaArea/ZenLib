@@ -13,6 +13,9 @@ version="0.4.14"
 Home=`pwd`
 install_prefix=${Home}/mk_package
 packagecreation_prefix=${Home}/create_package
+if test -z ${basedir}; then
+  basedir="/"
+fi
 
 #Common code
 . ./mkpkg.sub
@@ -70,6 +73,9 @@ chmod 644 ${install_prefix}/include/ZenLib/Format/Html/*.h
 install -d -m 755 ${install_prefix}/include/ZenLib/Format/Http
 cp ../../Source/ZenLib/Format/Http/*.h ${install_prefix}/include/ZenLib/Format/Http
 chmod 644 ${install_prefix}/include/ZenLib/Format/Http/*.h
+install -d -m 755 ${install_prefix}/include/ZenLib/TinyXml
+cp ../../Source/ZenLib/TinyXml/*.h ${install_prefix}/include/ZenLib/TinyXml
+chmod 644 ${install_prefix}/include/ZenLib/TinyXml/*.h
 install -d -m 755 ${install_prefix}/bin
 cp ../GNU/Library/libzen-config ${install_prefix}/bin
 chmod 755 ${install_prefix}/bin/*
