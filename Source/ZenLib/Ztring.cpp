@@ -669,7 +669,7 @@ Ztring& Ztring::From_CC1 (const int8u S)
 
 Ztring& Ztring::From_Number (const int8s I, int8u Radix)
 {
-    #if defined(__MINGW32__) || defined(__sun__)
+    #if defined(__MINGW32__) || ( defined(__sun__) && !defined(__sparc__) )
         if (Radix==0)
         {
             clear();
@@ -698,7 +698,7 @@ Ztring& Ztring::From_Number (const int8s I, int8u Radix)
 
 Ztring& Ztring::From_Number (const int8u I, int8u Radix)
 {
-    #if defined(__MINGW32__) || defined(__sun__)
+    #if defined(__MINGW32__) || ( defined(__sun__) && !defined(__sparc__) )
         if (Radix==0)
         {
             clear();
@@ -727,7 +727,7 @@ Ztring& Ztring::From_Number (const int8u I, int8u Radix)
 
 Ztring& Ztring::From_Number (const int16s I, int8u Radix)
 {
-    #if defined(__MINGW32__) || defined(__sun__)
+    #if defined(__MINGW32__) || ( defined(__sun__) && !defined(__sparc__) )
         if (Radix==0)
         {
             clear();
@@ -752,7 +752,7 @@ Ztring& Ztring::From_Number (const int16s I, int8u Radix)
 
 Ztring& Ztring::From_Number (const int16u I, int8u Radix)
 {
-    #if defined(__MINGW32__) || defined(__sun__)
+    #if defined(__MINGW32__) || ( defined(__sun__) && !defined(__sparc__) )
         if (Radix==0)
         {
             clear();
@@ -762,7 +762,7 @@ Ztring& Ztring::From_Number (const int16u I, int8u Radix)
         #ifdef __MINGW32__
             _ultot (I, C1, Radix);
         #else
-            _tnprintf(C1, 32, Radix==10?_T("%d"):(Radix==16?_T("%x"):(Radix==8?_T("%o"):_T(""))), I);
+            _tnprintf(C1, 32, Radix==10?_T("%u"):(Radix==16?_T("%x"):(Radix==8?_T("%o"):_T(""))), I);
         #endif
         assign (C1);
         delete[] C1; //C1=NULL;
@@ -777,7 +777,7 @@ Ztring& Ztring::From_Number (const int16u I, int8u Radix)
 
 Ztring& Ztring::From_Number (const int32s I, int8u Radix)
 {
-    #if defined(__MINGW32__) || defined(__sun__)
+    #if defined(__MINGW32__) || ( defined(__sun__) && !defined(__sparc__) )
         if (Radix==0)
         {
             clear();
@@ -787,7 +787,7 @@ Ztring& Ztring::From_Number (const int32s I, int8u Radix)
         #ifdef __MINGW32__
             _itot (I, C1, Radix);
         #else
-            _tnprintf(C1, 32, Radix==10?_T("%d"):(Radix==16?_T("%x"):(Radix==8?_T("%o"):_T(""))), I);
+            _tnprintf(C1, 32, Radix==10?_T("%ld"):(Radix==16?_T("%lx"):(Radix==8?_T("%lo"):_T(""))), I);
         #endif
         assign (C1);
         delete[] C1; //C1=NULL;
@@ -802,7 +802,7 @@ Ztring& Ztring::From_Number (const int32s I, int8u Radix)
 
 Ztring& Ztring::From_Number (const int32u I, int8u Radix)
 {
-    #if defined(__MINGW32__) || defined(__sun__)
+    #if defined(__MINGW32__) || ( defined(__sun__) && !defined(__sparc__) )
         if (Radix==0)
         {
             clear();
@@ -812,7 +812,7 @@ Ztring& Ztring::From_Number (const int32u I, int8u Radix)
         #ifdef __MINGW32__
             _ultot (I, C1, Radix);
         #else
-            _tnprintf(C1, 32, Radix==10?_T("%d"):(Radix==16?_T("%x"):(Radix==8?_T("%o"):_T(""))), I);
+            _tnprintf(C1, 32, Radix==10?_T("%lu"):(Radix==16?_T("%lx"):(Radix==8?_T("%lo"):_T(""))), I);
         #endif
         assign (C1);
         delete[] C1; //C1=NULL;
@@ -827,7 +827,7 @@ Ztring& Ztring::From_Number (const int32u I, int8u Radix)
 
 Ztring& Ztring::From_Number (const int64s I, int8u Radix)
 {
-    #if defined(__MINGW32__) || defined(__sun__)
+    #if defined(__MINGW32__) || ( defined(__sun__) && !defined(__sparc__) )
         if (Radix==0)
         {
             clear();
@@ -837,7 +837,7 @@ Ztring& Ztring::From_Number (const int64s I, int8u Radix)
         #ifdef __MINGW32__
             _i64tot (I, C1, Radix);
         #else
-            _tnprintf(C1, 32, Radix==10?_T("%d"):(Radix==16?_T("%x"):(Radix==8?_T("%o"):_T(""))), I); //TODO : int64s (this is int32s only)
+            _tnprintf(C1, 64, Radix==10?_T("%lld"):(Radix==16?_T("%llx"):(Radix==8?_T("%llo"):_T(""))), I);
         #endif
         assign (C1);
         delete[] C1; //C1=NULL;
@@ -852,7 +852,7 @@ Ztring& Ztring::From_Number (const int64s I, int8u Radix)
 
 Ztring& Ztring::From_Number (const int64u I, int8u Radix)
 {
-    #if defined(__MINGW32__) || defined(__sun__)
+    #if defined(__MINGW32__) || ( defined(__sun__) && !defined(__sparc__) )
         if (Radix==0)
         {
             clear();
@@ -862,7 +862,7 @@ Ztring& Ztring::From_Number (const int64u I, int8u Radix)
         #ifdef __MINGW32__
             _ui64tot (I, C1, Radix);
         #else
-            _tnprintf(C1, 32, Radix==10?_T("%d"):(Radix==16?_T("%x"):(Radix==8?_T("%o"):_T(""))), I); //TODO : int64u (this is int32u only)
+            _tnprintf(C1, 64, Radix==10?_T("%llu"):(Radix==16?_T("%llx"):(Radix==8?_T("%llo"):_T(""))), I);
         #endif
         assign (C1);
         delete[] C1; //C1=NULL;
@@ -884,7 +884,7 @@ Ztring& Ztring::From_Number (const int128u I, int8u Radix)
 
 Ztring& Ztring::From_Number (const float32 F, int8u Precision, ztring_t Options)
 {
-    #if defined(__MINGW32__) || defined(__sun__) || defined(__mips__) || defined(__mipsel__)
+    #if defined(__MINGW32__) || ( defined(__sun__) && !defined(__sparc__) ) || defined(__mips__) || defined(__mipsel__)
         Char C1[100];
         _tnprintf (C1, 99, (Ztring(_T("%."))+Ztring::ToZtring(Precision)+_T("f")).c_str(), F);
         assign(C1);
@@ -907,7 +907,7 @@ Ztring& Ztring::From_Number (const float32 F, int8u Precision, ztring_t Options)
 
 Ztring& Ztring::From_Number (const float64 F, int8u Precision, ztring_t Options)
 {
-    #if defined(__MINGW32__) || defined(__sun__) || defined(__mips__) || defined(__mipsel__)
+    #if defined(__MINGW32__) || ( defined(__sun__) && !defined(__sparc__) ) || defined(__mips__) || defined(__mipsel__)
         Char C1[100];
         _tnprintf (C1, 99, (Ztring(_T("%."))+Ztring::ToZtring(Precision)+_T("f")).c_str(), F);
         assign(C1);
@@ -930,7 +930,7 @@ Ztring& Ztring::From_Number (const float64 F, int8u Precision, ztring_t Options)
 
 Ztring& Ztring::From_Number (const float80 F, int8u Precision, ztring_t Options)
 {
-    #if defined(__MINGW32__) || defined(__sun__) || defined(__mips__) || defined(__mipsel__)
+    #if defined(__MINGW32__) || ( defined(__sun__) && !defined(__sparc__) ) || defined(__mips__) || defined(__mipsel__)
         Char C1[100];
         _tnprintf (C1, 99, (Ztring(_T("%."))+Ztring::ToZtring(Precision)+_T("f")).c_str(), F);
         assign(C1);
@@ -964,7 +964,7 @@ Ztring& Ztring::From_Number (const size_t I, int8u Radix)
 
 Ztring& Ztring::From_BCD     (const int8u I)
 {
-    #ifdef __sun__
+    #if ( defined(__sun__) && !defined(__sparc__) )
         clear();
         append(1, _T('0')+I/0x10);
         append(1, _T('0')+I%0x10);
@@ -1513,7 +1513,7 @@ int8s Ztring::To_int8s (int8u Radix, ztring_t Options) const
     int I;
     #ifdef __MINGW32__
         I=_ttoi(c_str());
-    #elif defined(__sun__)
+    #elif ( defined(__sun__) && !defined(__sparc__) )
         #ifdef UNICODE
             std::string S=To_UTF8();
             I=atoi(S.c_str());
@@ -1551,7 +1551,7 @@ int8u Ztring::To_int8u (int8u Radix, ztring_t Options) const
     unsigned int I;
     #ifdef __MINGW32__
         I=_ttoi64(c_str()); //TODO : I>0x7FFFFFFF - Replaced by i64 version to support, but not good
-    #elif defined(__sun__)
+    #elif ( defined(__sun__) && !defined(__sparc__) )
         #ifdef UNICODE
             std::string S=To_UTF8();
             I=atoi(S.c_str());
@@ -1589,7 +1589,7 @@ int16s Ztring::To_int16s (int8u Radix, ztring_t Options) const
     int I;
     #ifdef __MINGW32__
         I=_ttoi(c_str());
-    #elif defined(__sun__)
+    #elif ( defined(__sun__) && !defined(__sparc__) )
         #ifdef UNICODE
             std::string S=To_UTF8();
             I=atoi(S.c_str());
@@ -1627,7 +1627,7 @@ int16u Ztring::To_int16u (int8u Radix, ztring_t Options) const
     unsigned int I;
     #ifdef __MINGW32__
         I=_ttoi64(c_str()); //TODO : I>0x7FFFFFFF - Replaced by i64 version to support, but not good
-    #elif defined(__sun__)
+    #elif ( defined(__sun__) && !defined(__sparc__) )
         #ifdef UNICODE
             std::string S=To_UTF8();
             I=atoi(S.c_str());
@@ -1665,12 +1665,12 @@ int32s Ztring::To_int32s (int8u Radix, ztring_t Options) const
     int32s I;
     #ifdef __MINGW32__
         I=_ttoi(c_str());
-    #elif defined(__sun__)
+    #elif ( defined(__sun__) && !defined(__sparc__) )
         #ifdef UNICODE
             std::string S=To_UTF8();
-            I=atoi(S.c_str());
+            I=atol(S.c_str());
         #else //UNICODE
-            I=atoi(c_str());
+            I=atol(c_str());
         #endif //UNICODE
     #else
         tStringStream SS(*this);
@@ -1703,12 +1703,12 @@ int32u Ztring::To_int32u (int8u Radix, ztring_t Options) const
     int32u I;
     #ifdef __MINGW32__
         I=_ttoi64(c_str()); //TODO : I>0x7FFFFFFF - Replaced by i64 version to support, but not good
-    #elif defined(__sun__)
+    #elif ( defined(__sun__) && !defined(__sparc__) )
         #ifdef UNICODE
             std::string S=To_UTF8();
-            I=atoi(S.c_str());
+            I=atol(S.c_str());
         #else //UNICODE
-            I=atoi(c_str());
+            I=atol(c_str());
         #endif //UNICODE
     #else
         tStringStream SS(*this);
@@ -1741,12 +1741,12 @@ int64s Ztring::To_int64s (int8u Radix, ztring_t Options) const
     int64s I;
     #ifdef __MINGW32__
         I=_ttoi64(c_str());
-    #elif defined(__sun__)
+    #elif ( defined(__sun__) && !defined(__sparc__) )
         #ifdef UNICODE
              std::string S=To_UTF8();
-            I=atoi(S.c_str());
+            I=atoll(S.c_str());
        #else //UNICODE
-            I=atoi(c_str()); //TODO : int64u (this is int32u only)
+            I=atoll(c_str());
         #endif //UNICODE
     #else
         tStringStream SS(*this);
@@ -1779,12 +1779,12 @@ int64u Ztring::To_int64u (int8u Radix, ztring_t Options) const
     int64u I;
     #ifdef __MINGW32__
         I=_ttoi64(c_str()); //TODO : I>0x7FFFFFFFFFFFFFFF
-    #elif defined(__sun__)
+    #elif ( defined(__sun__) && !defined(__sparc__) )
         #ifdef UNICODE
              std::string S=To_UTF8();
-            I=atoi(S.c_str());
+            I=atoll(S.c_str());
        #else //UNICODE
-            I=atoi(c_str()); //TODO : int64u (this is int32u only)
+            I=atoll(c_str());
         #endif //UNICODE
     #else
         tStringStream SS(*this);
@@ -1877,7 +1877,7 @@ float32 Ztring::To_float32(ztring_t) const
         return 0;
 
     //Conversion
-    #if defined(__MINGW32__) || defined(__sun__)
+    #if defined(__MINGW32__) || ( defined(__sun__) && !defined(__sparc__) )
         #ifdef UNICODE
             return (wcstod(c_str(),NULL));
         #else
@@ -1903,11 +1903,11 @@ float64 Ztring::To_float64(ztring_t) const
         return 0;
 
     //Conversion
-    #if defined(__MINGW32__) || defined(__sun__)
+    #if defined(__MINGW32__) || ( defined(__sun__) && !defined(__sparc__) )
         #ifdef UNICODE
-            return (wcstod(c_str(),NULL));
+            return (wcstod(c_str(),NULL)); //TODO verify no wcstold
         #else
-            return (strtod(c_str(),NULL));
+            return (strtod(c_str(),NULL)); //TODO verify no strtold
         #endif
     #else
         float64 F;
@@ -1929,11 +1929,11 @@ float80 Ztring::To_float80(ztring_t) const
         return 0;
 
     //Conversion
-    #if defined(__MINGW32__) || defined(__sun__)
+    #if defined(__MINGW32__) || ( defined(__sun__) && !defined(__sparc__) )
         #ifdef UNICODE
-            return (wcstod(c_str(),NULL));
+            return (wcstod(c_str(),NULL)); //TODO verify no wcstold
         #else
-            return (strtod(c_str(),NULL));
+            return (strtod(c_str(),NULL)); //TODO verify no strtold
         #endif
     #else
         float80 F;

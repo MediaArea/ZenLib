@@ -1,4 +1,4 @@
-Version 0.4.15, 2010-
+Version 0.4.15, 2010-05-13
 -------------
 x Ztring: Solaris compatibility was broken
 x Solaris: pkgtrans packages, with optional default directory as script parameter
