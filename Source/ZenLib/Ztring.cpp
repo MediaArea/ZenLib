@@ -244,7 +244,7 @@ Ztring& Ztring::From_UTF8 (const char* S)
                 }
                 else
                 {
-                    int Size=MultiByteToWideChar(CP_UTF8, 0, S, -1, NULL, 0);
+                    int Size=MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, S, -1, NULL, 0);
                     if (Size!=0)
                     {
                         Char* WideString=new Char[Size+1];
@@ -892,6 +892,9 @@ Ztring& Ztring::From_Number (const float32 F, int8u Precision, ztring_t Options)
         toStringStream SS;
         SS << setprecision(Precision) << fixed << F;
         assign(SS.str());
+        #if defined(__BORLANDC__)
+            FindAndReplace(_T(","), _T(".")); //Borland C++ Builder 2010+Windows Seven put a comma for istringstream, but does not support comma for ostringstream
+        #endif
     #endif
 
     if ((Options & Ztring_NoZero && size()>0) && find(_T('.'))>0)
@@ -915,6 +918,9 @@ Ztring& Ztring::From_Number (const float64 F, int8u Precision, ztring_t Options)
         toStringStream SS;
         SS << setprecision(Precision) << fixed << F;
         assign(SS.str());
+        #if defined(__BORLANDC__)
+            FindAndReplace(_T(","), _T(".")); //Borland C++ Builder 2010+Windows Seven put a comma for istringstream, but does not support comma for ostringstream
+        #endif
     #endif
 
     if ((Options & Ztring_NoZero && size()>0) && find(_T('.'))>0)
@@ -938,6 +944,9 @@ Ztring& Ztring::From_Number (const float80 F, int8u Precision, ztring_t Options)
         toStringStream SS;
         SS << setprecision(Precision) << fixed << F;
         assign(SS.str());
+        #if defined(__BORLANDC__)
+            FindAndReplace(_T(","), _T(".")); //Borland C++ Builder 2010+Windows Seven put a comma for istringstream, but does not support comma for ostringstream
+        #endif
     #endif
 
     if ((Options & Ztring_NoZero && size()>0) && find(_T('.'))>0)
