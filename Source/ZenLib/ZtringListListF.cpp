@@ -183,7 +183,7 @@ bool ZtringListListF::CFG_Charger ()
 
     //Convert File --> ZtringList
     ZtringList List;
-    List.Separator_Set(0, _T("\r\n"));
+    List.Separator_Set(0, EOL);
     Ztring Z1;
     Z1.From_UTF8((char*)Buffer, 0, BytesCount);
     List.Write(Z1);
@@ -306,7 +306,7 @@ bool ZtringListListF::CFG_Sauvegarder ()
         }
         if (Commentaire!=Ztring())
             ToWrite+=_T("; ")+Commentaire;
-        ToWrite+=_T("\r\n");
+        ToWrite+=EOL;
     }
     F.Write(ToWrite);
 

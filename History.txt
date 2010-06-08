@@ -1,6 +1,7 @@
 Version 0.4.16, 2010-
 -------------
 x Decimal point issues with some specific compilers/OS
+x ZtringList: issues with EOL
 
 Version 0.4.15, 2010-05-14
 -------------
