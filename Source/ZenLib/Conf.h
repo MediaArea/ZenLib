@@ -183,8 +183,9 @@
 
 //---------------------------------------------------------------------------
 //Macro to cut down on compiler warnings
-#define UNUSED(Identifier)
-
+#ifndef UNUSED
+    #define UNUSED(Identifier)
+#endif
 //---------------------------------------------------------------------------
 //If we need size_t specific integer conversion
 #if defined(__LP64__) || defined(MACOSX)
