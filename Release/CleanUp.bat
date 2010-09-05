@@ -16,7 +16,10 @@ call CleanUp
 cd ..\..\Release
 
 @rem MS Visual Studio ---
-cd ..\Project\MSVC
+cd ..\Project\MSVC2010
+call CleanUp
+cd ..\..\Release
+cd ..\Project\MSVC2008
 call CleanUp
 cd ..\..\Release
 cd ..\Project\MSVC2005
