@@ -19,7 +19,7 @@
 			<Base>true</Base>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Base)'!=''">
-			<IncludePath>..\..\..\Source\ZenLib;..\..\..\Source\Example;$(IncludePath)</IncludePath>
+			<IncludePath>..\..\..\Source\ZenLib\;..\..\..\Source\Example\;..\..\..\Source\ZenLib;..\..\..\Source\Example;$(IncludePath)</IncludePath>
 			<TASM_Defines>_UNICODE _WIN32 _DEBUG;$(TASM_Defines)</TASM_Defines>
 			<PackageImports>vcl.bpi;rtl.bpi;dbrtl.bpi;adortl.bpi;vcldb.bpi;vclx.bpi;bdertl.bpi;vcldbx.bpi;dsnap.bpi;dsnap.bpi;dsnapcon.bpi;teeui.bpi;teedb.bpi;tee.bpi;dss.bpi;dsnapcon.bpi;bcbsmp.bpi;vclie.bpi;xmlrtl.bpi;inet.bpi;inetdbbde.bpi;inetdbxpress.bpi;inetdb.bpi;webdsnap.bpi;bcbie.bpi;websnap.bpi;soaprtl.bpi;dbexpress.bpi;dbxcds.bpi</PackageImports>
 			<ILINK_FullDebugInfo>true</ILINK_FullDebugInfo>
@@ -50,7 +50,7 @@
 			<BCC_Defines>NO_STRICT;_UNICODE;_WIN32;$(BCC_Defines)</BCC_Defines>
 			<BCC_InlineFunctionExpansion>false</BCC_InlineFunctionExpansion>
 			<DCC_AdditionalSwitches> -M</DCC_AdditionalSwitches>
-			<ILINK_LibraryPath>..\..\..\..\Shared\Library\BCB;..\..\..\Source\ZenLib;..\..\..\Source\Example;$(BDS)\lib\obj;$(BDS)\lib;$(ILINK_LibraryPath)</ILINK_LibraryPath>
+			<ILINK_LibraryPath>..\..\..\Source\ZenLib\;..\..\..\Source\Example\;..\..\..\..\Shared\Library\BCB;..\..\..\Source\ZenLib;..\..\..\Source\Example;$(BDS)\lib\obj;$(BDS)\lib;$(ILINK_LibraryPath)</ILINK_LibraryPath>
 			<BCC_DebugLineNumbers>true</BCC_DebugLineNumbers>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Cfg_1)'!=''">
@@ -74,47 +74,47 @@
 			<BCC_InlineFunctionExpansion>true</BCC_InlineFunctionExpansion>
 		</PropertyGroup>
 		<ItemGroup>
-			<CppCompile Include="..\..\..\Source\ZenLib\ZtringListListF.cpp">
-				<BuildOrder>7</BuildOrder>
-				<DependentOn>..\..\..\Source\ZenLib\ZtringListListF.h</DependentOn>
+			<ResFiles Include="ZenLib_Test.res">
+				<BuildOrder>-1</BuildOrder>
 				<BuildOrder>0</BuildOrder>
+			</ResFiles>
+			<CppCompile Include="..\..\..\Source\Example\ZenLib_Test.cpp">
+				<BuildOrder>5</BuildOrder>
+				<BuildOrder>2</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\..\Source\ZenLib\Utils.cpp">
+				<BuildOrder>7</BuildOrder>
+				<BuildOrder>3</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\..\Source\ZenLib\Ztring.cpp">
+				<BuildOrder>9</BuildOrder>
+				<BuildOrder>4</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\..\Source\ZenLib\ZtringList.cpp">
+				<BuildOrder>8</BuildOrder>
+				<BuildOrder>5</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="..\..\..\Source\ZenLib\ZtringListList.cpp">
 				<BuildOrder>6</BuildOrder>
 				<BuildOrder>1</BuildOrder>
 			</CppCompile>
+			<CppCompile Include="..\..\..\Source\ZenLib\ZtringListListF.cpp">
+				<BuildOrder>7</BuildOrder>
+				<DependentOn>..\..\..\Source\ZenLib\ZtringListListF.h</DependentOn>
+				<BuildOrder>0</BuildOrder>
+			</CppCompile>
 			<CppCompile Include="..\..\..\Source\ZenLib\MemoryDebug.cpp">
 				<BuildOrder>8</BuildOrder>
 				<BuildOrder>2</BuildOrder>
 			</CppCompile>
-			<LibFiles Include="..\..\..\..\Shared\Library\BCB\Zlib.lib">
-				<BuildOrder>10</BuildOrder>
-				<BuildOrder>3</BuildOrder>
-			</LibFiles>
 			<LibFiles Include="..\..\..\..\Shared\Library\BCB\WxWidgets.lib">
 				<BuildOrder>9</BuildOrder>
 				<BuildOrder>4</BuildOrder>
 			</LibFiles>
-			<CppCompile Include="..\..\..\Source\Example\ZenLib_Test.cpp">
-				<BuildOrder>2</BuildOrder>
-				<BuildOrder>5</BuildOrder>
-			</CppCompile>
-			<ResFiles Include="ZenLib_Test.res">
-				<BuildOrder>-1</BuildOrder>
-				<BuildOrder>0</BuildOrder>
-			</ResFiles>
-			<CppCompile Include="..\..\..\Source\ZenLib\Utils.cpp">
+			<LibFiles Include="..\..\..\..\Shared\Library\BCB\Zlib.lib">
 				<BuildOrder>3</BuildOrder>
-				<BuildOrder>7</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\..\Source\ZenLib\ZtringList.cpp">
-				<BuildOrder>5</BuildOrder>
-				<BuildOrder>8</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\..\Source\ZenLib\Ztring.cpp">
-				<BuildOrder>4</BuildOrder>
-				<BuildOrder>9</BuildOrder>
-			</CppCompile>
+				<BuildOrder>10</BuildOrder>
+			</LibFiles>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>
