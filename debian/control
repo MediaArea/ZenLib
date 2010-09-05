@@ -1,6 +1,6 @@
 Source: libzen
 Priority: optional
-Maintainer: Jerome Martinez <zen@mediaarea.net>
+Maintainer: MediaArea.net <info@mediaarea.net>
 Build-Depends: debhelper (>= 5), doxygen, tofrodos, automake, autoconf, libtool
 Standards-Version: 3.7.3
 Section: libs

@@ -15,7 +15,7 @@ Summary:		Shared library for libmediainfo and medianfo*
 Group:			System/Libraries
 License:		BSD
 URL:			http://zenlib.sourceforge.net/
-Packager:		Jerome Martinez <zen@mediaarea.net>
+Packager:		MediaArea.net <info@mediaarea.net>
 Source:			libzen_%{version}-1.tar.gz
 BuildRoot:		%{_tmppath}/%{name}-%{version}-%{release}-root
 BuildRequires:	dos2unix
@@ -102,6 +102,6 @@ done
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
-* Tue Jan 01 2009 Jerome Martinez <zen@mediaarea.net> - 0.4.15-0
+* Tue Jan 01 2009 MediaArea.net <info@mediaarea.net> - 0.4.15-0
 - See History.txt for more info and real dates
 - Previous packages made by Toni Graffy <toni@links2linux.de>
