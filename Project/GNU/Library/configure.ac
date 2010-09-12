@@ -59,107 +59,6 @@ dnl With
 dnl
 AC_ARG_WITH(macosx-sdk,         AC_HELP_STRING([--with-macosx-sdk],         [Force the Mac SDK]),                         , with_macosx_sdk=no)
 AC_ARG_WITH(macosx-version-min, AC_HELP_STRING([--with-macosx-version-min], [Force the Mac Version]),                     , with_macosx_version_min=no)
-AC_ARG_WITH(wxwidgets,      AC_HELP_STRING([--with-wxwidgets],      [Use WxWidgets]),                           , with_wxwidgets=no)
-AC_ARG_WITH(wx_gui,         AC_HELP_STRING([--with-wx-gui],         [Use WxWidgets with a GUI]),                , with_wx_gui=no)
-AC_ARG_WITH(wx_static,      AC_HELP_STRING([--with-wx-static],      [Use WxWidgets static libs]),               , with_wx_static=no)
-
-dnl -------------------------------------------------------------------------
-dnl Third party
-dnl
-m4_include(wxwin.m4)
-AM_OPTIONS_WXCONFIG
-
-dnl #########################################################################
-dnl ### Parsing options
-dnl #########################################################################
-
-dnl -------------------------------------------------------------------------
-dnl WxWidgets (v2)
-dnl
-
-dnl Download and compile
-WxBuiltInCompile()
-{
-	if test -e ../../../../Shared/Project/WxWidgets/Compile.sh; then
-		cd ../../../../Shared/Project/WxWidgets
-		chmod u+x Compile.sh
-		./Compile.sh --enable-unicode=$enable_unicode --enable-static=yes --enable-gui=$with_wx_gui --build=$build
-		cd $Home
-		if test -e ../../../../Shared/Source/WxWidgets/Compile/wx-config; then
-			if test "x$(../../../../Shared/Source/WxWidgets/Compile/wx-config --unicode=$enable_unicode --version)" = "x"; then
-				with_wxwidgets="no"
-			else
-				dnl Compiled builtin lib found!
-				with_wxwidgets="builtin"
-			fi
-		else
-			dnl Problem while compiling
-			with_wxwidgets="no"
-		fi
-	else
-		with_wxwidgets="no"
-	fi
-}
-
-dnl Search for a good build, else built it
-WxBuiltInSearchGoodBuild()
-{
-	if test -e ../../../../Shared/Source/WxWidgets/Compile/wx-config; then
-		dnl There is already a compiled version
-		if test "x$(../../../../Shared/Source/WxWidgets/Compile/wx-config --unicode=$enable_unicode --static=$with_wx_static --version)" = "x"; then
-			if test "x$(../../../../Shared/Source/WxWidgets/Compile/wx-config --unicode=$enable_unicode --version)" = "x"; then
-				dnl Not well compiled, try to compile again
-				WxBuiltInCompile
-			else
-				dnl Already compiled builtin lib found!
-				with_wxwidgets="builtin"
-			fi
-		else
-			dnl Already compiled builtin lib found!
-			with_wxwidgets="builtin"
-		fi
-	else
-		dnl Not yet compiled, try to compile
-		WxBuiltInCompile
-	fi
-}
-
-dnl The test
-if test "$with_wxwidgets" = "yes"; then
-    dnl Searching system libs
-    AM_PATH_WXCONFIG(2.8.0, WxSystemLibs=1, WxSystemLibs=0, [base], --unicode=$enable_unicode --static=$with_wx_static)
-    if test "$WxSystemLibs" != 1; then
-        dnl Searching builtin libs
-		WxBuiltInSearchGoodBuild
-	else
-        dnl System lib found!
-		with_wxwidgets="system"
-	fi
-	
-	if test "$with_wxwidgets" = "no"; then
-		AC_MSG_ERROR([
-			wxWidgets must be installed on your system.
-	 
-			Please check that wx-config is in path, the directory
-			where wxWidgets libraries are installed (returned by
-			'wx-config --libs' or 'wx-config --static --libs' command)
-			is in LD_LIBRARY_PATH or equivalent variable and
-			wxWidgets version is 2.8.0 or above, and the compilation 
-			is compatible with 
-			--unicode=$enable_unicode --static=$with_wx_static
-			])
-	fi
-	if test "$with_wxwidgets" = "system"; then
-		if test "${with_wx_config+set}" = set; then
-			ZenLib_Wx_Config=$with_wx_config;
-		else
-			ZenLib_Wx_Config="wx-config"
-		fi
-	fi
-	if test "$with_wxwidgets" = "builtin"; then
-       ZenLib_Wx_Config="../../../../Shared/Source/WxWidgets/Compile/wx-config"
-	fi
-fi
 
 dnl #########################################################################
 dnl ### Compiler specific
@@ -224,16 +123,6 @@ fi
 dnl #########################################################################
 dnl ### ZenLib flags
 dnl #########################################################################
-
-dnl -------------------------------------------------------------------------
-dnl WxWidgets
-dnl
-if test "$with_wxwidgets" != "no"; then
-	CFLAGS="$CFLAGS $($ZenLib_Wx_Config --unicode=$enable_unicode --cflags)"
-	CXXFLAGS="$CXXFLAGS $($ZenLib_Wx_Config --unicode=$enable_unicode --cxxflags)"
-	ZenLib_LIBS="$ZenLib_LIBS $($ZenLib_Wx_Config --unicode=$enable_unicode --libs)"
-	ZenLib_LIBS_Static="$ZenLib_LIBS_Static $($ZenLib_Wx_Config --unicode=$enable_unicode --libs)"
-fi
 
 dnl -------------------------------------------------------------------------
 dnl Common
@@ -331,7 +220,6 @@ echo ""
 echo "  Unicode?                                                $enable_unicode"
 echo "  wstring missing support?                                $ZenLib_WstringMissing"
 echo "  Large files support?                                    $enable_large_files"
-echo "  Using WxWidgets?                                        $with_wxwidgets"
 echo ""
 echo "  Create static lib?                                      $enable_static"
 echo "  Create shared lib?                                      $enable_shared"
