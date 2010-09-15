@@ -346,7 +346,6 @@
     <ClInclude Include="..\..\..\Source\ZenLib\BitStream.h" />
     <ClInclude Include="..\..\..\Source\ZenLib\BitStream_LE.h" />
     <ClInclude Include="..\..\..\Source\ZenLib\Conf.h" />
-    <ClInclude Include="..\..\..\Source\ZenLib\ConvertUTF.h" />
     <ClInclude Include="..\..\..\Source\ZenLib\CriticalSection.h" />
     <ClInclude Include="..\..\..\Source\ZenLib\Dir.h" />
     <ClInclude Include="..\..\..\Source\ZenLib\File.h" />

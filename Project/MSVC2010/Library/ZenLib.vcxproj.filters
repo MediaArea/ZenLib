@@ -131,9 +131,6 @@
     <ClInclude Include="..\..\..\Source\ZenLib\Conf.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Source\ZenLib\ConvertUTF.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Source\ZenLib\CriticalSection.h">
       <Filter>Header Files</Filter>
     </ClInclude>
