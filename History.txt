@@ -3,6 +3,7 @@ Version 0.4.16, 2010-
 + BitStream: Peek3()
 x Decimal point issues with some specific compilers/OS
 x ZtringList: issues with EOL
+x #3025205, File is not opened if a "?" is in it
 
 Version 0.4.15, 2010-05-14
 -------------
