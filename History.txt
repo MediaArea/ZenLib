@@ -1,4 +1,4 @@
-Version 0.4.16, 2010-
+Version 0.4.16, 2010-10-24
 -------------
 + BitStream: Peek3()
 x Decimal point issues with some specific compilers/OS
