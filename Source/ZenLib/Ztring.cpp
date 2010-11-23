@@ -1522,7 +1522,7 @@ int8s Ztring::To_int8s (int8u Radix, ztring_t Options) const
     int I;
     #ifdef __MINGW32__
         I=_ttoi(c_str());
-    #elif ( defined(__sun__) && !defined(__sparc__) )
+    #elif ( defined(__sun__) && !defined(__sparc__) ) || defined(__UCLIBC__)
         #ifdef UNICODE
             std::string S=To_UTF8();
             I=atoi(S.c_str());
@@ -1560,7 +1560,7 @@ int8u Ztring::To_int8u (int8u Radix, ztring_t Options) const
     unsigned int I;
     #ifdef __MINGW32__
         I=_ttoi64(c_str()); //TODO : I>0x7FFFFFFF - Replaced by i64 version to support, but not good
-    #elif ( defined(__sun__) && !defined(__sparc__) )
+    #elif ( defined(__sun__) && !defined(__sparc__) ) || defined(__UCLIBC__)
         #ifdef UNICODE
             std::string S=To_UTF8();
             I=atoi(S.c_str());
@@ -1598,7 +1598,7 @@ int16s Ztring::To_int16s (int8u Radix, ztring_t Options) const
     int I;
     #ifdef __MINGW32__
         I=_ttoi(c_str());
-    #elif ( defined(__sun__) && !defined(__sparc__) )
+    #elif ( defined(__sun__) && !defined(__sparc__) ) || defined(__UCLIBC__)
         #ifdef UNICODE
             std::string S=To_UTF8();
             I=atoi(S.c_str());
@@ -1636,7 +1636,7 @@ int16u Ztring::To_int16u (int8u Radix, ztring_t Options) const
     unsigned int I;
     #ifdef __MINGW32__
         I=_ttoi64(c_str()); //TODO : I>0x7FFFFFFF - Replaced by i64 version to support, but not good
-    #elif ( defined(__sun__) && !defined(__sparc__) )
+    #elif ( defined(__sun__) && !defined(__sparc__) ) || defined(__UCLIBC__)
         #ifdef UNICODE
             std::string S=To_UTF8();
             I=atoi(S.c_str());
@@ -1674,7 +1674,7 @@ int32s Ztring::To_int32s (int8u Radix, ztring_t Options) const
     int32s I;
     #ifdef __MINGW32__
         I=_ttoi(c_str());
-    #elif ( defined(__sun__) && !defined(__sparc__) )
+    #elif ( defined(__sun__) && !defined(__sparc__) ) || defined(__UCLIBC__)
         #ifdef UNICODE
             std::string S=To_UTF8();
             I=atol(S.c_str());
@@ -1712,7 +1712,7 @@ int32u Ztring::To_int32u (int8u Radix, ztring_t Options) const
     int32u I;
     #ifdef __MINGW32__
         I=_ttoi64(c_str()); //TODO : I>0x7FFFFFFF - Replaced by i64 version to support, but not good
-    #elif ( defined(__sun__) && !defined(__sparc__) )
+    #elif ( defined(__sun__) && !defined(__sparc__) ) || defined(__UCLIBC__)
         #ifdef UNICODE
             std::string S=To_UTF8();
             I=atol(S.c_str());
@@ -1750,7 +1750,7 @@ int64s Ztring::To_int64s (int8u Radix, ztring_t Options) const
     int64s I;
     #ifdef __MINGW32__
         I=_ttoi64(c_str());
-    #elif ( defined(__sun__) && !defined(__sparc__) )
+    #elif ( defined(__sun__) && !defined(__sparc__) ) || defined(__UCLIBC__)
         #ifdef UNICODE
              std::string S=To_UTF8();
             I=atoll(S.c_str());
@@ -1788,7 +1788,7 @@ int64u Ztring::To_int64u (int8u Radix, ztring_t Options) const
     int64u I;
     #ifdef __MINGW32__
         I=_ttoi64(c_str()); //TODO : I>0x7FFFFFFFFFFFFFFF
-    #elif ( defined(__sun__) && !defined(__sparc__) )
+    #elif ( defined(__sun__) && !defined(__sparc__) ) || defined(__UCLIBC__)
         #ifdef UNICODE
              std::string S=To_UTF8();
             I=atoll(S.c_str());

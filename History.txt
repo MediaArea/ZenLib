@@ -1,3 +1,7 @@
+Version 0.4.17
+--------------
++ uClibc compatibility, thanks to Metin KAYA <metin@EnderUNIX.org>
+
 Version 0.4.16, 2010-10-24
 -------------
 + BitStream: Peek3()

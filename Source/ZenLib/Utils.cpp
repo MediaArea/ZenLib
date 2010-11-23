@@ -28,6 +28,7 @@
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 #include "ZenLib/Utils.h"
+#include <cmath>
 #include <complex>
 //---------------------------------------------------------------------------
 
@@ -654,7 +655,7 @@ float80 BigEndian2float80(const char* Liste)
     if (Exponent==0 || Exponent==0x7FFF)
         return 0; //These are denormalised numbers, NANs, and other horrible things
     Exponent-=0x3FFF; //Bias
-    float80 Answer=(((float80)Mantissa)/9223372036854775808.0+1.0)*std::pow((float80)2, (int)Exponent); //(1+Mantissa) * 2^Exponent
+    float80 Answer=(((float80)Mantissa)/9223372036854775808.0+1.0)*std::pow((float)2, (int)Exponent); //(1+Mantissa) * 2^Exponent
     if (Sign)
         Answer=-Answer;
 
