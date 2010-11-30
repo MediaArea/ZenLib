@@ -171,8 +171,20 @@ public:
 
     virtual void Skip (size_t HowMany)
     {
-        if (HowMany==0 || HowMany>32)
+        if (HowMany==0)
             return;
+        if (HowMany>32) //Algorithm is only for <=32 bits
+        {
+            do
+            {
+                Skip(32);
+                HowMany-=32;
+            }
+            while(HowMany>32);
+            if (HowMany)
+                Skip(HowMany);
+            return;
+        }
         if ((size_t)HowMany>Buffer_Size+LastByte_Size)
         {
             Buffer_Size=0;
