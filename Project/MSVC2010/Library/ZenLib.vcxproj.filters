@@ -206,5 +206,8 @@
     <ClInclude Include="..\..\..\Source\ZenLib\TinyXml\tinyxml.h">
       <Filter>Header Files\TinyXml</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Source\ZenLib\Conf_Internal.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
