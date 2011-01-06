@@ -212,9 +212,9 @@ Ztring ZtringListList::Read () const
     ToReturn+=Read(Size);
 
     //Delete all useless separators at the end
-    if(ToReturn.size()>0 && Separator[0].size() && ToReturn(ToReturn.size()-1)==Separator[0][Separator[0].size()-1]) //Optimize speed
-        while (ToReturn.find(Separator[0].c_str(), ToReturn.size()-Separator[0].size())!=std::string::npos)
-            ToReturn.resize(ToReturn.size()-Separator[0].size());
+    //if(ToReturn.size()>0 && Separator[0].size() && ToReturn(ToReturn.size()-1)==Separator[0][Separator[0].size()-1]) //Optimize speed
+    //    while (ToReturn.find(Separator[0].c_str(), ToReturn.size()-Separator[0].size())!=std::string::npos)
+    //        ToReturn.resize(ToReturn.size()-Separator[0].size());
 
     return ToReturn;
 }

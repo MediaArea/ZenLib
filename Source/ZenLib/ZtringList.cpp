@@ -188,7 +188,8 @@ Ztring ZtringList::Read () const
     }
 
     //delete all useless separators at the end
-    while (Retour.find(Separator[0].c_str(), Retour.size()-Separator[0].size())!=std::string::npos)
+    //while (Retour.find(Separator[0].c_str(), Retour.size()-Separator[0].size())!=std::string::npos)
+    if (Retour.find(Separator[0].c_str(), Retour.size()-Separator[0].size())!=std::string::npos)
         Retour.resize(Retour.size()-Separator[0].size());
 
     return Retour;

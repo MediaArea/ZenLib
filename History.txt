@@ -1,3 +1,7 @@
+Version 0.4.18, 2011-
+--------------
+x ZtringList and ZtringListList :: Read(): do not remove pending delimiters
+
 Version 0.4.17, 2010-12-16
 --------------
 + uClibc compatibility, thanks to Metin KAYA <metin@EnderUNIX.org>
