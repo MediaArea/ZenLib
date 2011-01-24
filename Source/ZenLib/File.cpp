@@ -694,7 +694,7 @@ bool File::Opened_Get()
             //return File_Handle!=-1;
             return File_Handle!=NULL && ((fstream*)File_Handle)->is_open();
         #elif defined WINDOWS
-            return File_Handle!=NULL;
+            return File_Handle!=INVALID_HANDLE_VALUE;
         #endif
     #endif //ZENLIB_USEWX
 }
