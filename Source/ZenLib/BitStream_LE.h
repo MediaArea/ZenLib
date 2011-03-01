@@ -107,7 +107,7 @@ public:
 
     int32u Remain () //How many bits remain?
     {
-        return 32;
+        return storage*8-(endbyte*8+endbit);
     };
 
     void Byte_Align()
