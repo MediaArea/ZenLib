@@ -59,7 +59,21 @@ unsigned char Char2Hex (unsigned char Char)
         Char-='a'-10;
     else if (Char<='F' && Char>='A')
         Char-='A'-10;
-    else 
+    else
+        Char =0;
+    return Char;
+}
+
+//---------------------------------------------------------------------------
+wchar_t Char2Hex (wchar_t Char)
+{
+         if (Char<='9' && Char>='0')
+        Char-='0';
+    else if (Char<='f' && Char>='a')
+        Char-='a'-10;
+    else if (Char<='F' && Char>='A')
+        Char-='A'-10;
+    else
         Char =0;
     return Char;
 }
@@ -70,6 +84,15 @@ string Hex2Char (unsigned char Char)
     string Result;
     Result+=(char)((Char/16>=10?'a'-10:'0')+Char/16);
     Result+=(char)((Char%16>=10?'a'-10:'0')+Char%16);
+    return Result;
+}
+
+//---------------------------------------------------------------------------
+wstring Hex2Char (wchar_t Char)
+{
+    wstring Result;
+    Result+=(Char/16>=10?'a'-10:'0')+Char/16;
+    Result+=(Char%16>=10?'a'-10:'0')+Char%16;
     return Result;
 }
 
@@ -85,7 +108,7 @@ std::string URL_Encoded_Encode (const std::string& URL)
     for (Pos=0; Pos<URL.size(); Pos++)
     {
         if ((URL[Pos]>='\x00' && URL[Pos]<='\x20')
-         || URL[Pos]=='\0x7F'
+         || URL[Pos]=='\x7F'
          || URL[Pos]==' '
          || URL[Pos]=='<'
          || URL[Pos]=='>'
@@ -110,7 +133,47 @@ std::string URL_Encoded_Encode (const std::string& URL)
          || URL[Pos]=='+'
          || URL[Pos]=='$'
          || URL[Pos]==','*/)
-            Result+='%'+Hex2Char(URL[Pos]);
+            Result+='%'+Hex2Char((unsigned char)URL[Pos]);
+        else
+            Result+=URL[Pos];
+    }
+    return Result;
+}
+
+//---------------------------------------------------------------------------
+std::wstring URL_Encoded_Encode (const std::wstring& URL)
+{
+    wstring Result;
+    wstring::size_type Pos;
+    for (Pos=0; Pos<URL.size(); Pos++)
+    {
+        if ((URL[Pos]>=L'\x00' && URL[Pos]<=L'\x20')
+         || URL[Pos]==L'\x7F'
+         || URL[Pos]==L' '
+         || URL[Pos]==L'<'
+         || URL[Pos]==L'>'
+         || URL[Pos]==L'#'
+         || URL[Pos]==L'%'
+         || URL[Pos]==L'\"'
+         || URL[Pos]==L'{'
+         || URL[Pos]==L'}'
+         || URL[Pos]==L'|'
+         || URL[Pos]==L'\\'
+         || URL[Pos]==L'^'
+         || URL[Pos]==L'['
+         || URL[Pos]==L']'
+         || URL[Pos]==L'`'
+         /*|| URL[Pos]==L';'
+         || URL[Pos]==L'/'
+         || URL[Pos]==L'?'
+         || URL[Pos]==L':'
+         || URL[Pos]==L'@'
+         || URL[Pos]==L'&'
+         || URL[Pos]==L'=L'
+         || URL[Pos]==L'+'
+         || URL[Pos]==L'$'
+         || URL[Pos]==L','*/)
+            Result+=L'%'+Hex2Char(URL[Pos]);
         else
             Result+=URL[Pos];
     }
@@ -126,14 +189,37 @@ std::string URL_Encoded_Decode (const std::string& URL)
     {
         if (URL[Pos]=='%' && Pos+2<URL.size()) //At least 3 chars
         {
-            const unsigned char Char1 = Char2Hex(URL[Pos+1]);
-            const unsigned char Char2 = Char2Hex(URL[Pos+2]);
+            const unsigned char Char1 = Char2Hex((unsigned char)URL[Pos+1]);
+            const unsigned char Char2 = Char2Hex((unsigned char)URL[Pos+2]);
             const unsigned char Char = (Char1<<4) | Char2;
             Result+=Char;
             Pos+=2; //3 chars are used
         }
         else if (URL[Pos]=='+')
             Result+=' ';
+        else
+            Result+=URL[Pos];
+    }
+    return Result;
+}
+
+//---------------------------------------------------------------------------
+std::wstring URL_Encoded_Decode (const std::wstring& URL)
+{
+    wstring Result;
+    wstring::size_type Pos;
+    for (Pos=0; Pos<URL.size(); Pos++)
+    {
+        if (URL[Pos]==L'%' && Pos+2<URL.size()) //At least 3 chars
+        {
+            const wchar_t Char1 = Char2Hex(URL[Pos+1]);
+            const wchar_t Char2 = Char2Hex(URL[Pos+2]);
+            const wchar_t Char = (Char1<<4) | Char2;
+            Result+=Char;
+            Pos+=2; //3 chars are used
+        }
+        else if (URL[Pos]==L'+')
+            Result+=L' ';
         else
             Result+=URL[Pos];
     }

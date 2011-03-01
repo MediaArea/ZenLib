@@ -1,5 +1,6 @@
 Version 0.4.18, 2011-
 --------------
++ HTTP helpers in Unicode version
 x BitStream Little Endian: count of remaining bits was wrong
 x ZtringList and ZtringListList :: Read(): do not remove pending delimiters
 x File Open status: error with Windows return value
