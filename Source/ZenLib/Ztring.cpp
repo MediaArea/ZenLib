@@ -72,7 +72,7 @@ Ztring EmptyZtring;
 //---------------------------------------------------------------------------
 
 //---------------------------------------------------------------------------
-#if defined(__MINGW32__) || defined(__sun__) || defined(__mips__) || defined(__mipsel__)
+#if defined(__MINGW32__) || defined(__sun__) || defined(__mips__) || defined(__mipsel__) || defined(__UCLIBC__)
     #if defined (_UNICODE)
         #define _tnprintf snwprintf
     #else
@@ -669,7 +669,7 @@ Ztring& Ztring::From_CC1 (const int8u S)
 
 Ztring& Ztring::From_Number (const int8s I, int8u Radix)
 {
-    #if defined(__MINGW32__) || ( defined(__sun__) && !defined(__sparc__) )
+    #if defined(__MINGW32__) || ( defined(__sun__) && !defined(__sparc__) ) || defined(__UCLIBC__)
         if (Radix==0)
         {
             clear();
@@ -698,7 +698,7 @@ Ztring& Ztring::From_Number (const int8s I, int8u Radix)
 
 Ztring& Ztring::From_Number (const int8u I, int8u Radix)
 {
-    #if defined(__MINGW32__) || ( defined(__sun__) && !defined(__sparc__) )
+    #if defined(__MINGW32__) || ( defined(__sun__) && !defined(__sparc__) ) || defined(__UCLIBC__)
         if (Radix==0)
         {
             clear();
@@ -727,7 +727,7 @@ Ztring& Ztring::From_Number (const int8u I, int8u Radix)
 
 Ztring& Ztring::From_Number (const int16s I, int8u Radix)
 {
-    #if defined(__MINGW32__) || ( defined(__sun__) && !defined(__sparc__) )
+    #if defined(__MINGW32__) || ( defined(__sun__) && !defined(__sparc__) ) || defined(__UCLIBC__)
         if (Radix==0)
         {
             clear();
@@ -752,7 +752,7 @@ Ztring& Ztring::From_Number (const int16s I, int8u Radix)
 
 Ztring& Ztring::From_Number (const int16u I, int8u Radix)
 {
-    #if defined(__MINGW32__) || ( defined(__sun__) && !defined(__sparc__) )
+    #if defined(__MINGW32__) || ( defined(__sun__) && !defined(__sparc__) ) || defined(__UCLIBC__)
         if (Radix==0)
         {
             clear();
@@ -777,7 +777,7 @@ Ztring& Ztring::From_Number (const int16u I, int8u Radix)
 
 Ztring& Ztring::From_Number (const int32s I, int8u Radix)
 {
-    #if defined(__MINGW32__) || ( defined(__sun__) && !defined(__sparc__) )
+    #if defined(__MINGW32__) || ( defined(__sun__) && !defined(__sparc__) ) || defined(__UCLIBC__)
         if (Radix==0)
         {
             clear();
@@ -802,7 +802,7 @@ Ztring& Ztring::From_Number (const int32s I, int8u Radix)
 
 Ztring& Ztring::From_Number (const int32u I, int8u Radix)
 {
-    #if defined(__MINGW32__) || ( defined(__sun__) && !defined(__sparc__) )
+    #if defined(__MINGW32__) || ( defined(__sun__) && !defined(__sparc__) ) || defined(__UCLIBC__)
         if (Radix==0)
         {
             clear();
@@ -827,7 +827,7 @@ Ztring& Ztring::From_Number (const int32u I, int8u Radix)
 
 Ztring& Ztring::From_Number (const int64s I, int8u Radix)
 {
-    #if defined(__MINGW32__) || ( defined(__sun__) && !defined(__sparc__) )
+    #if defined(__MINGW32__) || ( defined(__sun__) && !defined(__sparc__) ) || defined(__UCLIBC__)
         if (Radix==0)
         {
             clear();
@@ -852,7 +852,7 @@ Ztring& Ztring::From_Number (const int64s I, int8u Radix)
 
 Ztring& Ztring::From_Number (const int64u I, int8u Radix)
 {
-    #if defined(__MINGW32__) || ( defined(__sun__) && !defined(__sparc__) )
+    #if defined(__MINGW32__) || ( defined(__sun__) && !defined(__sparc__) ) || defined(__UCLIBC__)
         if (Radix==0)
         {
             clear();
@@ -884,7 +884,7 @@ Ztring& Ztring::From_Number (const int128u I, int8u Radix)
 
 Ztring& Ztring::From_Number (const float32 F, int8u Precision, ztring_t Options)
 {
-    #if defined(__MINGW32__) || ( defined(__sun__) && !defined(__sparc__) ) || defined(__mips__) || defined(__mipsel__)
+    #if defined(__MINGW32__) || ( defined(__sun__) && !defined(__sparc__) ) || defined(__mips__) || defined(__mipsel__) || defined(__UCLIBC__)
         Char C1[100];
         _tnprintf (C1, 99, (Ztring(_T("%."))+Ztring::ToZtring(Precision)+_T("f")).c_str(), F);
         assign(C1);
@@ -910,7 +910,7 @@ Ztring& Ztring::From_Number (const float32 F, int8u Precision, ztring_t Options)
 
 Ztring& Ztring::From_Number (const float64 F, int8u Precision, ztring_t Options)
 {
-    #if defined(__MINGW32__) || ( defined(__sun__) && !defined(__sparc__) ) || defined(__mips__) || defined(__mipsel__)
+    #if defined(__MINGW32__) || ( defined(__sun__) && !defined(__sparc__) ) || defined(__mips__) || defined(__mipsel__) || defined(__UCLIBC__)
         Char C1[100];
         _tnprintf (C1, 99, (Ztring(_T("%."))+Ztring::ToZtring(Precision)+_T("f")).c_str(), F);
         assign(C1);
@@ -936,7 +936,7 @@ Ztring& Ztring::From_Number (const float64 F, int8u Precision, ztring_t Options)
 
 Ztring& Ztring::From_Number (const float80 F, int8u Precision, ztring_t Options)
 {
-    #if defined(__MINGW32__) || ( defined(__sun__) && !defined(__sparc__) ) || defined(__mips__) || defined(__mipsel__)
+    #if defined(__MINGW32__) || ( defined(__sun__) && !defined(__sparc__) ) || defined(__mips__) || defined(__mipsel__) || defined(__UCLIBC__)
         Char C1[100];
         _tnprintf (C1, 99, (Ztring(_T("%."))+Ztring::ToZtring(Precision)+_T("f")).c_str(), F);
         assign(C1);
