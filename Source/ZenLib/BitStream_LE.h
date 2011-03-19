@@ -73,8 +73,11 @@ public:
         HowMany+=endbit;
 
         if(endbyte+4>=storage){
-        ret=-1L;
-        if(endbyte*8+(long)HowMany>storage*8)goto overflow;
+            ret=-1L;
+            if(endbyte*8+(long)HowMany>storage*8){
+                Attach(NULL, 0);
+                goto overflow;
+            }
         }
 
         ret=ptr[0]>>endbit;
@@ -92,11 +95,12 @@ public:
         }
         ret&=m;
 
-        overflow:
-
         ptr+=HowMany/8;
         endbyte+=(long)HowMany/8;
         endbit=(long)HowMany&7;
+
+        overflow:
+
         return(ret);
     };
 
