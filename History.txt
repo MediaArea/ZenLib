@@ -1,6 +1,7 @@
 Version 0.4.20, 2011-
 --------------
 + TinyXml updated
++ float16 (on disk) support
 
 Version 0.4.19, 2011-03-19
 --------------

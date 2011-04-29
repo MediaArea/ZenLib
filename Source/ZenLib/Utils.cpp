@@ -216,24 +216,112 @@ int128u LittleEndian2int128u(const char* Liste)
 }
 
 //---------------------------------------------------------------------------
-// Little Endian - float 32 bits
-float32 LittleEndian2float32(const char*)
+// Little Endian - float 16 bits
+float32 LittleEndian2float16(const char* Liste)
 {
-    return 0.0; //Does it exist?
+    //sign          1 bit
+    //exponent      5 bit
+    //significand  10 bit
+
+    //Retrieving data
+    int32u Integer=LittleEndian2int32u(Liste);
+
+    //Retrieving elements
+    bool   Sign    =(Integer&0x8000)?true:false;
+    int32u Exponent=(Integer>>10)&0xFF;
+    int32u Mantissa= Integer&0x03FF;
+
+    //Some computing
+    if (Exponent==0 || Exponent==0xFF)
+        return 0; //These are denormalised numbers, NANs, and other horrible things
+    Exponent-=0x7F; //Bias
+    float64 Answer=(((float64)Mantissa)/8388608+1.0)*std::pow((float64)2, (int)Exponent); //(1+Mantissa) * 2^Exponent
+    if (Sign)
+        Answer=-Answer;
+
+    return (float32)Answer;
+}
+
+//---------------------------------------------------------------------------
+// Little Endian - float 32 bits
+float32 LittleEndian2float32(const char* Liste)
+{
+    //sign          1 bit
+    //exponent      8 bit
+    //significand  23 bit
+
+    //Retrieving data
+    int32u Integer=LittleEndian2int32u(Liste);
+
+    //Retrieving elements
+    bool   Sign    =(Integer&0x80000000)?true:false;
+    int32u Exponent=(Integer>>23)&0xFF;
+    int32u Mantissa= Integer&0x007FFFFF;
+
+    //Some computing
+    if (Exponent==0 || Exponent==0xFF)
+        return 0; //These are denormalised numbers, NANs, and other horrible things
+    Exponent-=0x7F; //Bias
+    float64 Answer=(((float64)Mantissa)/8388608+1.0)*std::pow((float64)2, (int)Exponent); //(1+Mantissa) * 2^Exponent
+    if (Sign)
+        Answer=-Answer;
+
+    return (float32)Answer;
 }
 
 //---------------------------------------------------------------------------
 // Little Endian - float 64 bits
-float64 LittleEndian2float64(const char*)
+float64 LittleEndian2float64(const char* Liste)
 {
-    return 0.0; //Does it exist?
+    //sign          1 bit
+    //exponent     11 bit
+    //significand  52 bit
+
+    //Retrieving data
+    int64u Integer=LittleEndian2int64u(Liste);
+
+    //Retrieving elements
+    bool   Sign    =(Integer&0x8000000000000000LL)?true:false;
+    int64u Exponent=(Integer>>52)&0x7FF;
+    int64u Mantissa= Integer&0xFFFFFFFFFFFFFLL;
+
+    //Some computing
+    if (Exponent==0 || Exponent==0x7FF)
+        return 0; //These are denormalised numbers, NANs, and other horrible things
+    Exponent-=0x3FF; //Bias
+    float64 Answer=(((float64)Mantissa)/4503599627370496.0+1.0)*std::pow((float64)2, (int)Exponent); //(1+Mantissa) * 2^Exponent
+    if (Sign)
+        Answer=-Answer;
+
+    return (float64)Answer;
 }
 
 //---------------------------------------------------------------------------
 // Little Endian - float 80 bits
-float80 LittleEndian2float80(const char*)
+float80 LittleEndian2float80(const char* Liste)
 {
-    return 0.0; //Does it exist?
+    //sign          1 bit
+    //exponent     15 bit
+    //integer?      1 bit
+    //significand  63 bit
+
+    //Retrieving data
+    int16u Integer1=BigEndian2int16u(Liste);
+    int64u Integer2=BigEndian2int64u(Liste+2);
+
+    //Retrieving elements
+    bool   Sign    =(Integer1&0x8000)?true:false;
+    int16u Exponent= Integer1&0x7FFF;
+    int64u Mantissa= Integer2&0x7FFFFFFFFFFFFFFFLL; //Only 63 bits, 1 most significant bit is explicit
+    //Some computing
+    if (Exponent==0 || Exponent==0x7FFF)
+        return 0; //These are denormalised numbers, NANs, and other horrible things
+    Exponent-=0x3FFF; //Bias
+    float80 Answer=(((float80)Mantissa)/9223372036854775808.0+1.0)*std::pow((float)2, (int)Exponent); //(1+Mantissa) * 2^Exponent
+    if (Sign)
+        Answer=-Answer;
+
+    return (float80)Answer;
 }
 
 //***************************************************************************
@@ -581,6 +669,33 @@ int128u BigEndian2int128u(const char* Liste)
 }
 
 //---------------------------------------------------------------------------
+// Big Endian - float 16 bits
+float32 BigEndian2float16(const char* Liste)
+{
+    //sign          1 bit
+    //exponent      5 bit
+    //significand  10 bit
+
+    //Retrieving data
+    int32u Integer=BigEndian2int32u(Liste);
+
+    //Retrieving elements
+    bool   Sign    =(Integer&0x8000)?true:false;
+    int32u Exponent=(Integer>>10)&0xFF;
+    int32u Mantissa= Integer&0x03FF;
+
+    //Some computing
+    if (Exponent==0 || Exponent==0xFF)
+        return 0; //These are denormalised numbers, NANs, and other horrible things
+    Exponent-=0x7F; //Bias
+    float64 Answer=(((float64)Mantissa)/8388608+1.0)*std::pow((float64)2, (int)Exponent); //(1+Mantissa) * 2^Exponent
+    if (Sign)
+        Answer=-Answer;
+
+    return (float32)Answer;
+}
+
+//---------------------------------------------------------------------------
 // Big Endian - float 32 bits
 float32 BigEndian2float32(const char* Liste)
 {
@@ -631,7 +746,7 @@ float64 BigEndian2float64(const char* Liste)
     if (Sign)
         Answer=-Answer;
 
-    return (float32)Answer;
+    return (float64)Answer;
 }
 
 //---------------------------------------------------------------------------
