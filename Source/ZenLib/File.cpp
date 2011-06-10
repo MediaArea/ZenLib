@@ -78,7 +78,15 @@ namespace ZenLib
 //---------------------------------------------------------------------------
 File::File()
 {
-    File_Handle=NULL;
+    #ifdef ZENLIB_USEWX
+        File_Handle=NULL;
+    #else //ZENLIB_USEWX
+        #ifdef ZENLIB_STANDARD
+            File_Handle=NULL;
+        #elif defined WINDOWS
+            File_Handle=INVALID_HANDLE_VALUE;
+        #endif
+    #endif //ZENLIB_USEWX
     Position=(int64u)-1;
     Size=(int64u)-1;
 }
@@ -86,7 +94,15 @@ File::File()
 File::File(Ztring File_Name, access_t Access)
 {
     if (!Open(File_Name, Access))
-        File_Handle=NULL;
+        #ifdef ZENLIB_USEWX
+            File_Handle=NULL;
+        #else //ZENLIB_USEWX
+            #ifdef ZENLIB_STANDARD
+                File_Handle=NULL;
+            #elif defined WINDOWS
+                File_Handle=INVALID_HANDLE_VALUE;
+            #endif
+        #endif //ZENLIB_USEWX
     Position=(int64u)-1;
     Size=(int64u)-1;
 }
