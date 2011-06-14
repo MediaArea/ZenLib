@@ -1,4 +1,4 @@
-Version 0.4.20, 2011-
+Version 0.4.20, 2011-06-15
 --------------
 + TinyXml updated
 + float16 (on disk) support
@@ -8,7 +8,7 @@ Version 0.4.19, 2011-03-19
 + Ztring: more compatibility with uCLibC
 x BitStream_LE: wrong result if buffer underrun
 
-Version 0.4.19, 2011-03-03
+Version 0.4.18, 2011-03-03
 --------------
 + HTTP helpers in Unicode version
 x BitStream Little Endian: count of remaining bits was wrong
