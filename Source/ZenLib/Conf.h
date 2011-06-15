@@ -195,6 +195,7 @@
 //---------------------------------------------------------------------------
 //(-1) is known to be the MAX of an unsigned int but GCC complains about it
 #include <new>
+#include <cstring> //size_t
 namespace ZenLib
 {
     const std::size_t Error=((std::size_t)(-1));
