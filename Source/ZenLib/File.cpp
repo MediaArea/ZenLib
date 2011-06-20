@@ -722,6 +722,15 @@ bool File::Opened_Get()
 //---------------------------------------------------------------------------
 int64u File::Size_Get(const Ztring &File_Name)
 {
+    #if defined WINDOWS
+        if (!IsWin9X())
+        {
+            WIN32_FILE_ATTRIBUTE_DATA Attributes;
+            if (GetFileAttributesEx(File_Name.c_str(), GetFileExInfoStandard, &Attributes))
+                return (((int64u)Attributes.nFileSizeHigh)<<32)+Attributes.nFileSizeLow;
+        }
+    #endif //defined WINDOWS
+
     File F(File_Name);
     return F.Size_Get();
 }
