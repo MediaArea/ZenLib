@@ -121,7 +121,10 @@ bool Ztring::Assign_FromFile (const Ztring &FileName)
         Buffer_Offset+=BytesRead;
     }
     if (Buffer_Offset<F_Size)
+    {
+        delete[] Buffer;
         return false;
+    }
     Buffer[Buffer_Offset]='\0';
 
     //Filling

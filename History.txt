@@ -1,6 +1,7 @@
 Version 0.4.21, 
 --------------
 + File size retrieval is faster (Windows)
+x #3157308, Ztring::Assign_FromFile(): Memory leak
 
 Version 0.4.20, 2011-06-15
 --------------
