@@ -43,7 +43,8 @@
 				AdditionalIncludeDirectories="../../../Source"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
 				RuntimeLibrary="0"
-				UsePrecompiledHeader="0"
+				UsePrecompiledHeader="2"
+				PrecompiledHeaderThrough="ZenLib/PreComp.h"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -128,6 +129,18 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\Source\ZenLib\PreComp.cpp"
+				>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
 				RelativePath="..\..\..\Source\ZenLib\Thread.cpp"
 				>
 			</File>
@@ -197,14 +210,38 @@
 				<File
 					RelativePath="..\..\..\Source\ZenLib\TinyXml\tinyxml.cpp"
 					>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							UsePrecompiledHeader="0"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\..\Source\ZenLib\TinyXml\tinyxmlerror.cpp"
 					>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							UsePrecompiledHeader="0"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\..\Source\ZenLib\TinyXml\tinyxmlparser.cpp"
 					>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							UsePrecompiledHeader="0"
+						/>
+					</FileConfiguration>
 				</File>
 			</Filter>
 		</Filter>
