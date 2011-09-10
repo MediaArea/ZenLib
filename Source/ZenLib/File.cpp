@@ -493,9 +493,6 @@ int64u File::Position_Get ()
 //---------------------------------------------------------------------------
 int64u File::Size_Get()
 {
-    if (Size!=(int64u)-1)
-        return Size;
-
     if (File_Handle==NULL)
         return 0;
 

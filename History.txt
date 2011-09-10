@@ -1,3 +1,7 @@
+Version 0.4.22
+--------------
++ File size retrieval is dynamic = support of growing files (Windows)
+
 Version 0.4.21, 2011-08-16
 --------------
 + File size retrieval is faster (Windows)
