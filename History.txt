@@ -1,6 +1,7 @@
 Version 0.4.22
 --------------
 + File size retrieval is dynamic = support of growing files (Windows)
+x #3412495, Ztring: To_UTF8() was working wrong, corrected thanks to Andrew Jang
 
 Version 0.4.21, 2011-08-16
 --------------

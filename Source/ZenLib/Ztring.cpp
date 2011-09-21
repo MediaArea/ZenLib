@@ -1327,35 +1327,69 @@ std::string Ztring::To_UTF8 () const
                         return std::string();
                 }
             #else //WINDOWS
+                //Correction thanks to Andrew Jang
                 std::string ToReturn;
+                ToReturn.reserve(size()); // more efficient
+
                 const wchar_t* Z=c_str();
-                while (*Z) //0 is end
+
+                while (*Z)
                 {
-                    //1 byte
-                    if (*Z<0x80)
-                        ToReturn += (char)  (*Z);
-                    else if (*Z<0x1000)
-                    {
-                        ToReturn += (char)(((*Z)>> 6)&0x1F);
-                        ToReturn += (char)( (*Z)     &0x3F);
-                    }
-                    else if (*Z<0x40000)
-                    {
-                        ToReturn += (char)(((*Z)>>12)&0x0F);
-                        ToReturn += (char)(((*Z)>> 6)&0x3F);
-                        ToReturn += (char)( (*Z)     &0x3F);
-                    }
-                    else if (*Z<0x1000000)
-                    {
-                        ToReturn += (char)(((*Z)>>18)&0x07);
-                        ToReturn += (char)(((*Z)>>12)&0x3F);
-                        ToReturn += (char)(((*Z)>> 6)&0x3F);
-                        ToReturn += (char)( (*Z)     &0x3F);
-                    }
+                    int32u wc; // must be unsigned.
+
+                    if (sizeof(wchar_t) == 2)
+                        wc = (int16u) *Z; // avoid a cast problem if wchar_t is signed.
                     else
-                        break; //Bad character
-                    Z++;
+                        wc = *Z;
+
+                    int count;
+
+                    // refer to http://en.wikipedia.org/wiki/UTF-8#Description
+
+                    if (wc < 0x80)
+                        count = 1;
+                    else if (wc < 0x800)
+                        count = 2;
+                    else if (wc < 0x10000)
+                        count = 3;
+                    else if (wc < 0x200000)
+                        count = 4;
+                    else if (wc < 0x4000000)
+                        count = 5;
+                    else if (wc <= 0x7fffffff)
+                        count = 6;
+                    else
+                        break;  // bad character
+
+                    int64u utfbuf = 0; // 8 bytes
+                    char* utf8chars = (char*) &utfbuf;
+
+                    switch (count)
+                    {
+                    case 6:
+                        utf8chars[5] = 0x80 | (wc & 0x3f);
+                        wc = (wc >> 6) | 0x4000000;
+                    case 5:
+                        utf8chars[4] = 0x80 | (wc & 0x3f);
+                        wc = (wc >> 6) | 0x200000;
+                    case 4:
+                        utf8chars[3] = 0x80 | (wc & 0x3f);
+                        wc = (wc >> 6) | 0x10000;
+                    case 3:
+                        utf8chars[2] = 0x80 | (wc & 0x3f);
+                        wc = (wc >> 6) | 0x800;
+                    case 2:
+                        utf8chars[1] = 0x80 | (wc & 0x3f);
+                        wc = (wc >> 6) | 0xc0;
+                    case 1:
+                        utf8chars[0] = wc;
+                    }
+
+                    ToReturn += utf8chars;
+
+                    ++Z;
                 }
+
                 return ToReturn;
             #endif
         #endif //ZENLIB_USEWX
