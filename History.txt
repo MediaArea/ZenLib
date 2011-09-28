@@ -1,3 +1,7 @@
+Version 0.4.23, 2011-
+--------------
++ Loading of CSV or any 2-dimensional array is carriage return mode insensitive
+
 Version 0.4.22, 2011-09-23
 --------------
 + File size retrieval is dynamic = support of growing files (Windows)

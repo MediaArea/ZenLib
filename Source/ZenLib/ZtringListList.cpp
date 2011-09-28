@@ -78,7 +78,7 @@ ZtringListList::ZtringListList(const ZtringListList &Source)
 
 ZtringListList::ZtringListList(const Ztring &Source)
 {
-    Separator[0]=_T("\r\n");
+    Separator[0]=EOL;
     Separator[1]=_T(";");
     Quote=_T("\"");
     Max[0]=Error;
@@ -88,7 +88,7 @@ ZtringListList::ZtringListList(const Ztring &Source)
 
 ZtringListList::ZtringListList(const Char *Source)
 {
-    Separator[0]=_T("\r\n");
+    Separator[0]=EOL;
     Separator[1]=_T(";");
     Quote=_T("\"");
     Max[0]=Error;
@@ -99,7 +99,7 @@ ZtringListList::ZtringListList(const Char *Source)
 #ifdef _UNICODE
 ZtringListList::ZtringListList (const char* S)
 {
-    Separator[0]=_T("\r\n");
+    Separator[0]=EOL;
     Separator[1]=_T(";");
     Quote=_T("\"");
     Max[0]=Error;
@@ -311,11 +311,34 @@ void ZtringListList::Write(const Ztring &ToWrite)
     ZL1.Quote_Set(Quote);
     ZL1.Max_Set(0, Max[1]);
 
+    //Detecting carriage return format
+    Ztring WriteSeparator;
+    if (Separator[0]==EOL)
+    {
+        size_t CarriageReturn_Pos=ToWrite.find_first_of(_T("\r\n"));
+        if (CarriageReturn_Pos!=string::npos)
+        {
+            if (ToWrite[CarriageReturn_Pos]==_T('\r'))
+            {
+                if (CarriageReturn_Pos+1<ToWrite.size() && ToWrite[CarriageReturn_Pos+1]==_T('\n'))
+                    WriteSeparator=_T("\r\n");
+                else
+                    WriteSeparator=_T("\r");
+            }
+            else
+                WriteSeparator=_T("\n");
+        }
+        else
+            WriteSeparator=Separator[0];
+    }
+    else
+        WriteSeparator=Separator[0];
+
     do
     {
         //Searching end of line, but it must not be in quotes
         bool InQuotes=false;
-        Ztring CharsToFind=Separator[0]+Quote;
+        Ztring CharsToFind=WriteSeparator+Quote;
         size_t Pos_End=PosC;
         while (Pos_End<ToWrite.size())
         {
@@ -332,7 +355,7 @@ void ZtringListList::Write(const Ztring &ToWrite)
                     }*/
                 }
 
-                if (!InQuotes && Pos_End+Separator[0].size()<=ToWrite.size() && ToWrite[Pos_End]==Separator[0][0])
+                if (!InQuotes && Pos_End+WriteSeparator.size()<=ToWrite.size() && ToWrite[Pos_End]==WriteSeparator[0])
                 {
                     C1=ToWrite.substr(PosC, Pos_End-PosC); 
                     break;
@@ -349,7 +372,7 @@ void ZtringListList::Write(const Ztring &ToWrite)
 
         ZL1.Write(C1);
         push_back(ZL1);
-        PosC+=C1.size()+Separator[0].size();
+        PosC+=C1.size()+WriteSeparator.size();
         if (PosC>=ToWrite.size())
             Fini=true;
     }
