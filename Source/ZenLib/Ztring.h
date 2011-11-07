@@ -137,6 +137,13 @@ public :
         /// @brief convert an ISO-8859-1 encoded string into Ztring
     Ztring& From_ISO_8859_1   (const char  *S, size_type Length)                {return From_ISO_8859_1(S, 0, Length);};
 
+        /// @brief convert an ISO-8859-2 encoded string into Ztring
+    Ztring& From_ISO_8859_2   (const char  *S);
+        /// @brief convert an ISO-8859-1 encoded string into Ztring
+    Ztring& From_ISO_8859_2   (const char  *S, size_type Start,  size_type Length);
+        /// @brief convert an ISO-8859-1 encoded string into Ztring
+    Ztring& From_ISO_8859_2   (const char  *S, size_type Length)                {return From_ISO_8859_2(S, 0, Length);};
+
         /// @brief convert an 16 byte GUID into Ztring
     Ztring& From_GUID    (const int128u S);
         /// @brief convert an 16 byte UUID into Ztring

@@ -1,6 +1,9 @@
 Version 0.4.23, 2011-
 --------------
 + Loading of CSV or any 2-dimensional array is carriage return mode insensitive
++ Ztring: ISO_8859_2 support
+x Ztring: UTF-8 load/save using generic code instead of Windows functions (they don't work for all Unicode codes)
+
 
 Version 0.4.22, 2011-09-23
 --------------
