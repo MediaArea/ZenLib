@@ -128,7 +128,10 @@ bool ZtringListListF::Load (const Ztring &NewFileName)
 bool ZtringListListF::CSV_Charger ()
 {
     //Read file
-    File F(Name);
+    File F;
+    if (!F.Open(Name))
+        return false;
+
     int8u* Buffer=new int8u[(size_t)F.Size_Get()+1];
     size_t BytesCount=F.Read(Buffer, (size_t)F.Size_Get());
     F.Close();
