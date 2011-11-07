@@ -21,11 +21,16 @@
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 //---------------------------------------------------------------------------
-#include "ZenLib/Conf_Internal.h"
+#include "ZenLib/PreComp.h"
 #ifdef __BORLANDC__
     #pragma hdrstop
 #endif
 //---------------------------------------------------------------------------
+
+//---------------------------------------------------------------------------
+#include "ZenLib/Conf_Internal.h"
+//---------------------------------------------------------------------------
+
 //---------------------------------------------------------------------------
 #ifdef ZENLIB_USEWX
     #include <wx/file.h>
@@ -50,6 +55,7 @@
         #endif
         */
         #include <sys/stat.h>
+        #include <unistd.h>
         #include <fstream>
         using namespace std;
         #ifndef S_ISDIR
@@ -238,9 +244,11 @@ bool File::Open (const tstring &File_Name_, access_t Access)
 }
 
 //---------------------------------------------------------------------------
-bool File::Create (const Ztring &File_Name, bool OverWrite)
+bool File::Create (const Ztring &File_Name_, bool OverWrite)
 {
     Close();
+
+    File_Name=File_Name_;
 
     #ifdef ZENLIB_USEWX
         File_Handle=(void*)new wxFile();
@@ -411,13 +419,59 @@ size_t File::Write (const int8u* Buffer, size_t Buffer_Size)
         #ifdef ZENLIB_STANDARD
             //return write(File_Handle, Buffer, Buffer_Size);
             ((fstream*)File_Handle)->write((char*)Buffer, Buffer_Size);
-            return ((fstream*)File_Handle)->bad()?0:Buffer_Size;
+            if (((fstream*)File_Handle)->bad())
+            {
+                Position=(int64u)-1;
+                return 0;
+            }
+            else
+            {
+                if (Position!=(int64u)-1)
+                    Position+=Buffer_Size;    
+                return Buffer_Size;
+            }
         #elif defined WINDOWS
             DWORD Buffer_Size_Written;
             if (WriteFile(File_Handle, Buffer, (DWORD)Buffer_Size, &Buffer_Size_Written, NULL))
+            {
+                if (Position!=(int64u)-1)
+                    Position+=Buffer_Size_Written;    
                 return Buffer_Size_Written;
+            }
             else
+            {
+                Position=(int64u)-1;
                 return 0;
+            }
+        #endif
+    #endif //ZENLIB_USEWX
+}
+
+//---------------------------------------------------------------------------
+bool File::Truncate (int64u Offset)
+{
+    if (File_Handle==NULL)
+        return false;
+
+    #ifdef ZENLIB_USEWX
+        return false; Not supported
+    #else //ZENLIB_USEWX
+        #ifdef ZENLIB_STANDARD
+            //Need to close the file, use truncate, reopen it
+            if (Offset==(int64u)-1)
+                Offset=Position_Get();
+            Ztring File_Name_Sav=File_Name;
+            Close();
+            truncate(File_Name_Sav.To_Local().c_str(), Offset);
+            if (!Open(File_Name_Sav, Access_Read_Write))
+                return false;
+            GoTo(0, FromEnd);
+        #elif defined WINDOWS
+            if(Offset!=(int64u)-1 && Offset!=Position_Get())
+                if (!GoTo(Offset))
+                    return false;
+            SetEndOfFile(File_Handle);
+            return true;
         #endif
     #endif //ZENLIB_USEWX
 }
