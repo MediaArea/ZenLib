@@ -42,20 +42,10 @@
         #else
             #include <cstdio>
         #endif
-        /*
-        #ifdef WINDOWS
-            #include <io.h>
-        #else
-            #include <cstdio>
-        #endif
-        #include <fcntl.h>
         #include <sys/stat.h>
-        #ifndef O_BINARY
-            #define O_BINARY 0
-        #endif
-        */
-        #include <sys/stat.h>
-        #include <unistd.h>
+        #if !defined(WINDOWS)
+            #include <unistd.h>
+        #endif //!defined(WINDOWS)
         #include <fstream>
         using namespace std;
         #ifndef S_ISDIR
@@ -457,15 +447,20 @@ bool File::Truncate (int64u Offset)
         return false; Not supported
     #else //ZENLIB_USEWX
         #ifdef ZENLIB_STANDARD
-            //Need to close the file, use truncate, reopen it
-            if (Offset==(int64u)-1)
-                Offset=Position_Get();
-            Ztring File_Name_Sav=File_Name;
-            Close();
-            truncate(File_Name_Sav.To_Local().c_str(), Offset);
-            if (!Open(File_Name_Sav, Access_Read_Write))
-                return false;
-            GoTo(0, FromEnd);
+            #if defined(WINDOWS)
+                return false; //No supported
+            #else //defined(WINDOWS)
+                //Need to close the file, use truncate, reopen it
+                if (Offset==(int64u)-1)
+                    Offset=Position_Get();
+                Ztring File_Name_Sav=File_Name;
+                Close();
+                truncate(File_Name_Sav.To_Local().c_str(), Offset);
+                if (!Open(File_Name_Sav, Access_Read_Write))
+                    return false;
+                GoTo(0, FromEnd);
+                return true;
+            #endif //!defined(WINDOWS)
         #elif defined WINDOWS
             if(Offset!=(int64u)-1 && Offset!=Position_Get())
                 if (!GoTo(Offset))
