@@ -573,9 +573,6 @@ int64u File::Position_Get ()
 //---------------------------------------------------------------------------
 int64u File::Size_Get()
 {
-    if (Size!=(int64u)-1)
-        return Size;
-
     #ifdef ZENLIB_USEWX
         if (File_Handle==NULL)
     #else //ZENLIB_USEWX
