@@ -1,4 +1,4 @@
-Version 0.4.23, 2011-
+Version 0.4.23, 2011-11-10
 --------------
 + Loading of CSV or any 2-dimensional array is carriage return mode insensitive
 + Ztring: ISO_8859_2 support
