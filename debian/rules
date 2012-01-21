@@ -72,12 +72,12 @@ install: build
 
 	install -dm 755 $(CURDIR)/debian/tmp/usr/share/doc/libzen0
 	install -m 644 *.txt $(CURDIR)/debian/tmp/usr/share/doc/libzen0
-	install -dm 755 $(CURDIR)/debian/tmp/usr/share/doc/libzen0-dev
-	install -m 644 Documentation.html $(CURDIR)/debian/tmp/usr/share/doc/libzen0-dev
-	install -dm 755 $(CURDIR)/debian/tmp/usr/share/doc/libzen0-dev/Doc
-	install -m 644 Doc/*.* $(CURDIR)/debian/tmp/usr/share/doc/libzen0-dev/Doc
-	if test -d Doc/search/ ; then install -dm 755 $(CURDIR)/debian/tmp/usr/share/doc/libzen0-dev/Doc/search ; fi
-	if test -d Doc/search/ ; then install -m 644 Doc/search/*.* $(CURDIR)/debian/tmp/usr/share/doc/libzen0-dev/Doc/search ; fi
+	install -dm 755 $(CURDIR)/debian/tmp/usr/share/doc/libzen-dev
+	install -m 644 Documentation.html $(CURDIR)/debian/tmp/usr/share/doc/libzen-dev
+	install -dm 755 $(CURDIR)/debian/tmp/usr/share/doc/libzen-dev/Doc
+	install -m 644 Doc/*.* $(CURDIR)/debian/tmp/usr/share/doc/libzen-dev/Doc
+	if test -d Doc/search/ ; then install -dm 755 $(CURDIR)/debian/tmp/usr/share/doc/libzen-dev/Doc/search ; fi
+	if test -d Doc/search/ ; then install -m 644 Doc/search/*.* $(CURDIR)/debian/tmp/usr/share/doc/libzen-dev/Doc/search ; fi
 
 
 # Build architecture-independent files here.

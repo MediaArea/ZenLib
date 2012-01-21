@@ -25,12 +25,12 @@ BuildRequires:	gcc-c++
 %description
 Shared library for libmediainfo and medianfo-*.
 
-%package -n libzen0-devel
+%package -n libzen-devel
 Summary:	Include files and mandatory libraries for development
 Group:		Development/Libraries/C and C++
 Requires:	libzen0 = %{version}
 
-%description -n libzen0-devel
+%description -n libzen-devel
 Include files and mandatory libraries for development.
 
 %prep
@@ -90,7 +90,7 @@ done
 %doc History.txt License.txt ReadMe.txt
 %{_libdir}/libzen.so.*
 
-%files -n libzen0-devel
+%files -n libzen-devel
 %defattr(-,root,root,-)
 %doc Documentation.html
 %doc Doc/*

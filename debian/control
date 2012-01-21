@@ -8,7 +8,7 @@ Homepage: http://mediainfo.sourceforge.net
 Vcs-Svn: https://zenlib.svn.sourceforge.net/svnroot/zenlib/ZenLib/
 Vcs-Browser: http://zenlib.svn.sourceforge.net/viewvc/zenlib/ZenLib/
 
-Package: libzen0-dev
+Package: libzen-dev
 Section: libdevel
 Architecture: any
 Depends: libzen0 (>=0.4.23)
