@@ -1537,7 +1537,7 @@ std::string Ztring::To_UTF8 () const
                 utf8chars[1] = 0x80 | (wc & 0x3f);
                 wc = (wc >> 6) | 0xc0;
             case 1:
-                utf8chars[0] = wc;
+                utf8chars[0] = (char) wc;
             }
 
             ToReturn += utf8chars;
