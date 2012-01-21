@@ -57,14 +57,9 @@ WARN_LOGFILE           =
 #---------------------------------------------------------------------------
 # configuration options related to the input files
 #---------------------------------------------------------------------------
-INPUT                  = ../ZenLib/Conf.h \
-                         ../ZenLib/Utils.h \
-                         ../ZenLib/Ztring.h \
-                         ../ZenLib/ZtringList.h \
-                         ../ZenLib/ZtringListList.h \
-                         ../ZenLib/ZtringListListF.h
-FILE_PATTERNS          = 
-RECURSIVE              = NO
+INPUT                  = ../ZenLib/
+FILE_PATTERNS          = *.h
+RECURSIVE              = YES
 EXCLUDE                = 
 EXCLUDE_SYMLINKS       = NO
 EXCLUDE_PATTERNS       = 
