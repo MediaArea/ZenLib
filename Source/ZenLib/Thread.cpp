@@ -163,7 +163,7 @@ void Thread::Yield()
 #endif //__BORLANDC__
 
 
-#if  defined(__VISUALC__) || \
+#if  defined(_MSC_VER) || \
     (defined(__GNUG__) && defined(__MSVCRT__)) || \
      defined(__WATCOMC__) || \
      defined(__MWERKS__)

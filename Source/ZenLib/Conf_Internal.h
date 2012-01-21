@@ -69,7 +69,7 @@
     #endif //__BORLANDC__
     #include <wx/wxprec.h>
 #else //ZENLIB_USEWX
-    #if defined(__VISUALC__) || defined(__BORLANDC__)
+    #if defined(_MSC_VER) || defined(__BORLANDC__)
         #if defined WINDOWS && !defined ZENLIB_STANDARD
             #undef __TEXT
             #include <windows.h>
@@ -89,7 +89,7 @@
         #include <sstream>
         #include <stack>
         #include <string>
-    #endif //defined(__VISUALC__) || defined(__BORLANDC__)
+    #endif //defined(_MSC_VER) || defined(__BORLANDC__)
 #endif //ZENLIB_USEWX
 
 #endif
