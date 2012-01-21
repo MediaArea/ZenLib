@@ -1,3 +1,7 @@
+Version 0.4.24, 
+--------------
++ Convertion from ctime style date to ISO date
+
 Version 0.4.23, 2011-11-10
 --------------
 + Loading of CSV or any 2-dimensional array is carriage return mode insensitive

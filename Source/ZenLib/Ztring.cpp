@@ -58,7 +58,6 @@
 #ifdef SS
    #undef SS //Solaris defines this in cstdlib
 #endif
-#include <ctime>
 #include <algorithm>
 #include <sstream>
 #include <iomanip>
@@ -1332,7 +1331,94 @@ Ztring& Ztring::Date_From_String (const char* Value, size_t Value_Size)
         assign (ToReturn.c_str());
     #else //ZENLIB_USEWX
         Ztring DateS; DateS.From_Local(Value, 0, Value_Size);
-        if (DateS.size()==20 && DateS[4]==_T('-') && DateS[7]==_T('-') && DateS[10]==_T('T') && DateS[13]==_T(':') && DateS[16]==_T(':') && DateS[19]==_T('Z'))
+        //Unix style formating : exactly 24 bytes (or 25 with 0x0A at the end) and Year is at the end
+        if ((DateS.size()==24 || (DateS.size()==25 && DateS[24]==_T('\n'))) && DateS[23]>=_T('0') && DateS[23]<=_T('9') && DateS[21]>=_T('0') && DateS[21]<=_T('9') && DateS[19]==_T(' '))
+        {
+            clear();
+            append(1, DateS[20]);
+            append(1, DateS[21]);
+            append(1, DateS[22]);
+            append(1, DateS[23]);
+            append(1, _T('-'));
+                 if (DateS[4]==_T('J') && DateS[5]==_T('a') && DateS[6]==_T('n') && DateS[7]==_T(' '))
+            {
+                append(1, _T('0'));
+                append(1, _T('1'));
+            }
+            else if (DateS[4]==_T('F') && DateS[5]==_T('e') && DateS[6]==_T('b') && DateS[7]==_T(' '))
+            {
+                append(1, _T('0'));
+                append(1, _T('2'));
+            }
+            else if (DateS[4]==_T('M') && DateS[5]==_T('a') && DateS[6]==_T('r') && DateS[7]==_T(' '))
+            {
+                append(1, _T('0'));
+                append(1, _T('3'));
+            }
+            else if (DateS[4]==_T('A') && DateS[5]==_T('p') && DateS[6]==_T('r') && DateS[7]==_T(' '))
+            {
+                append(1, _T('0'));
+                append(1, _T('4'));
+            }
+            else if (DateS[4]==_T('M') && DateS[5]==_T('a') && DateS[6]==_T('y') && DateS[7]==_T(' '))
+            {
+                append(1, _T('0'));
+                append(1, _T('5'));
+            }
+            else if (DateS[4]==_T('J') && DateS[5]==_T('u') && DateS[6]==_T('n') && DateS[7]==_T(' '))
+            {
+                append(1, _T('0'));
+                append(1, _T('6'));
+            }
+            else if (DateS[4]==_T('J') && DateS[5]==_T('u') && DateS[6]==_T('l') && DateS[7]==_T(' '))
+            {
+                append(1, _T('0'));
+                append(1, _T('7'));
+            }
+            else if (DateS[4]==_T('A') && DateS[5]==_T('u') && DateS[6]==_T('g') && DateS[7]==_T(' '))
+            {
+                append(1, _T('0'));
+                append(1, _T('8'));
+            }
+            else if (DateS[4]==_T('S') && DateS[5]==_T('e') && DateS[6]==_T('p') && DateS[7]==_T(' '))
+            {
+                append(1, _T('0'));
+                append(1, _T('9'));
+            }
+            else if (DateS[4]==_T('O') && DateS[5]==_T('c') && DateS[6]==_T('t') && DateS[7]==_T(' '))
+            {
+                append(1, _T('1'));
+                append(1, _T('0'));
+            }
+            else if (DateS[4]==_T('N') && DateS[5]==_T('o') && DateS[6]==_T('v') && DateS[7]==_T(' '))
+            {
+                append(1, _T('1'));
+                append(1, _T('1'));
+            }
+            else if (DateS[4]==_T('D') && DateS[5]==_T('e') && DateS[6]==_T('c') && DateS[7]==_T(' '))
+            {
+                append(1, _T('1'));
+                append(1, _T('2'));
+            }
+            else
+            {
+                assign(DateS);
+                return *this;
+            }
+            append(1, _T('-'));
+            append(1, DateS[8]);
+            append(1, DateS[9]);
+            append(1, _T(' '));
+            append(1, DateS[11]);
+            append(1, DateS[12]);
+            append(1, _T(':'));
+            append(1, DateS[14]);
+            append(1, DateS[15]);
+            append(1, _T(':'));
+            append(1, DateS[17]);
+            append(1, DateS[18]);
+        }
+        else if (DateS.size()==20 && DateS[4]==_T('-') && DateS[7]==_T('-') && DateS[10]==_T('T') && DateS[13]==_T(':') && DateS[16]==_T(':') && DateS[19]==_T('Z'))
         {
             DateS.resize(19);
             DateS[10]=_T(' ');
