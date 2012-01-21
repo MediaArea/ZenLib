@@ -342,7 +342,7 @@ void ZtringListList::Write(const Ztring &ToWrite)
         size_t Pos_End=PosC;
         while (Pos_End<ToWrite.size())
         {
-            Pos_End=ToWrite.find_first_of(CharsToFind, Pos_End);
+            Pos_End=ToWrite.find(WriteSeparator, Pos_End);
             if (Pos_End!=string::npos)
             {
                 if (Pos_End+Quote.size()<ToWrite.size() && ToWrite[Pos_End]==Quote[0] && ToWrite[Pos_End+1]!=Quote[0])

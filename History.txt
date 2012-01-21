@@ -1,6 +1,7 @@
 Version 0.4.24, 
 --------------
 + Convertion from ctime style date to ISO date
+x Read of text arrays of data was not well done if separator is bigger than 1 character
 
 Version 0.4.23, 2011-11-10
 --------------
