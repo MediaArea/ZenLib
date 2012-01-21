@@ -311,8 +311,8 @@ float80 LittleEndian2float80(const char* Liste)
     //significand  63 bit
 
     //Retrieving data
-    int16u Integer1=BigEndian2int16u(Liste);
-    int64u Integer2=BigEndian2int64u(Liste+2);
+    int16u Integer1=LittleEndian2int16u(Liste);
+    int64u Integer2=LittleEndian2int64u(Liste+2);
 
     //Retrieving elements
     bool   Sign    =(Integer1&0x8000)?true:false;
