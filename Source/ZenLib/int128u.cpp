@@ -268,7 +268,7 @@ uint128 uint128::div (const uint128 & ds, uint128 & remainder) const throw () {
     };
     ++b;
 
-    while (true)
+    for (;;)
         if (r < ds) {
             if (!(b--)) break;
 

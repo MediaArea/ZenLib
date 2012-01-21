@@ -274,7 +274,7 @@ int128 int128::div (const int128 & divisor, int128 & remainder) const throw () {
     };
     ++b;
 
-    while (true)
+    for (;;)
         if (r < ds) {
             if (!(b--)) break;
 
