@@ -196,10 +196,10 @@ public :
     Ztring& From_Number  (const float64,  int8u AfterComma=3, ztring_t Options=Ztring_Nothing);
         /// @brief convert number into Ztring
     Ztring& From_Number  (const float80,  int8u AfterComma=3, ztring_t Options=Ztring_Nothing);
-    #ifdef NEED_SIZET
+    #ifdef SIZET_IS_ULONG
         /// @brief convert number into Ztring
     Ztring& From_Number  (const size_t,   int8u Radix=10);
-    #endif //NEED_SIZET
+    #endif //SIZET_IS_ULONG
         /// @brief convert number (BCD coded) into Ztring
     Ztring& From_BCD     (const int8u);
         /// @brief convert count of milliseconds into a readable and sortable string
@@ -314,9 +314,9 @@ public :
     static Ztring ToZtring  (const float32  F, int8u AfterComma=3)               {return Ztring().From_Number(F, AfterComma);};
     static Ztring ToZtring  (const float64  F, int8u AfterComma=3)               {return Ztring().From_Number(F, AfterComma);};
     static Ztring ToZtring  (const float80  F, int8u AfterComma=3)               {return Ztring().From_Number(F, AfterComma);};
-    #ifdef NEED_SIZET
+    #ifdef SIZET_IS_ULONG
     static Ztring ToZtring  (const size_t   I,  int8u Radix=10)                  {return Ztring().From_Number(I, Radix);};
-    #endif //NEED_SIZET
+    #endif //SIZET_IS_ULONG
 
     //Edition
         /// @brief test if it is a number

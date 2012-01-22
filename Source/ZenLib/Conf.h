@@ -188,8 +188,8 @@
 #endif
 //---------------------------------------------------------------------------
 //If we need size_t specific integer conversion
-#if defined(__LP64__) || defined(MACOSX)
-    #define NEED_SIZET
+#if !defined(SIZET_IS_ULONG) && (defined(__LP64__) || defined(MACOSX))
+    #define SIZET_IS_ULONG
 #endif
 
 //---------------------------------------------------------------------------
