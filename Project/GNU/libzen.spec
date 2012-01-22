@@ -8,31 +8,56 @@
 
 %define libzen_version			0.4.23
 
-Name:			libzen0
+Name:			libzen
 Version:		%libzen_version
 Release:		1
-Summary:		Shared library for libmediainfo and medianfo*
+Summary:		ZenLib C++ utility library
 Group:			System/Libraries
 License:		BSD
 URL:			http://zenlib.sourceforge.net/
 Packager:		MediaArea.net SARL <info@mediaarea.net>
 Source:			libzen_%{version}-1.tar.gz
 BuildRoot:		%{_tmppath}/%{name}-%{version}-%{release}-root
+BuildRequires:	pkgconfig
 BuildRequires:	dos2unix
 BuildRequires:	doxygen
 BuildRequires:	gcc-c++
 BuildRequires:	glibc-devel
 
 %description
-Shared library for libmediainfo and medianfo-*.
+ZenLib is a C++ utility library. It includes classes for handling strings,
+configuration, bit streams, threading, translation, and cross-platform
+operating system functions.
+
+This package contains the headers required for compiling applications/libraries
+which use this library.
+
+%package -n libzen0
+Summary:		ZenLib C++ utility library -- shared library
+Group:			System/Libraries
+Requires:		glibc
+
+%description -n libzen0
+ZenLib is a C++ utility library. It includes classes for handling strings,
+configuration, bit streams, threading, translation, and cross-platform
+operating system functions.
+
+This package contains the headers required for compiling applications/libraries
+which use this library.
 
 %package -n libzen-devel
-Summary:	Include files and mandatory libraries for development
+Summary:	ZenLib C++ utility library -- development files
 Group:		Development/Libraries/C and C++
 Requires:	libzen0 = %{version}
+Requires:	glibc-devel
 
 %description -n libzen-devel
-Include files and mandatory libraries for development.
+ZenLib is a C++ utility library. It includes classes for handling strings,
+configuration, bit streams, threading, translation, and cross-platform
+operating system functions.
+
+This package contains the headers and other development support files needed
+for compiling and linking applications and libraries which use this library.
 
 %prep
 %setup -q -n ZenLib
@@ -86,7 +111,7 @@ done
 
 %postun -n libzen0 -p /sbin/ldconfig
 
-%files
+%files -n libzen0
 %defattr(-,root,root,-)
 %doc History.txt License.txt ReadMe.txt
 %{_libdir}/libzen.so.*
