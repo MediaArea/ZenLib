@@ -20,7 +20,7 @@
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Base)'!=''">
 			<TLIB_PageSize>128</TLIB_PageSize>
-			<IncludePath>..\..\..\Source\ZenLib\TinyXml;..\..\..\Source\ZenLib;..\..\..\Source\ZenLib\Format\Http;..\..\..\Source\ZenLib\Format\Html;..\..\..\Source\ZenLib\HTTP_Client;$(IncludePath)</IncludePath>
+			<IncludePath>..\..\..\Source\ZenLib\;..\..\..\Source\ZenLib\Format\Http\;..\..\..\Source\ZenLib\Format\Html\;..\..\..\Source\ZenLib\HTTP_Client\;..\..\..\Source\ZenLib\TinyXml;..\..\..\Source\ZenLib;..\..\..\Source\ZenLib\Format\Http;..\..\..\Source\ZenLib\Format\Html;..\..\..\Source\ZenLib\HTTP_Client;$(IncludePath)</IncludePath>
 			<BRCC_Defines>_RTLDLL;NO_STRICT;_UNICODE;_WIN32;$(BRCC_Defines)</BRCC_Defines>
 			<PackageImports>vcl.bpi;rtl.bpi;vclx.bpi;xmlrtl.bpi;vclie.bpi;inet.bpi;inetdbbde.bpi;inetdbxpress.bpi;soaprtl.bpi;dbrtl.bpi;dsnap.bpi;bcbie.bpi;vcldb.bpi;websnap.bpi;webdsnap.bpi;vclactnband.bpi</PackageImports>
 			<DCC_ResourcePath>..\..\..\Source\ZenLib\Format\Http;..\..\..\Source\ZenLib\Format\Html;..\..\..\Source\ZenLib\HTTP_Client;..\..\..\Source\ZenLib;E:\Programmation\ZenLib\Project\BCB\Library;$(DCC_ResourcePath)</DCC_ResourcePath>
@@ -70,130 +70,121 @@
 			<ILINK_LibraryPath>$(BDS)\lib\release;$(ILINK_LibraryPath);$(ILINK_LibraryPath)</ILINK_LibraryPath>
 		</PropertyGroup>
 		<ItemGroup>
-			<CppCompile Include="..\..\..\Source\ZenLib\File.cpp">
-				<BuildOrder>22</BuildOrder>
-				<BuildOrder>11</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\..\Source\ZenLib\HTTP_Client\HTTPClientString.c">
-				<BuildOrder>21</BuildOrder>
-				<BuildOrder>2</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\..\Source\ZenLib\HTTP_Client.cpp">
-				<BuildOrder>24</BuildOrder>
-				<BuildOrder>13</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\..\Source\ZenLib\FileName.cpp">
-				<BuildOrder>23</BuildOrder>
-				<BuildOrder>12</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\..\Source\ZenLib\HTTP_Client\HTTPClientAuth.c">
-				<BuildOrder>3</BuildOrder>
-				<BuildOrder>18</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\..\Source\ZenLib\Dir.cpp">
-				<BuildOrder>6</BuildOrder>
-				<BuildOrder>17</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\..\Source\ZenLib\HTTP_Client\HTTPClientWrapper.c">
-				<BuildOrder>-1</BuildOrder>
-				<BuildOrder>1</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="ZenLib.cpp">
-				<BuildOrder>-1</BuildOrder>
+			<CppCompile Include="..\..\..\Source\ZenLib\Ztring.cpp">
+				<BuildOrder>19</BuildOrder>
 				<BuildOrder>0</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\..\Source\ZenLib\TinyXml\tinyxml.cpp">
-				<BuildOrder>30</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\..\Source\ZenLib\TinyXml\tinyxmlparser.cpp">
-				<BuildOrder>32</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\..\Source\ZenLib\TinyXml\tinyxmlerror.cpp">
-				<BuildOrder>31</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\..\Source\ZenLib\CriticalSection.cpp">
-				<BuildOrder>7</BuildOrder>
-				<BuildOrder>26</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\..\Source\ZenLib\int128u.cpp">
-				<BuildOrder>25</BuildOrder>
-				<BuildOrder>10</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\..\Source\ZenLib\int128s.cpp">
-				<BuildOrder>9</BuildOrder>
-				<BuildOrder>28</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\..\Source\ZenLib\InfoMap.cpp">
-				<BuildOrder>8</BuildOrder>
-				<BuildOrder>27</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\..\Source\ZenLib\Conf.cpp">
-				<BuildOrder>5</BuildOrder>
-				<BuildOrder>16</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\..\Source\ZenLib\Thread.cpp">
-				<BuildOrder>5</BuildOrder>
-				<BuildOrder>16</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\..\Source\ZenLib\OS_Utils.cpp">
-				<BuildOrder>4</BuildOrder>
-				<BuildOrder>15</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\..\Source\ZenLib\Format\Http\Http_Handler.cpp">
-				<BuildOrder>7</BuildOrder>
-				<BuildOrder>26</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\..\Source\ZenLib\Translation.cpp">
-				<BuildOrder>6</BuildOrder>
-				<BuildOrder>17</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="..\..\..\Source\ZenLib\ZtringList.cpp">
 				<BuildOrder>20</BuildOrder>
 				<BuildOrder>1</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="..\..\..\Source\ZenLib\Ztring.cpp">
-				<BuildOrder>19</BuildOrder>
-				<BuildOrder>0</BuildOrder>
+			<CppCompile Include="..\..\..\Source\ZenLib\ZtringListList.cpp">
+				<BuildOrder>21</BuildOrder>
+				<BuildOrder>2</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="..\..\..\Source\ZenLib\Utils.cpp">
 				<BuildOrder>3</BuildOrder>
 				<BuildOrder>18</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="..\..\..\Source\ZenLib\ZtringListList.cpp">
-				<BuildOrder>21</BuildOrder>
-				<BuildOrder>2</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\..\Source\ZenLib\Format\Html\Html_Request.cpp">
-				<BuildOrder>24</BuildOrder>
-				<BuildOrder>13</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\..\Source\ZenLib\Format\Html\Html_Handler.cpp">
-				<BuildOrder>23</BuildOrder>
-				<BuildOrder>12</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\..\Source\ZenLib\HTTP_Client\HTTPClient.c">
+			<CppCompile Include="..\..\..\Source\ZenLib\OS_Utils.cpp">
 				<BuildOrder>4</BuildOrder>
 				<BuildOrder>15</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="..\..\..\Source\ZenLib\MemoryDebug.cpp">
-				<BuildOrder>14</BuildOrder>
+			<CppCompile Include="..\..\..\Source\ZenLib\Thread.cpp">
+				<BuildOrder>5</BuildOrder>
+				<BuildOrder>16</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\..\Source\ZenLib\Translation.cpp">
+				<BuildOrder>6</BuildOrder>
+				<BuildOrder>17</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\..\Source\ZenLib\Format\Http\Http_Handler.cpp">
+				<BuildOrder>7</BuildOrder>
+				<BuildOrder>26</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\..\Source\ZenLib\Format\Http\Http_Request.cpp">
+				<BuildOrder>8</BuildOrder>
+				<BuildOrder>27</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="..\..\..\Source\ZenLib\Format\Http\Http_Utils.cpp">
 				<BuildOrder>9</BuildOrder>
 				<BuildOrder>28</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="..\..\..\Source\ZenLib\Format\Http\Http_Request.cpp">
-				<BuildOrder>8</BuildOrder>
-				<BuildOrder>27</BuildOrder>
+			<CppCompile Include="..\..\..\Source\ZenLib\Format\Http\Http_Cookies.cpp">
+				<BuildOrder>25</BuildOrder>
+				<BuildOrder>10</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="..\..\..\Source\ZenLib\ZtringListListF.cpp">
 				<BuildOrder>22</BuildOrder>
 				<DependentOn>..\..\..\Source\ZenLib\ZtringListListF.h</DependentOn>
 				<BuildOrder>11</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="..\..\..\Source\ZenLib\Format\Http\Http_Cookies.cpp">
+			<CppCompile Include="..\..\..\Source\ZenLib\Format\Html\Html_Handler.cpp">
+				<BuildOrder>23</BuildOrder>
+				<BuildOrder>12</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\..\Source\ZenLib\Format\Html\Html_Request.cpp">
+				<BuildOrder>24</BuildOrder>
+				<BuildOrder>13</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\..\Source\ZenLib\MemoryDebug.cpp">
+				<BuildOrder>14</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\..\Source\ZenLib\HTTP_Client\HTTPClient.c">
+				<BuildOrder>4</BuildOrder>
+				<BuildOrder>15</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\..\Source\ZenLib\Dir.cpp">
+				<BuildOrder>6</BuildOrder>
+				<BuildOrder>17</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\..\Source\ZenLib\HTTP_Client\HTTPClientAuth.c">
+				<BuildOrder>3</BuildOrder>
+				<BuildOrder>18</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="ZenLib.cpp">
+				<BuildOrder>-1</BuildOrder>
+				<BuildOrder>0</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\..\Source\ZenLib\HTTP_Client\HTTPClientWrapper.c">
+				<BuildOrder>-1</BuildOrder>
+				<BuildOrder>1</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\..\Source\ZenLib\HTTP_Client\HTTPClientString.c">
+				<BuildOrder>21</BuildOrder>
+				<BuildOrder>2</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\..\Source\ZenLib\File.cpp">
+				<BuildOrder>22</BuildOrder>
+				<BuildOrder>11</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\..\Source\ZenLib\FileName.cpp">
+				<BuildOrder>23</BuildOrder>
+				<BuildOrder>12</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\..\Source\ZenLib\HTTP_Client.cpp">
+				<BuildOrder>24</BuildOrder>
+				<BuildOrder>13</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\..\Source\ZenLib\int128s.cpp">
+				<BuildOrder>9</BuildOrder>
+				<BuildOrder>28</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\..\Source\ZenLib\int128u.cpp">
 				<BuildOrder>25</BuildOrder>
 				<BuildOrder>10</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\..\Source\ZenLib\Conf.cpp">
+				<BuildOrder>5</BuildOrder>
+				<BuildOrder>16</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\..\Source\ZenLib\InfoMap.cpp">
+				<BuildOrder>8</BuildOrder>
+				<BuildOrder>27</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\..\Source\ZenLib\CriticalSection.cpp">
+				<BuildOrder>7</BuildOrder>
+				<BuildOrder>26</BuildOrder>
 			</CppCompile>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>

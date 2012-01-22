@@ -4,6 +4,7 @@ Version 0.4.24,
 x Read of text arrays of data was not well done if separator is bigger than 1 character
 x UTF-8 to UCS4 conversion was buggy with 4-byte characters
 x LittleEndian2float80() was buggy
+x Removing TinyXml and Base64 from the package
 
 Version 0.4.23, 2011-11-10
 --------------

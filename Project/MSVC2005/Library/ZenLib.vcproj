@@ -204,46 +204,6 @@
 					</File>
 				</Filter>
 			</Filter>
-			<Filter
-				Name="TinyXml"
-				>
-				<File
-					RelativePath="..\..\..\Source\ZenLib\TinyXml\tinyxml.cpp"
-					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							UsePrecompiledHeader="0"
-						/>
-					</FileConfiguration>
-				</File>
-				<File
-					RelativePath="..\..\..\Source\ZenLib\TinyXml\tinyxmlerror.cpp"
-					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							UsePrecompiledHeader="0"
-						/>
-					</FileConfiguration>
-				</File>
-				<File
-					RelativePath="..\..\..\Source\ZenLib\TinyXml\tinyxmlparser.cpp"
-					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							UsePrecompiledHeader="0"
-						/>
-					</FileConfiguration>
-				</File>
-			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -369,14 +329,6 @@
 						>
 					</File>
 				</Filter>
-			</Filter>
-			<Filter
-				Name="TinyXml"
-				>
-				<File
-					RelativePath="..\..\..\Source\ZenLib\TinyXml\tinyxml.h"
-					>
-				</File>
 			</Filter>
 		</Filter>
 		<Filter

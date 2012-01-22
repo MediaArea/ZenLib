@@ -24,10 +24,7 @@ libzen_la_SOURCES = \
                        ../../../Source/ZenLib/Format/Http/Http_Cookies.cpp \
                        ../../../Source/ZenLib/Format/Http/Http_Handler.cpp \
                        ../../../Source/ZenLib/Format/Http/Http_Request.cpp \
-                       ../../../Source/ZenLib/Format/Http/Http_Utils.cpp \
-                       ../../../Source/ZenLib/TinyXml/tinyxml.cpp \
-                       ../../../Source/ZenLib/TinyXml/tinyxmlerror.cpp \
-                       ../../../Source/ZenLib/TinyXml/tinyxmlparser.cpp
+                       ../../../Source/ZenLib/Format/Http/Http_Utils.cpp
 
 libzen_la_LDFLAGS     = -no-undefined -version-info 0:0:0
 
