@@ -15,12 +15,13 @@ Summary:		Shared library for libmediainfo and medianfo*
 Group:			System/Libraries
 License:		BSD
 URL:			http://zenlib.sourceforge.net/
-Packager:		MediaArea.net <info@mediaarea.net>
+Packager:		MediaArea.net SARL <info@mediaarea.net>
 Source:			libzen_%{version}-1.tar.gz
 BuildRoot:		%{_tmppath}/%{name}-%{version}-%{release}-root
 BuildRequires:	dos2unix
 BuildRequires:	doxygen
 BuildRequires:	gcc-c++
+BuildRequires:	glibc-devel
 
 %description
 Shared library for libmediainfo and medianfo-*.
@@ -51,7 +52,7 @@ cp Source/Doc/*.html ./
 pushd Project/GNU/Library
 	%__chmod +x autogen
 	./autogen
-	%configure --enable-shared
+	%configure --disable-static --enable-shared
 
 	%__make clean
 	%__make %{?jobs:-j%{jobs}}
@@ -66,7 +67,7 @@ popd
 %__install -dm 755 %{buildroot}%{_includedir}/ZenLib
 %__install -m 644 Source/ZenLib/*.h \
 	%{buildroot}%{_includedir}/ZenLib
-for i in Base64 HTTP_Client Format/Html Format/Http TinyXml; do
+for i in HTTP_Client Format/Html Format/Http; do
 	%__install -dm 755 %{buildroot}%{_includedir}/ZenLib/$i
 	%__install -m 644 Source/ZenLib/$i/*.h \
 		%{buildroot}%{_includedir}/ZenLib/$i
@@ -96,12 +97,11 @@ done
 %doc Doc/*
 %dir %{_includedir}/ZenLib
 %{_includedir}/ZenLib/*
-%{_libdir}/libzen.a
 %{_libdir}/libzen.la
 %{_libdir}/libzen.so
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
-* Tue Jan 01 2009 MediaArea.net <info@mediaarea.net> - 0.4.23-0
+* Tue Jan 01 2009 MediaArea.net SARL <info@mediaarea.net> - 0.4.23-0
 - See History.txt for more info and real dates
 - Previous packages made by Toni Graffy <toni@links2linux.de>
