@@ -178,8 +178,8 @@ dnl
 if test "$GXX" = yes ; then
 	dnl Check if size_t is long
 	if echo echo __SIZE_TYPE__ | $CPP -E - | $GREP -q "long"; then
-		CFLAGS="$CFLAGS -DSIZET_IS_ULONG"
-		CXXFLAGS="$CXXFLAGS -DSIZET_IS_ULONG"
+		CFLAGS="$CFLAGS -DSIZE_T_IS_LONG"
+		CXXFLAGS="$CXXFLAGS -DSIZE_T_IS_LONG"
 	fi
 
 	CFLAGS="$CFLAGS -fPIC"

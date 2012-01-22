@@ -1075,7 +1075,7 @@ Ztring& Ztring::From_Number (const float80 F, int8u Precision, ztring_t Options)
     return *this;
 }
 
-#ifdef SIZET_IS_ULONG
+#ifdef SIZE_T_IS_LONG
 Ztring& Ztring::From_Number (const size_t I, int8u Radix)
 {
     toStringStream SS;
@@ -1084,7 +1084,7 @@ Ztring& Ztring::From_Number (const size_t I, int8u Radix)
     MakeUpperCase();
     return *this;
 }
-#endif //SIZET_IS_ULONG
+#endif //SIZE_T_IS_LONG
 
 Ztring& Ztring::From_BCD     (const int8u I)
 {
