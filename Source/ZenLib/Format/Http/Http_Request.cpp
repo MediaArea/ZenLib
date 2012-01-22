@@ -159,8 +159,8 @@ bool Request::Http_Begin(std::istream &In, std::ostream &Out)
     while (!Line.empty());
 
     //Info
-    if (Method.size()==3 && Method[0]=='G' && Method[1]=='E' && Method[2]=='T'
-     || Method.size()==4 && Method[0]=='P' && Method[1]=='O' && Method[2]=='S' && Method[3]=='T')
+    if ((Method.size()==3 && Method[0]=='G' && Method[1]=='E' && Method[2]=='T')
+     || (Method.size()==4 && Method[0]=='P' && Method[1]=='O' && Method[2]=='S' && Method[3]=='T'))
     {
         do
         {
