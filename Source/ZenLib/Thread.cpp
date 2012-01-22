@@ -255,7 +255,7 @@ Thread::returnvalue Thread::Run()
     if (ThreadPointer==NULL)
     {
         C.Leave();
-        return Ressource;
+        return Resource;
     }
 
     //Running

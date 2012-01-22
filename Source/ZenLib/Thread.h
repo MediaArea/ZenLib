@@ -55,7 +55,7 @@ public :
         Ok,
         IsNotRunning,
         Incoherent,
-        Ressource,
+        Resource,
     };
     returnvalue Run();
     returnvalue RunAgain();
