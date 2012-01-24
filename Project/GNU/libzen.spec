@@ -50,6 +50,7 @@ Summary:	ZenLib C++ utility library -- development files
 Group:		Development/Libraries/C and C++
 Requires:	libzen0 = %{version}
 Requires:	glibc-devel
+Obsoletes:	libzen0-devel
 
 %description -n libzen-devel
 ZenLib is a C++ utility library. It includes classes for handling strings,
