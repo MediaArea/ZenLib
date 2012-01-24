@@ -1,6 +1,7 @@
 Version 0.4.24, 
 --------------
 + Convertion from ctime style date to ISO date
++ GNU: more generic test of size_t as a long (e.g. for s390)
 x Read of text arrays of data was not well done if separator is bigger than 1 character
 x UTF-8 to UCS4 conversion was buggy with 4-byte characters
 x LittleEndian2float80() was buggy
