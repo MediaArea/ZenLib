@@ -1,4 +1,4 @@
-Version 0.4.24, 
+Version 0.4.24, 2012-01-24
 --------------
 + Convertion from ctime style date to ISO date
 + GNU: more generic test of size_t as a long (e.g. for s390)
