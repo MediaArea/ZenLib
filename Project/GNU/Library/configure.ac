@@ -173,15 +173,24 @@ dnl Threads
 dnl
 
 dnl -------------------------------------------------------------------------
+dnl Check if size_t is long
+dnl
+AC_LANG([C++])
+AC_COMPILE_IFELSE([
+	#include <cstdlib>
+	void foo(signed int) {}
+	void foo(unsigned int) {}
+	int main () {foo(size_t(0));}], [size_t_is_long="no"], [size_t_is_long="yes"])
+
+if test "$size_t_is_long" = "yes"; then
+	CXXFLAGS="$CXXFLAGS -DSIZE_T_IS_LONG"
+	ZenLib_CXXFLAGS="$ZenLib_CXXFLAGS -DSIZE_T_IS_LONG"
+fi
+
+dnl -------------------------------------------------------------------------
 dnl GNU compiler
 dnl
 if test "$GXX" = yes ; then
-	dnl Check if size_t is long
-	if echo echo __SIZE_TYPE__ | $CPP -E - | $GREP -q "long"; then
-		CFLAGS="$CFLAGS -DSIZE_T_IS_LONG"
-		CXXFLAGS="$CXXFLAGS -DSIZE_T_IS_LONG"
-	fi
-
 	CFLAGS="$CFLAGS -fPIC"
 	CXXFLAGS="$CXXFLAGS -fPIC"
 	if test "$enable_debug" = "yes"; then
