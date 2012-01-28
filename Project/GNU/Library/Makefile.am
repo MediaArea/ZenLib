@@ -28,4 +28,53 @@ libzen_la_SOURCES = \
 
 libzen_la_LDFLAGS     = -no-undefined -version-info 0:0:0
 
-INCLUDES = -I../../../Source
+zenincludedir = $(includedir)/ZenLib
+zeninclude_HEADERS = \
+ ../../../Source/ZenLib/BitStream.h \
+ ../../../Source/ZenLib/BitStream_LE.h \
+ ../../../Source/ZenLib/Conf.h \
+ ../../../Source/ZenLib/Conf_Internal.h \
+ ../../../Source/ZenLib/CriticalSection.h \
+ ../../../Source/ZenLib/Dir.h \
+ ../../../Source/ZenLib/File.h \
+ ../../../Source/ZenLib/FileName.h \
+ ../../../Source/ZenLib/HTTP_Client.h \
+ ../../../Source/ZenLib/InfoMap.h \
+ ../../../Source/ZenLib/int128s.h \
+ ../../../Source/ZenLib/int128u.h \
+ ../../../Source/ZenLib/MemoryDebug.h \
+ ../../../Source/ZenLib/OS_Utils.h \
+ ../../../Source/ZenLib/PreComp.h \
+ ../../../Source/ZenLib/Thread.h \
+ ../../../Source/ZenLib/Trace.h \
+ ../../../Source/ZenLib/Translation.h \
+ ../../../Source/ZenLib/Utils.h \
+ ../../../Source/ZenLib/Ztring.h \
+ ../../../Source/ZenLib/ZtringList.h \
+ ../../../Source/ZenLib/ZtringListListF.h \
+ ../../../Source/ZenLib/ZtringListList.h
+
+zen_httpclientdir = $(zenincludedir)/HTTP_Client
+zen_httpclient_HEADERS = \
+ ../../../Source/ZenLib/HTTP_Client/HTTPClient.h \
+ ../../../Source/ZenLib/HTTP_Client/HTTPClientCommon.h \
+ ../../../Source/ZenLib/HTTP_Client/HTTPClientString.h \
+ ../../../Source/ZenLib/HTTP_Client/HTTPClientAuth.h \
+ ../../../Source/ZenLib/HTTP_Client/HTTPClientWrapper.h
+
+zen_format_htmldir = $(zenincludedir)/Format/Html
+zen_format_html_HEADERS = \
+ ../../../Source/ZenLib/Format/Html/Html_Handler.h \
+ ../../../Source/ZenLib/Format/Html/Html_Request.h
+
+zen_format_httpdir = $(zenincludedir)/Format/Http
+zen_format_http_HEADERS = \
+ ../../../Source/ZenLib/Format/Http/Http_Utils.h \
+ ../../../Source/ZenLib/Format/Http/Http_Request.h \
+ ../../../Source/ZenLib/Format/Http/Http_Handler.h \
+ ../../../Source/ZenLib/Format/Http/Http_Cookies.h
+
+pkgconfigdir = $(libdir)/pkg-config
+pkgconfig_DATA = libzen.pc
+
+AM_CPPFLAGS = -I../../../Source

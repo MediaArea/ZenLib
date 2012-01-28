@@ -3,25 +3,23 @@ dnl ### Init
 dnl #########################################################################
 
 dnl -------------------------------------------------------------------------
+dnl Name and version
+dnl
+AC_INIT([libzen], [0.4.24])
+dnl -------------------------------------------------------------------------
 dnl Test if we are at the good place
 dnl
-AC_INIT(../../../Source/ZenLib/Ztring.cpp)
+AC_CONFIG_SRCDIR([../../../Source/ZenLib/Ztring.cpp])
 
 dnl -------------------------------------------------------------------------
 dnl sets build, host, target variables and the same with _alias
 dnl
 AC_CANONICAL_BUILD
-
-dnl -------------------------------------------------------------------------
-dnl Name and version
-dnl
-AM_INIT_AUTOMAKE(ZenLib,0)
+AM_INIT_AUTOMAKE([foreign -Wall])
 
 dnl -------------------------------------------------------------------------
 dnl Autotools init
 dnl
-CFLAGS="$CFLAGS"
-CXXFLAGS="$CXXFLAGS"
 AC_PROG_CC
 AC_PROG_CXX
 AC_PROG_CPP
@@ -31,35 +29,30 @@ AC_PROG_LIBTOOL
 AC_PROG_INSTALL
 
 dnl #########################################################################
-dnl Configure
-dnl #########################################################################
-
-Home=`pwd`
-
-dnl #########################################################################
 dnl ### Options
 dnl #########################################################################
 
 dnl -------------------------------------------------------------------------
 dnl Enable
 dnl
-AC_ARG_ENABLE(debug,            AC_HELP_STRING([--enable-debug],            [Enable full debug]),                         , enable_debug=no)
-AC_ARG_ENABLE(gprof,            AC_HELP_STRING([--enable-gprof],            [Enable gprof log]),                          , enable_gprof=no)
-AC_ARG_ENABLE(universal_binary, AC_HELP_STRING([--enable-universal_binary], [Create Mac PPC/i386 Universal binary]),      , enable_universal_binary=no)
-AC_ARG_ENABLE(arch-ppc,         AC_HELP_STRING([--enable-arch-ppc],         [Create Mac PPC architecture]),               , enable_arch_ppc=no)
-AC_ARG_ENABLE(arch-ppc64,       AC_HELP_STRING([--enable-arch-ppc64],       [Create Mac PPC64 architecture]),             , enable_arch_ppc64=no)
-AC_ARG_ENABLE(arch-i386,        AC_HELP_STRING([--enable-arch-i386],        [Create Mac i386 architecture]),              , enable_arch_i386=no)
-AC_ARG_ENABLE(arch-x86_64,      AC_HELP_STRING([--enable-arch-x86_64],      [Create Mac x86_64 architecture]),            , enable_arch_x86_64=no)
-AC_ARG_ENABLE(unicode,          AC_HELP_STRING([--disable-unicode],         [Disable unicode]),                           , enable_unicode=yes)
-AC_ARG_ENABLE(wstringmissing,   AC_HELP_STRING([--enable-wstringmissing],   [Disable wstring support (old compilers)]),   , enable_wstringmissing=no)
-AC_ARG_ENABLE(large_files,      AC_HELP_STRING([--disable-large-files],     [Disable large files support]),               , enable_large_files=yes)
-dnl AC_ARG_ENABLE(threads,          AC_HELP_STRING([--disable-threads],         [Disable threads support]),                   , enable_threads=yes)
+AC_ARG_ENABLE([debug],            [AS_HELP_STRING([--enable-debug],             [Enable full debug])],                          ,, [enable_debug=no])
+AC_ARG_ENABLE([gprof],            [AS_HELP_STRING([--enable-gprof],             [Enable gprof log])],                           ,, [enable_gprof=no])
+AC_ARG_ENABLE([universal_binary], [AS_HELP_STRING([--enable-universal_binary],  [Create Mac PPC/i386 Universal binary])],       ,, [enable_universal_binary=no])
+AC_ARG_ENABLE([arch-ppc],         [AS_HELP_STRING(([--enable-arch-ppc],         [Create Mac PPC architecture]))],               ,, [enable_arch_ppc=no])
+AC_ARG_ENABLE([arch-ppc64],       [AS_HELP_STRING(([--enable-arch-ppc64],       [Create Mac PPC64 architecture]))],             ,, [enable_arch_ppc64=no])
+AC_ARG_ENABLE([arch-i386],        [AS_HELP_STRING(([--enable-arch-i386],        [Create Mac i386 architecture]))],              ,, [enable_arch_i386=no])
+AC_ARG_ENABLE([arch-x86_64],      [AS_HELP_STRING(([--enable-arch-x86_64],      [Create Mac x86_64 architecture]))],            ,, [enable_arch_x86_64=no])
+AC_ARG_ENABLE([unicode],          [AS_HELP_STRING(([--disable-unicode],         [Disable unicode]))],                           ,, [enable_unicode=yes])
+AC_ARG_ENABLE([wstringmissing],   [AS_HELP_STRING(([--enable-wstringmissing],   [Disable wstring support (old compilers)]))],   ,, [enable_wstringmissing=no])
+AC_ARG_ENABLE([large_files],      [AS_HELP_STRING(([--disable-large-files],     [Disable large files support]))],               ,, [enable_large_files=yes])
+dnl AC_ARG_ENABLE([threads],          [AS_HELP_STRING(([--disable-threads],         [Disable threads support]))],                   ,, [enable_threads=yes])
+ 
 
 dnl -------------------------------------------------------------------------
 dnl With
 dnl
-AC_ARG_WITH(macosx-sdk,         AC_HELP_STRING([--with-macosx-sdk],         [Force the Mac SDK]),                         , with_macosx_sdk=no)
-AC_ARG_WITH(macosx-version-min, AC_HELP_STRING([--with-macosx-version-min], [Force the Mac Version]),                     , with_macosx_version_min=no)
+AC_ARG_WITH([macosx-sdk],         [AS_HELP_STRING(([--with-macosx-sdk],         [Force the Mac SDK]))],                         ,, [with_macosx_sdk=no])
+AC_ARG_WITH([macosx-version-min], [AS_HELP_STRING(([--with-macosx-version-min], [Force the Mac Version]))],                     ,, [with_macosx_version_min=no])
 
 dnl #########################################################################
 dnl ### Compiler specific
