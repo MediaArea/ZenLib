@@ -120,7 +120,8 @@ ZtringList Dir::GetAllFileNames(const Ztring &Dir_Name_, dirlist_t Options)
             if (Path.empty())
             {
                 #ifdef UNICODE
-                    if (IsWin9X())
+                    #ifndef ZENLIB_NO_WIN9X_SUPPORT
+                    if (IsWin9X_Fast())
                     {
                         DWORD Path_Size=GetFullPathNameA(Dir_Name.To_Local().c_str(), 0, NULL, NULL);
                         char* PathTemp=new char[Path_Size+1];
@@ -129,6 +130,7 @@ ZtringList Dir::GetAllFileNames(const Ztring &Dir_Name_, dirlist_t Options)
                         delete [] PathTemp; //PathTemp=NULL;
                     }
                     else
+                    #endif //ZENLIB_NO_WIN9X_SUPPORT
                     {
                         DWORD Path_Size=GetFullPathName(Dir_Name.c_str(), 0, NULL, NULL);
                         Char* PathTemp=new Char[Path_Size+1];
@@ -146,12 +148,14 @@ ZtringList Dir::GetAllFileNames(const Ztring &Dir_Name_, dirlist_t Options)
             }
 
             #ifdef UNICODE
-                WIN32_FIND_DATAA FindFileDataA;
                 WIN32_FIND_DATAW FindFileDataW;
                 HANDLE hFind;
-                if (IsWin9X())
+                #ifndef ZENLIB_NO_WIN9X_SUPPORT
+                WIN32_FIND_DATAA FindFileDataA;
+                if (IsWin9X_Fast())
                     hFind=FindFirstFileA(Dir_Name.To_Local().c_str(), &FindFileDataA);
                 else
+                #endif //ZENLIB_NO_WIN9X_SUPPORT
                     hFind=FindFirstFileW(Dir_Name.c_str(), &FindFileDataW);
             #else
                 WIN32_FIND_DATA FindFileData;
@@ -166,9 +170,11 @@ ZtringList Dir::GetAllFileNames(const Ztring &Dir_Name_, dirlist_t Options)
             {
                 #ifdef UNICODE
                     Ztring File_Name;
-                    if (IsWin9X())
+                    #ifndef ZENLIB_NO_WIN9X_SUPPORT
+                    if (IsWin9X_Fast())
                         File_Name=FindFileDataA.cFileName;
                     else
+                    #endif //ZENLIB_NO_WIN9X_SUPPORT
                         File_Name=FindFileDataW.cFileName;
                 #else
                     Ztring File_Name(FindFileData.cFileName);
@@ -185,9 +191,11 @@ ZtringList Dir::GetAllFileNames(const Ztring &Dir_Name_, dirlist_t Options)
                         ToReturn.push_back(File_Name_Complete); //A file
                 }
                 #ifdef UNICODE
-                    if (IsWin9X())
+                    #ifndef ZENLIB_NO_WIN9X_SUPPORT
+                    if (IsWin9X_Fast())
                         ReturnValue=FindNextFileA(hFind, &FindFileDataA);
                     else
+                    #endif //ZENLIB_NO_WIN9X_SUPPORT
                         ReturnValue=FindNextFileW(hFind, &FindFileDataW);
                 #else
                     ReturnValue=FindNextFile(hFind, &FindFileData);
@@ -274,9 +282,11 @@ bool Dir::Exists(const Ztring &File_Name)
        #ifdef WINDOWS
             #ifdef UNICODE
                 DWORD FileAttributes;
-                if (IsWin9X())
+                #ifndef ZENLIB_NO_WIN9X_SUPPORT
+                if (IsWin9X_Fast())
                     FileAttributes=GetFileAttributesA(File_Name.To_Local().c_str());
                 else
+                #endif //ZENLIB_NO_WIN9X_SUPPORT
                     FileAttributes=GetFileAttributesW(File_Name.c_str());
             #else
                 DWORD FileAttributes=GetFileAttributes(File_Name.c_str());
@@ -303,9 +313,11 @@ bool Dir::Create(const Ztring &File_Name)
     #else //ZENLIB_USEWX
         #ifdef WINDOWS
             #ifdef UNICODE
-                if (IsWin9X())
+                #ifndef ZENLIB_NO_WIN9X_SUPPORT
+                if (IsWin9X_Fast())
                     return CreateDirectoryA(File_Name.To_Local().c_str(), NULL)!=0;
                 else
+                #endif //ZENLIB_NO_WIN9X_SUPPORT
                     return CreateDirectoryW(File_Name.c_str(), NULL)!=0;
             #else
                 return CreateDirectory(File_Name.c_str(), NULL)!=0;

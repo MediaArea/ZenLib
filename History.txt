@@ -1,3 +1,7 @@
+Version 0.4.25
+--------------
++ Removing Win9X detection on 64-bit CPU
+
 Version 0.4.24, 2012-01-24
 --------------
 + Convertion from ctime style date to ISO date

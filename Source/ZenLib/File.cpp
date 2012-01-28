@@ -178,17 +178,26 @@ bool File::Open (const tstring &File_Name_, access_t Access)
             DWORD dwDesiredAccess, dwShareMode, dwCreationDisposition;
             switch (Access)
             {
-                case Access_Read         : dwDesiredAccess=IsWin9X()?GENERIC_READ:FILE_READ_DATA; dwShareMode=FILE_SHARE_READ|FILE_SHARE_WRITE; dwCreationDisposition=OPEN_EXISTING; break;
+                #ifndef ZENLIB_NO_WIN9X_SUPPORT
+                case Access_Read         : dwDesiredAccess=IsWin9X_Fast()?GENERIC_READ:FILE_READ_DATA; dwShareMode=FILE_SHARE_READ|FILE_SHARE_WRITE; dwCreationDisposition=OPEN_EXISTING; break;
                 case Access_Write        : dwDesiredAccess=GENERIC_WRITE;   dwShareMode=0;                                 dwCreationDisposition=OPEN_ALWAYS;   break;
-                case Access_Read_Write   : dwDesiredAccess=(IsWin9X()?GENERIC_READ:FILE_READ_DATA)|GENERIC_WRITE;   dwShareMode=0; dwCreationDisposition=OPEN_ALWAYS;   break;
+                case Access_Read_Write   : dwDesiredAccess=(IsWin9X_Fast()?GENERIC_READ:FILE_READ_DATA)|GENERIC_WRITE;   dwShareMode=0; dwCreationDisposition=OPEN_ALWAYS;   break;
                 case Access_Write_Append : dwDesiredAccess=GENERIC_WRITE;   dwShareMode=0;                                 dwCreationDisposition=OPEN_ALWAYS;   break;
+                #else // ZENLIB_NO_WIN9X_SUPPORT
+                case Access_Read         : dwDesiredAccess=FILE_READ_DATA; dwShareMode=FILE_SHARE_READ|FILE_SHARE_WRITE; dwCreationDisposition=OPEN_EXISTING; break;
+                case Access_Write        : dwDesiredAccess=GENERIC_WRITE;   dwShareMode=0;                                 dwCreationDisposition=OPEN_ALWAYS;   break;
+                case Access_Read_Write   : dwDesiredAccess=FILE_READ_DATA|GENERIC_WRITE;   dwShareMode=0; dwCreationDisposition=OPEN_ALWAYS;   break;
+                case Access_Write_Append : dwDesiredAccess=GENERIC_WRITE;   dwShareMode=0;                                 dwCreationDisposition=OPEN_ALWAYS;   break;
+                #endif //ZENLIB_NO_WIN9X_SUPPORT
                 default                  : dwDesiredAccess=0;               dwShareMode=0;                                 dwCreationDisposition=0;             break;
             }
 
             #ifdef UNICODE
-                if (IsWin9X())
+                #ifndef ZENLIB_NO_WIN9X_SUPPORT
+                if (IsWin9X_Fast())
                     File_Handle=CreateFileA(File_Name.To_Local().c_str(), dwDesiredAccess, dwShareMode, NULL, dwCreationDisposition, 0, NULL);
                 else
+                #endif //ZENLIB_NO_WIN9X_SUPPORT
                     File_Handle=CreateFileW(File_Name.c_str(), dwDesiredAccess, dwShareMode, NULL, dwCreationDisposition, 0, NULL);
             #else
                 File_Handle=CreateFile(File_Name.c_str(), dwDesiredAccess, dwShareMode, NULL, dwCreationDisposition, 0, NULL);
@@ -211,9 +220,11 @@ bool File::Open (const tstring &File_Name_, access_t Access)
                     */
                     Sleep(1000);
                     #ifdef UNICODE
-                        if (IsWin9X())
+                        #ifndef ZENLIB_NO_WIN9X_SUPPORT
+                        if (IsWin9X_Fast())
                             File_Handle=CreateFileA(Ztring(File_Name).To_Local().c_str(), dwDesiredAccess, dwShareMode, NULL, dwCreationDisposition, 0, NULL);
                         else
+                        #endif //ZENLIB_NO_WIN9X_SUPPORT
                             File_Handle=CreateFileW(File_Name.c_str(), dwDesiredAccess, dwShareMode, NULL, dwCreationDisposition, 0, NULL);
                     #else
                         File_Handle=CreateFile(File_Name.c_str(), dwDesiredAccess, dwShareMode, NULL, dwCreationDisposition, 0, NULL);
@@ -296,9 +307,11 @@ bool File::Create (const Ztring &File_Name_, bool OverWrite)
             }
 
             #ifdef UNICODE
-                if (IsWin9X())
+                #ifndef ZENLIB_NO_WIN9X_SUPPORT
+                if (IsWin9X_Fast())
                     File_Handle=CreateFileA(File_Name.To_Local().c_str(), dwDesiredAccess, dwShareMode, NULL, dwCreationDisposition, 0, NULL);
                 else
+                #endif //ZENLIB_NO_WIN9X_SUPPORT
                     File_Handle=CreateFileW(File_Name.c_str(), dwDesiredAccess, dwShareMode, NULL, dwCreationDisposition, 0, NULL);
             #else
                 File_Handle=CreateFile(File_Name.c_str(), dwDesiredAccess, dwShareMode, NULL, dwCreationDisposition, 0, NULL);
@@ -308,9 +321,11 @@ bool File::Create (const Ztring &File_Name_, bool OverWrite)
                 //Sometime the file is locked for few milliseconds, we try again later
                 Sleep(3000);
                 #ifdef UNICODE
-                    if (IsWin9X())
+                    #ifndef ZENLIB_NO_WIN9X_SUPPORT
+                    if (IsWin9X_Fast())
                         File_Handle=CreateFileA(File_Name.To_Local().c_str(), dwDesiredAccess, dwShareMode, NULL, dwCreationDisposition, 0, NULL);
                     else
+                    #endif //ZENLIB_NO_WIN9X_SUPPORT
                         File_Handle=CreateFileW(File_Name.c_str(), dwDesiredAccess, dwShareMode, NULL, dwCreationDisposition, 0, NULL);
                 #else
                     File_Handle=CreateFile(File_Name.c_str(), dwDesiredAccess, dwShareMode, NULL, dwCreationDisposition, 0, NULL);
@@ -840,9 +855,11 @@ bool File::Exists(const Ztring &File_Name)
         #elif defined WINDOWS
             #ifdef UNICODE
                 DWORD FileAttributes;
-                if (IsWin9X())
+                #ifndef ZENLIB_NO_WIN9X_SUPPORT
+                if (IsWin9X_Fast())
                     FileAttributes=GetFileAttributesA(File_Name.To_Local().c_str());
                 else
+                #endif //ZENLIB_NO_WIN9X_SUPPORT
                     FileAttributes=GetFileAttributesW(File_Name.c_str());
             #else
                 DWORD FileAttributes=GetFileAttributes(File_Name.c_str());
@@ -862,9 +879,11 @@ bool File::Copy(const Ztring &Source, const Ztring &Destination, bool OverWrite)
             return false;
         #elif defined WINDOWS
             #ifdef UNICODE
-                if (IsWin9X())
+                #ifndef ZENLIB_NO_WIN9X_SUPPORT
+                if (IsWin9X_Fast())
                     return CopyFileA(Source.To_Local().c_str(), Destination.To_Local().c_str(), !OverWrite)!=0;
                 else
+                #endif //ZENLIB_NO_WIN9X_SUPPORT
                     return CopyFileW(Source.c_str(), Destination.c_str(), !OverWrite)!=0;
             #else
                 return CopyFile(Source.c_str(), Destination.c_str(), !OverWrite)!=0;
@@ -887,9 +906,11 @@ bool File::Move(const Ztring &Source, const Ztring &Destination, bool OverWrite)
             return !std::rename(Source.To_Local().c_str(), Destination.To_Local().c_str());
         #elif defined WINDOWS
             #ifdef UNICODE
-                if (IsWin9X())
+                #ifndef ZENLIB_NO_WIN9X_SUPPORT
+                if (IsWin9X_Fast())
                     return MoveFileA(Source.To_Local().c_str(), Destination.To_Local().c_str())!=0;
                 else
+                #endif //ZENLIB_NO_WIN9X_SUPPORT
                     return MoveFileW(Source.c_str(), Destination.c_str())!=0;
             #else
                 return MoveFile(Source.c_str(), Destination.c_str())!=0;
@@ -912,9 +933,11 @@ bool File::Delete(const Ztring &File_Name)
             #endif //UNICODE
         #elif defined WINDOWS
             #ifdef UNICODE
-                if (IsWin9X())
+                #ifndef ZENLIB_NO_WIN9X_SUPPORT
+                if (IsWin9X_Fast())
                     return DeleteFileA(File_Name.To_Local().c_str())!=0;
                 else
+                #endif //ZENLIB_NO_WIN9X_SUPPORT
                     return DeleteFileW(File_Name.c_str())!=0;
             #else
                 return DeleteFile(File_Name.c_str())!=0;
