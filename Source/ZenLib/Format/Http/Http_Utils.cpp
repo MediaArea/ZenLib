@@ -152,7 +152,7 @@ std::wstring URL_Encoded_Encode (const std::wstring& URL)
     wstring::size_type Pos;
     for (Pos=0; Pos<URL.size(); Pos++)
     {
-        if ((URL[Pos]>=L'\x00' && URL[Pos]<=L'\x20')
+        if (URL[Pos]<=L'\x20'
          || URL[Pos]==L'\x7F'
          || URL[Pos]==L' '
          || URL[Pos]==L'<'
