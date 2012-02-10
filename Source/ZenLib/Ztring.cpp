@@ -828,13 +828,26 @@ Ztring& Ztring::From_Number (const int8u I, int8u Radix)
         assign (C1);
         delete[] C1; //C1=NULL;
     #else
-        toStringStream SS;
-        #ifdef UNICODE
-            SS << setbase(Radix) << I;
-        #else //UNICODE
-            SS << setbase(Radix) << (size_t)I; //On linux (at least), (un)signed char is detected as a char
-        #endif //UNICODE
-        assign(SS.str());
+        if (Radix==2)
+        {
+            clear();
+            for (int8u Pos=0; Pos<8; Pos++)
+            {
+                if (I<(((int8u)1)<<Pos))
+                    break;
+                insert(0, 1, (I&(((int8u)1)<<Pos))?_T('1'):_T('0'));
+            }
+        }
+        else
+        {
+            toStringStream SS;
+            #ifdef UNICODE
+                SS << setbase(Radix) << I;
+            #else //UNICODE
+                SS << setbase(Radix) << (size_t)I; //On linux (at least), (un)signed char is detected as a char
+            #endif //UNICODE
+            assign(SS.str());
+        }
     #endif
     MakeUpperCase();
     return *this;
@@ -882,9 +895,22 @@ Ztring& Ztring::From_Number (const int16u I, int8u Radix)
         assign (C1);
         delete[] C1; //C1=NULL;
     #else
-        toStringStream SS;
-        SS << setbase(Radix) << I;
-        assign(SS.str());
+        if (Radix==2)
+        {
+            clear();
+            for (int8u Pos=0; Pos<16; Pos++)
+            {
+                if (I<(((int16u)1)<<Pos))
+                    break;
+                insert(0, 1, (I&(((int16u)1)<<Pos))?_T('1'):_T('0'));
+            }
+        }
+        else
+        {
+            toStringStream SS;
+            SS << setbase(Radix) << I;
+            assign(SS.str());
+        }
     #endif
     MakeUpperCase();
     return *this;
@@ -932,9 +958,22 @@ Ztring& Ztring::From_Number (const int32u I, int8u Radix)
         assign (C1);
         delete[] C1; //C1=NULL;
     #else
-        toStringStream SS;
-        SS << setbase(Radix) << I;
-        assign(SS.str());
+        if (Radix==2)
+        {
+            clear();
+            for (int8u Pos=0; Pos<32; Pos++)
+            {
+                if (I<(((int32u)1)<<Pos))
+                    break;
+                insert(0, 1, (I&(((int32u)1)<<Pos))?_T('1'):_T('0'));
+            }
+        }
+        else
+        {
+            toStringStream SS;
+            SS << setbase(Radix) << I;
+            assign(SS.str());
+        }
     #endif
     MakeUpperCase();
     return *this;
@@ -982,9 +1021,22 @@ Ztring& Ztring::From_Number (const int64u I, int8u Radix)
         assign (C1);
         delete[] C1; //C1=NULL;
     #else
-        toStringStream SS;
-        SS << setbase(Radix) << I;
-        assign(SS.str());
+        if (Radix==2)
+        {
+            clear();
+            for (int8u Pos=0; Pos<32; Pos++)
+            {
+                if (I<(((int64u)1)<<Pos))
+                    break;
+                insert(0, 1, (I&(((int64u)1)<<Pos))?_T('1'):_T('0'));
+            }
+        }
+        else
+        {
+            toStringStream SS;
+            SS << setbase(Radix) << I;
+            assign(SS.str());
+        }
     #endif
     MakeUpperCase();
     return *this;

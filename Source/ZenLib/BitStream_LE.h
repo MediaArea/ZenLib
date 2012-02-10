@@ -37,7 +37,7 @@
 namespace ZenLib
 {
 
-class BitStream_LE : BitStream
+class BitStream_LE : public BitStream
 {
 public:
     BitStream_LE ()                                                             :BitStream() {};

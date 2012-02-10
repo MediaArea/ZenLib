@@ -1,6 +1,8 @@
 Version 0.4.25
 --------------
++ Fast bitstream parser
 + Removing Win9X detection on 64-bit CPU
++ Ztring: integer to text conversion with radix=2
 
 Version 0.4.24, 2012-01-24
 --------------
