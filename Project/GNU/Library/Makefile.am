@@ -74,7 +74,7 @@ zen_format_http_HEADERS = \
  ../../../Source/ZenLib/Format/Http/Http_Handler.h \
  ../../../Source/ZenLib/Format/Http/Http_Cookies.h
 
-pkgconfigdir = $(libdir)/pkg-config
+pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = libzen.pc
 
 AM_CPPFLAGS = -I../../../Source
