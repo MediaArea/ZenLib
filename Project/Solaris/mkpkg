@@ -9,7 +9,7 @@ release=`uname -r`
 
 #Creation of known directories and filenames
 name="libzen0"
-version="0.4.24"
+version="0.4.25"
 Home=`pwd`
 install_prefix=${Home}/mk_package
 packagecreation_prefix=${Home}/create_package
