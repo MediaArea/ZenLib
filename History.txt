@@ -1,4 +1,4 @@
-Version 0.4.25, 2012-03-15
+Version 0.4.25, 2012-03-13
 --------------
 + Fast bitstream parser
 + Removing Win9X detection on 64-bit CPU
