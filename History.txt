@@ -1,4 +1,4 @@
-Version 0.4.25, 2012-04-09
+Version 0.4.26, 2012-04-09
 --------------
 + Better support of machines lacking of std::stringstream
 + Better support of machines requesting explicit stdc++ library link option (e.g. some ARM embedded devices)
