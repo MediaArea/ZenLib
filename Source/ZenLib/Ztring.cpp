@@ -176,16 +176,17 @@ Ztring EmptyZtring;
 //---------------------------------------------------------------------------
 
 //---------------------------------------------------------------------------
-#if defined(__MINGW32__) || defined(__sun__) || defined(__mips__) || defined(__mipsel__) || defined(__UCLIBC__)
+#if defined(STRINGSTREAM_MISSING)
     #if defined (_UNICODE)
         #define _tnprintf snwprintf
     #else
         #define _tnprintf snprintf
     #endif
+#else
+    typedef basic_stringstream<Char>  tStringStream;
+    typedef basic_istringstream<Char> tiStringStream;
+    typedef basic_ostringstream<Char> toStringStream;
 #endif
-typedef basic_stringstream<Char>  tStringStream;
-typedef basic_istringstream<Char> tiStringStream;
-typedef basic_ostringstream<Char> toStringStream;
 //---------------------------------------------------------------------------
 
 //***************************************************************************
@@ -784,7 +785,7 @@ Ztring& Ztring::From_CC1 (const int8u S)
 
 Ztring& Ztring::From_Number (const int8s I, int8u Radix)
 {
-    #if defined(__MINGW32__) || ( defined(__sun__) && !defined(__sparc__) ) || defined(__UCLIBC__)
+    #if defined(STRINGSTREAM_MISSING)
         if (Radix==0)
         {
             clear();
@@ -813,7 +814,7 @@ Ztring& Ztring::From_Number (const int8s I, int8u Radix)
 
 Ztring& Ztring::From_Number (const int8u I, int8u Radix)
 {
-    #if defined(__MINGW32__) || ( defined(__sun__) && !defined(__sparc__) ) || defined(__UCLIBC__)
+    #if defined(STRINGSTREAM_MISSING)
         if (Radix==0)
         {
             clear();
@@ -855,7 +856,7 @@ Ztring& Ztring::From_Number (const int8u I, int8u Radix)
 
 Ztring& Ztring::From_Number (const int16s I, int8u Radix)
 {
-    #if defined(__MINGW32__) || ( defined(__sun__) && !defined(__sparc__) ) || defined(__UCLIBC__)
+    #if defined(STRINGSTREAM_MISSING)
         if (Radix==0)
         {
             clear();
@@ -880,7 +881,7 @@ Ztring& Ztring::From_Number (const int16s I, int8u Radix)
 
 Ztring& Ztring::From_Number (const int16u I, int8u Radix)
 {
-    #if defined(__MINGW32__) || ( defined(__sun__) && !defined(__sparc__) ) || defined(__UCLIBC__)
+    #if defined(STRINGSTREAM_MISSING)
         if (Radix==0)
         {
             clear();
@@ -918,7 +919,7 @@ Ztring& Ztring::From_Number (const int16u I, int8u Radix)
 
 Ztring& Ztring::From_Number (const int32s I, int8u Radix)
 {
-    #if defined(__MINGW32__) || ( defined(__sun__) && !defined(__sparc__) ) || defined(__UCLIBC__)
+    #if defined(STRINGSTREAM_MISSING)
         if (Radix==0)
         {
             clear();
@@ -943,7 +944,7 @@ Ztring& Ztring::From_Number (const int32s I, int8u Radix)
 
 Ztring& Ztring::From_Number (const int32u I, int8u Radix)
 {
-    #if defined(__MINGW32__) || ( defined(__sun__) && !defined(__sparc__) ) || defined(__UCLIBC__)
+    #if defined(STRINGSTREAM_MISSING)
         if (Radix==0)
         {
             clear();
@@ -981,7 +982,7 @@ Ztring& Ztring::From_Number (const int32u I, int8u Radix)
 
 Ztring& Ztring::From_Number (const int64s I, int8u Radix)
 {
-    #if defined(__MINGW32__) || ( defined(__sun__) && !defined(__sparc__) ) || defined(__UCLIBC__)
+    #if defined(STRINGSTREAM_MISSING)
         if (Radix==0)
         {
             clear();
@@ -1006,7 +1007,7 @@ Ztring& Ztring::From_Number (const int64s I, int8u Radix)
 
 Ztring& Ztring::From_Number (const int64u I, int8u Radix)
 {
-    #if defined(__MINGW32__) || ( defined(__sun__) && !defined(__sparc__) ) || defined(__UCLIBC__)
+    #if defined(STRINGSTREAM_MISSING)
         if (Radix==0)
         {
             clear();
@@ -1051,7 +1052,7 @@ Ztring& Ztring::From_Number (const int128u I, int8u Radix)
 
 Ztring& Ztring::From_Number (const float32 F, int8u Precision, ztring_t Options)
 {
-    #if defined(__MINGW32__) || ( defined(__sun__) && !defined(__sparc__) ) || defined(__mips__) || defined(__mipsel__) || defined(__UCLIBC__)
+    #if defined(STRINGSTREAM_MISSING)
         Char C1[100];
         _tnprintf (C1, 99, (Ztring(_T("%."))+Ztring::ToZtring(Precision)+_T("f")).c_str(), F);
         assign(C1);
@@ -1077,7 +1078,7 @@ Ztring& Ztring::From_Number (const float32 F, int8u Precision, ztring_t Options)
 
 Ztring& Ztring::From_Number (const float64 F, int8u Precision, ztring_t Options)
 {
-    #if defined(__MINGW32__) || ( defined(__sun__) && !defined(__sparc__) ) || defined(__mips__) || defined(__mipsel__) || defined(__UCLIBC__)
+    #if defined(STRINGSTREAM_MISSING)
         Char C1[100];
         _tnprintf (C1, 99, (Ztring(_T("%."))+Ztring::ToZtring(Precision)+_T("f")).c_str(), F);
         assign(C1);
@@ -1103,7 +1104,7 @@ Ztring& Ztring::From_Number (const float64 F, int8u Precision, ztring_t Options)
 
 Ztring& Ztring::From_Number (const float80 F, int8u Precision, ztring_t Options)
 {
-    #if defined(__MINGW32__) || ( defined(__sun__) && !defined(__sparc__) ) || defined(__mips__) || defined(__mipsel__) || defined(__UCLIBC__)
+    #if defined(STRINGSTREAM_MISSING)
         Char C1[100];
         _tnprintf (C1, 99, (Ztring(_T("%."))+Ztring::ToZtring(Precision)+_T("f")).c_str(), F);
         assign(C1);
@@ -1140,7 +1141,7 @@ Ztring& Ztring::From_Number (const size_t I, int8u Radix)
 
 Ztring& Ztring::From_BCD     (const int8u I)
 {
-    #if ( defined(__sun__) && !defined(__sparc__) )
+    #if defined(STRINGSTREAM_MISSING)
         clear();
         append(1, _T('0')+I/0x10);
         append(1, _T('0')+I%0x10);
@@ -1773,10 +1774,10 @@ int8s Ztring::To_int8s (int8u Radix, ztring_t Options) const
 
     //Conversion
     int I;
-    #ifdef __MINGW32__
-        I=_ttoi(c_str());
-    #elif ( defined(__sun__) && !defined(__sparc__) ) || defined(__UCLIBC__)
-        #ifdef UNICODE
+    #if defined(STRINGSTREAM_MISSING)
+        #ifdef __MINGW32__
+            I=_ttoi(c_str());
+        #elif defined(UNICODE)
             std::string S=To_UTF8();
             I=atoi(S.c_str());
         #else //UNICODE
@@ -1811,15 +1812,15 @@ int8u Ztring::To_int8u (int8u Radix, ztring_t Options) const
 
     //Conversion
     unsigned int I;
-    #ifdef __MINGW32__
-        I=_ttoi64(c_str()); //TODO : I>0x7FFFFFFF - Replaced by i64 version to support, but not good
-    #elif ( defined(__sun__) && !defined(__sparc__) ) || defined(__UCLIBC__)
-        #ifdef UNICODE
+    #if defined(STRINGSTREAM_MISSING)
+        #ifdef __MINGW32__
+            I=_ttoi64(c_str()); //TODO : I>0x7FFFFFFF - Replaced by i64 version to support, but not good
+        #elif defined(UNICODE)
             std::string S=To_UTF8();
             I=atoi(S.c_str());
-        #else //UNICODE
+        #else //defined(UNICODE)
             I=atoi(c_str());
-        #endif //UNICODE
+        #endif //defined(UNICODE)
     #else
         tStringStream SS(*this);
         SS >> setbase(Radix) >> I;
@@ -1849,15 +1850,15 @@ int16s Ztring::To_int16s (int8u Radix, ztring_t Options) const
 
     //Conversion
     int I;
-    #ifdef __MINGW32__
-        I=_ttoi(c_str());
-    #elif ( defined(__sun__) && !defined(__sparc__) ) || defined(__UCLIBC__)
-        #ifdef UNICODE
+    #if defined(STRINGSTREAM_MISSING)
+        #ifdef __MINGW32__
+            I=_ttoi(c_str());
+        #elif defined(UNICODE)
             std::string S=To_UTF8();
             I=atoi(S.c_str());
-        #else //UNICODE
+        #else //defined(UNICODE)
             I=atoi(c_str());
-        #endif //UNICODE
+        #endif //defined(UNICODE)
     #else
         tStringStream SS(*this);
         SS >> setbase(Radix) >> I;
@@ -1887,15 +1888,15 @@ int16u Ztring::To_int16u (int8u Radix, ztring_t Options) const
 
     //Conversion
     unsigned int I;
-    #ifdef __MINGW32__
-        I=_ttoi64(c_str()); //TODO : I>0x7FFFFFFF - Replaced by i64 version to support, but not good
-    #elif ( defined(__sun__) && !defined(__sparc__) ) || defined(__UCLIBC__)
-        #ifdef UNICODE
+    #if defined(STRINGSTREAM_MISSING)
+        #ifdef __MINGW32__
+            I=_ttoi64(c_str()); //TODO : I>0x7FFFFFFF - Replaced by i64 version to support, but not good
+        #elif defined(UNICODE)
             std::string S=To_UTF8();
             I=atoi(S.c_str());
-        #else //UNICODE
+        #else //defined(UNICODE)
             I=atoi(c_str());
-        #endif //UNICODE
+        #endif //defined(UNICODE)
     #else
         tStringStream SS(*this);
         SS >> setbase(Radix) >> I;
@@ -1925,15 +1926,15 @@ int32s Ztring::To_int32s (int8u Radix, ztring_t Options) const
 
     //Conversion
     int32s I;
-    #ifdef __MINGW32__
-        I=_ttoi(c_str());
-    #elif ( defined(__sun__) && !defined(__sparc__) ) || defined(__UCLIBC__)
-        #ifdef UNICODE
+    #if defined(STRINGSTREAM_MISSING)
+        #ifdef __MINGW32__
+            I=_ttoi(c_str());
+        #elif defined(UNICODE)
             std::string S=To_UTF8();
             I=atol(S.c_str());
-        #else //UNICODE
+        #else //defined(UNICODE)
             I=atol(c_str());
-        #endif //UNICODE
+        #endif //defined(UNICODE)
     #else
         tStringStream SS(*this);
         SS >> setbase(Radix) >> I;
@@ -1963,15 +1964,15 @@ int32u Ztring::To_int32u (int8u Radix, ztring_t Options) const
 
     //Conversion
     int32u I;
-    #ifdef __MINGW32__
-        I=_ttoi64(c_str()); //TODO : I>0x7FFFFFFF - Replaced by i64 version to support, but not good
-    #elif ( defined(__sun__) && !defined(__sparc__) ) || defined(__UCLIBC__)
-        #ifdef UNICODE
+    #if defined(STRINGSTREAM_MISSING)
+        #ifdef __MINGW32__
+            I=_ttoi64(c_str()); //TODO : I>0x7FFFFFFF - Replaced by i64 version to support, but not good
+        #elif defined(UNICODE)
             std::string S=To_UTF8();
             I=atol(S.c_str());
-        #else //UNICODE
+        #else //defined(UNICODE)
             I=atol(c_str());
-        #endif //UNICODE
+        #endif //defined(UNICODE)
     #else
         tStringStream SS(*this);
         SS >> setbase(Radix) >> I;
@@ -2001,15 +2002,15 @@ int64s Ztring::To_int64s (int8u Radix, ztring_t Options) const
 
     //Conversion
     int64s I;
-    #ifdef __MINGW32__
-        I=_ttoi64(c_str());
-    #elif ( defined(__sun__) && !defined(__sparc__) ) || defined(__UCLIBC__)
-        #ifdef UNICODE
-             std::string S=To_UTF8();
+    #if defined(STRINGSTREAM_MISSING)
+        #ifdef __MINGW32__
+            I=_ttoi64(c_str());
+        #elif defined(UNICODE)
+            std::string S=To_UTF8();
             I=atoll(S.c_str());
-       #else //UNICODE
+        #else //defined(UNICODE)
             I=atoll(c_str());
-        #endif //UNICODE
+        #endif //defined(UNICODE)
     #else
         tStringStream SS(*this);
         SS >> setbase(Radix) >> I;
@@ -2039,15 +2040,15 @@ int64u Ztring::To_int64u (int8u Radix, ztring_t Options) const
 
     //Conversion
     int64u I;
-    #ifdef __MINGW32__
-        I=_ttoi64(c_str()); //TODO : I>0x7FFFFFFFFFFFFFFF
-    #elif ( defined(__sun__) && !defined(__sparc__) ) || defined(__UCLIBC__)
-        #ifdef UNICODE
-             std::string S=To_UTF8();
+    #if defined(STRINGSTREAM_MISSING)
+        #ifdef __MINGW32__
+            I=_ttoi64(c_str()); //TODO : I>0x7FFFFFFFFFFFFFFF
+        #elif defined(UNICODE)
+            std::string S=To_UTF8();
             I=atoll(S.c_str());
-       #else //UNICODE
+        #else //defined(UNICODE)
             I=atoll(c_str());
-        #endif //UNICODE
+        #endif //defined(UNICODE)
     #else
         tStringStream SS(*this);
         SS >> setbase(Radix) >> I;
@@ -2139,7 +2140,7 @@ float32 Ztring::To_float32(ztring_t) const
         return 0;
 
     //Conversion
-    #if defined(__MINGW32__) || ( defined(__sun__) && !defined(__sparc__) )
+    #if defined(STRINGSTREAM_MISSING)
         #ifdef UNICODE
             return (wcstod(c_str(),NULL));
         #else
@@ -2165,7 +2166,7 @@ float64 Ztring::To_float64(ztring_t) const
         return 0;
 
     //Conversion
-    #if defined(__MINGW32__) || ( defined(__sun__) && !defined(__sparc__) )
+    #if defined(STRINGSTREAM_MISSING)
         #ifdef UNICODE
             return (wcstod(c_str(),NULL)); //TODO verify no wcstold
         #else
@@ -2191,7 +2192,7 @@ float80 Ztring::To_float80(ztring_t) const
         return 0;
 
     //Conversion
-    #if defined(__MINGW32__) || ( defined(__sun__) && !defined(__sparc__) )
+    #if defined(STRINGSTREAM_MISSING)
         #ifdef UNICODE
             return (wcstod(c_str(),NULL)); //TODO verify no wcstold
         #else

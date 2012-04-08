@@ -173,11 +173,29 @@ AC_COMPILE_IFELSE([
 	#include <cstdlib>
 	void foo(signed int) {}
 	void foo(unsigned int) {}
-	int main () {foo(size_t(0));}], [size_t_is_long="no"], [size_t_is_long="yes"])
+	int main () {foo(size_t(0)); return 0;}], [size_t_is_long="no"], [size_t_is_long="yes"])
 
 if test "$size_t_is_long" = "yes"; then
 	CXXFLAGS="$CXXFLAGS -DSIZE_T_IS_LONG"
 	ZenLib_CXXFLAGS="$ZenLib_CXXFLAGS -DSIZE_T_IS_LONG"
+fi
+
+dnl -------------------------------------------------------------------------
+dnl Check if stringstream is available
+dnl
+AC_LANG([C++])
+if test "$enable_unicode" = "yes"; then
+    AC_COMPILE_IFELSE([
+        #include <sstream>
+        int main () {std::wstringstream message; message<<1.0; return 0;}], [stringstream_missing="no"], [stringstream_missing="yes"])
+else
+    AC_COMPILE_IFELSE([
+        #include <sstream>
+        int main () {std::stringstream message; message<<1.0; return 0;}], [stringstream_missing="no"], [stringstream_missing="yes"])
+fi
+
+if test "$stringstream_missing" = "yes"; then
+	CXXFLAGS="$CXXFLAGS -DSTRINGSTREAM_MISSING"
 fi
 
 dnl -------------------------------------------------------------------------
@@ -202,7 +220,7 @@ fi
 dnl -------------------------------------------------------------------------
 dnl External libs
 dnl
-LDFLAGS="$LDFLAGS -lpthread"
+LDFLAGS="$LDFLAGS -lpthread -lstdc++"
 
 dnl #########################################################################
 dnl ### Output
