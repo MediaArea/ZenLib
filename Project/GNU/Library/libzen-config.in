@@ -11,7 +11,7 @@ if test "$1" = "Unicode"; then
 echo @ZenLib_Unicode@
 fi
 if test "$1" = "WstringMissing"; then
-echo @ZenLib_WstringMissing@
+echo @ZenLib_wstring_missing@
 fi
 if test "$1" = "Exists"; then
 echo yes

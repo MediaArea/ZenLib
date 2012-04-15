@@ -176,7 +176,7 @@ Ztring EmptyZtring;
 //---------------------------------------------------------------------------
 
 //---------------------------------------------------------------------------
-#if defined(STRINGSTREAM_MISSING)
+#if defined(STREAM_MISSING)
     #if defined (_UNICODE)
         #define _tnprintf snwprintf
     #else
@@ -785,7 +785,7 @@ Ztring& Ztring::From_CC1 (const int8u S)
 
 Ztring& Ztring::From_Number (const int8s I, int8u Radix)
 {
-    #if defined(STRINGSTREAM_MISSING)
+    #if defined(STREAM_MISSING)
         if (Radix==0)
         {
             clear();
@@ -814,7 +814,7 @@ Ztring& Ztring::From_Number (const int8s I, int8u Radix)
 
 Ztring& Ztring::From_Number (const int8u I, int8u Radix)
 {
-    #if defined(STRINGSTREAM_MISSING)
+    #if defined(STREAM_MISSING)
         if (Radix==0)
         {
             clear();
@@ -856,7 +856,7 @@ Ztring& Ztring::From_Number (const int8u I, int8u Radix)
 
 Ztring& Ztring::From_Number (const int16s I, int8u Radix)
 {
-    #if defined(STRINGSTREAM_MISSING)
+    #if defined(STREAM_MISSING)
         if (Radix==0)
         {
             clear();
@@ -881,7 +881,7 @@ Ztring& Ztring::From_Number (const int16s I, int8u Radix)
 
 Ztring& Ztring::From_Number (const int16u I, int8u Radix)
 {
-    #if defined(STRINGSTREAM_MISSING)
+    #if defined(STREAM_MISSING)
         if (Radix==0)
         {
             clear();
@@ -919,7 +919,7 @@ Ztring& Ztring::From_Number (const int16u I, int8u Radix)
 
 Ztring& Ztring::From_Number (const int32s I, int8u Radix)
 {
-    #if defined(STRINGSTREAM_MISSING)
+    #if defined(STREAM_MISSING)
         if (Radix==0)
         {
             clear();
@@ -944,7 +944,7 @@ Ztring& Ztring::From_Number (const int32s I, int8u Radix)
 
 Ztring& Ztring::From_Number (const int32u I, int8u Radix)
 {
-    #if defined(STRINGSTREAM_MISSING)
+    #if defined(STREAM_MISSING)
         if (Radix==0)
         {
             clear();
@@ -982,7 +982,7 @@ Ztring& Ztring::From_Number (const int32u I, int8u Radix)
 
 Ztring& Ztring::From_Number (const int64s I, int8u Radix)
 {
-    #if defined(STRINGSTREAM_MISSING)
+    #if defined(STREAM_MISSING)
         if (Radix==0)
         {
             clear();
@@ -1007,7 +1007,7 @@ Ztring& Ztring::From_Number (const int64s I, int8u Radix)
 
 Ztring& Ztring::From_Number (const int64u I, int8u Radix)
 {
-    #if defined(STRINGSTREAM_MISSING)
+    #if defined(STREAM_MISSING)
         if (Radix==0)
         {
             clear();
@@ -1052,7 +1052,7 @@ Ztring& Ztring::From_Number (const int128u I, int8u Radix)
 
 Ztring& Ztring::From_Number (const float32 F, int8u Precision, ztring_t Options)
 {
-    #if defined(STRINGSTREAM_MISSING)
+    #if defined(STREAM_MISSING)
         Char C1[100];
         _tnprintf (C1, 99, (Ztring(_T("%."))+Ztring::ToZtring(Precision)+_T("f")).c_str(), F);
         assign(C1);
@@ -1078,7 +1078,7 @@ Ztring& Ztring::From_Number (const float32 F, int8u Precision, ztring_t Options)
 
 Ztring& Ztring::From_Number (const float64 F, int8u Precision, ztring_t Options)
 {
-    #if defined(STRINGSTREAM_MISSING)
+    #if defined(STREAM_MISSING)
         Char C1[100];
         _tnprintf (C1, 99, (Ztring(_T("%."))+Ztring::ToZtring(Precision)+_T("f")).c_str(), F);
         assign(C1);
@@ -1104,7 +1104,7 @@ Ztring& Ztring::From_Number (const float64 F, int8u Precision, ztring_t Options)
 
 Ztring& Ztring::From_Number (const float80 F, int8u Precision, ztring_t Options)
 {
-    #if defined(STRINGSTREAM_MISSING)
+    #if defined(STREAM_MISSING)
         Char C1[100];
         _tnprintf (C1, 99, (Ztring(_T("%."))+Ztring::ToZtring(Precision)+_T("f")).c_str(), F);
         assign(C1);
@@ -1131,9 +1131,18 @@ Ztring& Ztring::From_Number (const float80 F, int8u Precision, ztring_t Options)
 #ifdef SIZE_T_IS_LONG
 Ztring& Ztring::From_Number (const size_t I, int8u Radix)
 {
-    toStringStream SS;
-    SS << setbase(Radix) << I;
-    assign(SS.str());
+    #if defined(STREAM_MISSING)
+        Char C1[100];
+        _tnprintf(C1, 64, Radix==10?_T("%zu"):(Radix==16?_T("%zx"):(Radix==8?_T("%zo"):_T(""))), I);
+        assign(C1);
+    #else
+        toStringStream SS;
+        SS << setbase(Radix) << I;
+        assign(SS.str());
+        #if defined(__BORLANDC__)
+            FindAndReplace(_T(","), _T(".")); //Borland C++ Builder 2010+Windows Seven put a comma for istringstream, but does not support comma for ostringstream
+        #endif
+    #endif
     MakeUpperCase();
     return *this;
 }
@@ -1141,7 +1150,7 @@ Ztring& Ztring::From_Number (const size_t I, int8u Radix)
 
 Ztring& Ztring::From_BCD     (const int8u I)
 {
-    #if defined(STRINGSTREAM_MISSING)
+    #if defined(STREAM_MISSING)
         clear();
         append(1, _T('0')+I/0x10);
         append(1, _T('0')+I%0x10);
@@ -1774,7 +1783,7 @@ int8s Ztring::To_int8s (int8u Radix, ztring_t Options) const
 
     //Conversion
     int I;
-    #if defined(STRINGSTREAM_MISSING)
+    #if defined(STREAM_MISSING)
         #ifdef __MINGW32__
             I=_ttoi(c_str());
         #elif defined(UNICODE)
@@ -1812,7 +1821,7 @@ int8u Ztring::To_int8u (int8u Radix, ztring_t Options) const
 
     //Conversion
     unsigned int I;
-    #if defined(STRINGSTREAM_MISSING)
+    #if defined(STREAM_MISSING)
         #ifdef __MINGW32__
             I=_ttoi64(c_str()); //TODO : I>0x7FFFFFFF - Replaced by i64 version to support, but not good
         #elif defined(UNICODE)
@@ -1850,7 +1859,7 @@ int16s Ztring::To_int16s (int8u Radix, ztring_t Options) const
 
     //Conversion
     int I;
-    #if defined(STRINGSTREAM_MISSING)
+    #if defined(STREAM_MISSING)
         #ifdef __MINGW32__
             I=_ttoi(c_str());
         #elif defined(UNICODE)
@@ -1888,7 +1897,7 @@ int16u Ztring::To_int16u (int8u Radix, ztring_t Options) const
 
     //Conversion
     unsigned int I;
-    #if defined(STRINGSTREAM_MISSING)
+    #if defined(STREAM_MISSING)
         #ifdef __MINGW32__
             I=_ttoi64(c_str()); //TODO : I>0x7FFFFFFF - Replaced by i64 version to support, but not good
         #elif defined(UNICODE)
@@ -1926,7 +1935,7 @@ int32s Ztring::To_int32s (int8u Radix, ztring_t Options) const
 
     //Conversion
     int32s I;
-    #if defined(STRINGSTREAM_MISSING)
+    #if defined(STREAM_MISSING)
         #ifdef __MINGW32__
             I=_ttoi(c_str());
         #elif defined(UNICODE)
@@ -1964,7 +1973,7 @@ int32u Ztring::To_int32u (int8u Radix, ztring_t Options) const
 
     //Conversion
     int32u I;
-    #if defined(STRINGSTREAM_MISSING)
+    #if defined(STREAM_MISSING)
         #ifdef __MINGW32__
             I=_ttoi64(c_str()); //TODO : I>0x7FFFFFFF - Replaced by i64 version to support, but not good
         #elif defined(UNICODE)
@@ -2002,7 +2011,7 @@ int64s Ztring::To_int64s (int8u Radix, ztring_t Options) const
 
     //Conversion
     int64s I;
-    #if defined(STRINGSTREAM_MISSING)
+    #if defined(STREAM_MISSING)
         #ifdef __MINGW32__
             I=_ttoi64(c_str());
         #elif defined(UNICODE)
@@ -2040,7 +2049,7 @@ int64u Ztring::To_int64u (int8u Radix, ztring_t Options) const
 
     //Conversion
     int64u I;
-    #if defined(STRINGSTREAM_MISSING)
+    #if defined(STREAM_MISSING)
         #ifdef __MINGW32__
             I=_ttoi64(c_str()); //TODO : I>0x7FFFFFFFFFFFFFFF
         #elif defined(UNICODE)
@@ -2140,7 +2149,7 @@ float32 Ztring::To_float32(ztring_t) const
         return 0;
 
     //Conversion
-    #if defined(STRINGSTREAM_MISSING)
+    #if defined(STREAM_MISSING)
         #ifdef UNICODE
             return (wcstod(c_str(),NULL));
         #else
@@ -2166,7 +2175,7 @@ float64 Ztring::To_float64(ztring_t) const
         return 0;
 
     //Conversion
-    #if defined(STRINGSTREAM_MISSING)
+    #if defined(STREAM_MISSING)
         #ifdef UNICODE
             return (wcstod(c_str(),NULL)); //TODO verify no wcstold
         #else
@@ -2192,7 +2201,7 @@ float80 Ztring::To_float80(ztring_t) const
         return 0;
 
     //Conversion
-    #if defined(STRINGSTREAM_MISSING)
+    #if defined(STREAM_MISSING)
         #ifdef UNICODE
             return (wcstod(c_str(),NULL)); //TODO verify no wcstold
         #else

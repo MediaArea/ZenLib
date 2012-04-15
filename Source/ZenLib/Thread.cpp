@@ -33,7 +33,6 @@
 
 //---------------------------------------------------------------------------
 #include "ZenLib/Thread.h"
-#include <iostream>
 #include <ZenLib/Ztring.h>
 #include <ZenLib/CriticalSection.h>
 //---------------------------------------------------------------------------

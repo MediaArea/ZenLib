@@ -43,8 +43,9 @@ AC_ARG_ENABLE([arch-ppc64],       [AS_HELP_STRING(([--enable-arch-ppc64],       
 AC_ARG_ENABLE([arch-i386],        [AS_HELP_STRING(([--enable-arch-i386],        [Create Mac i386 architecture]))],              , [enable_arch_i386=no])
 AC_ARG_ENABLE([arch-x86_64],      [AS_HELP_STRING(([--enable-arch-x86_64],      [Create Mac x86_64 architecture]))],            , [enable_arch_x86_64=no])
 AC_ARG_ENABLE([unicode],          [AS_HELP_STRING(([--disable-unicode],         [Disable unicode]))],                           , [enable_unicode=yes])
-AC_ARG_ENABLE([wstringmissing],   [AS_HELP_STRING(([--enable-wstringmissing],   [Disable wstring support (old compilers)]))],   , [enable_wstringmissing=no])
-AC_ARG_ENABLE([large_files],      [AS_HELP_STRING(([--disable-large-files],     [Disable large files support]))],               , [enable_large_files=yes])
+AC_ARG_ENABLE([wstring_missing],  [AS_HELP_STRING(([--enable-wstring_missing],  [Disable wstring support (old compilers)]))],   , [enable_wstring_missing=no])
+AC_ARG_ENABLE([stream_missing],   [AS_HELP_STRING(([--enable-stream_missing],   [Disable stream support (old compilers)]))],    , [enable_stream_missing=no])
+AC_ARG_ENABLE([large_files],      [AS_HELP_STRING(([--disable-large_files],     [Disable large files support]))],               , [enable_large_files=yes])
 dnl AC_ARG_ENABLE([threads],          [AS_HELP_STRING(([--disable-threads],         [Disable threads support]))],                   , [enable_threads=yes])
  
 
@@ -131,13 +132,13 @@ dnl #########################################################################
 dnl -------------------------------------------------------------------------
 dnl wstring
 dnl
-if test "$enable_wstringmissing" = "yes"; then
+if test "$enable_wstring_missing" = "yes"; then
 	CXXFLAGS="$CXXFLAGS -DWSTRING_MISSING"
 	ZenLib_CXXFLAGS="$ZenLib_CXXFLAGS -DWSTRING_MISSING"
-	ZenLib_WstringMissing="yes"
+	ZenLib_wstring_missing="yes"
 	enable_unicode="no"
 else
-	ZenLib_WstringMissing="no"
+	ZenLib_wstring_missing="no"
 fi
 
 dnl -------------------------------------------------------------------------
@@ -181,21 +182,21 @@ if test "$size_t_is_long" = "yes"; then
 fi
 
 dnl -------------------------------------------------------------------------
-dnl Check if stringstream is available
+dnl Check if stream is available
 dnl
 AC_LANG([C++])
 if test "$enable_unicode" = "yes"; then
     AC_COMPILE_IFELSE([
         #include <sstream>
-        int main () {std::wstringstream message; message<<1.0; return 0;}], [stringstream_missing="no"], [stringstream_missing="yes"])
+        int main () {std::wstringstream message; message<<1.0; return 0;}], , [enable_stream_missing="yes"])
 else
     AC_COMPILE_IFELSE([
         #include <sstream>
-        int main () {std::stringstream message; message<<1.0; return 0;}], [stringstream_missing="no"], [stringstream_missing="yes"])
+        int main () {std::stringstream message; message<<1.0; return 0;}], , [enable_stream_missing="yes"])
 fi
 
-if test "$stringstream_missing" = "yes"; then
-	CXXFLAGS="$CXXFLAGS -DSTRINGSTREAM_MISSING"
+if test "$enable_stream_missing" = "yes"; then
+	CXXFLAGS="$CXXFLAGS -DSTREAM_MISSING"
 fi
 
 dnl -------------------------------------------------------------------------
@@ -230,7 +231,7 @@ AC_SUBST(ZenLib_CXXFLAGS)
 AC_SUBST(ZenLib_LIBS)
 AC_SUBST(ZenLib_LIBS_Static)
 AC_SUBST(ZenLib_Unicode)
-AC_SUBST(ZenLib_WstringMissing)
+AC_SUBST(ZenLib_wstring_missing)
 AC_SUBST(ZenLib_LargeFiles)
 AC_CONFIG_FILES(libzen-config, [chmod u+x libzen-config])
 AC_CONFIG_FILES(libzen.pc)
@@ -245,8 +246,9 @@ echo ""
 echo "Configured ZenLib for '$build'"
 echo ""
 echo "  Unicode?                                                $enable_unicode"
-echo "  wstring missing support?                                $ZenLib_WstringMissing"
 echo "  Large files support?                                    $enable_large_files"
+echo "  wstring missing support?                                $enable_wstring_missing"
+echo "  stream missing support?                                 $enable_stream_missing"
 echo ""
 echo "  Create static lib?                                      $enable_static"
 echo "  Create shared lib?                                      $enable_shared"
