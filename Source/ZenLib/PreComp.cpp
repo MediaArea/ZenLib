@@ -1,4 +1,4 @@
-// ZenLib::Translation - Helper for translation
+// PreComp - PreComp file for ZenLib
 // Copyright (C) 2007-2011 MediaArea.net SARL, Info@MediaArea.net
 //
 // This software is provided 'as-is', without any express or implied
