@@ -14,7 +14,7 @@ Release:		1
 Summary:		ZenLib C++ utility library
 Group:			System/Libraries
 License:		BSD
-URL:			http://zenlib.sourceforge.net/
+URL:			http://sourceforge.net/projects/zenlib
 Packager:		MediaArea.net SARL <info@mediaarea.net>
 Source:			libzen_%{version}-1.tar.gz
 BuildRoot:		%{_tmppath}/%{name}-%{version}-%{release}-root
@@ -48,7 +48,7 @@ which use this library.
 %package -n libzen-devel
 Summary:	ZenLib C++ utility library -- development files
 Group:		Development/Libraries/C and C++
-Requires:	libzen0 = %{version}
+Requires:	libzen0%{?_isa} = %{version}
 Requires:	glibc-devel
 Obsoletes:	libzen0-devel
 
@@ -121,6 +121,7 @@ done
 %defattr(-,root,root,-)
 %doc Documentation.html
 %doc Doc/*
+%{_bindir}/libzen-config
 %dir %{_includedir}/ZenLib
 %{_includedir}/ZenLib/*
 %{_libdir}/libzen.la

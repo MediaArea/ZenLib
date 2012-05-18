@@ -74,6 +74,8 @@ zen_format_http_HEADERS = \
  ../../../Source/ZenLib/Format/Http/Http_Handler.h \
  ../../../Source/ZenLib/Format/Http/Http_Cookies.h
 
+bin_SCRIPTS = libzen-config
+
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = libzen.pc
 
