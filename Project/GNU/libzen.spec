@@ -48,7 +48,7 @@ which use this library.
 %package -n libzen-devel
 Summary:	ZenLib C++ utility library -- development files
 Group:		Development/Libraries/C and C++
-Requires:	libzen%{?_isa} = %{version}
+Requires:	libzen0%{?_isa} = %{version}
 Requires:	glibc-devel
 Obsoletes:	libzen0-devel
 
