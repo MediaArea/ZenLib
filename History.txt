@@ -1,3 +1,7 @@
+Version 0.4.28, 2012-
+--------------
+x Ztring: UTF-16 conversion routines crash if the provided string size is odd.
+
 Version 0.4.27, 2012-05-22
 --------------
 + Better support of machines lacking of std::basic_stream

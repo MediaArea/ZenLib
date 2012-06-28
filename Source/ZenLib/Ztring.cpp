@@ -492,6 +492,8 @@ Ztring& Ztring::From_UTF16BE (const char* S, size_type Start, size_type Length)
         while(S[Length]!=0x0000)
             Length++;
     }
+    else
+        Length&=(size_t)-2; //odd number
 
     char* Temp=new char[Length+2];
     memcpy (Temp, S+Start, Length);
@@ -549,6 +551,8 @@ Ztring& Ztring::From_UTF16LE (const char* S, size_type Start, size_type Length)
         while(S[Length]!=0x0000)
             Length+=2;
     }
+    else
+        Length&=(size_t)-2; //odd number
 
     char* Temp=new char[Length+2];
     memcpy (Temp, S+Start, Length);
