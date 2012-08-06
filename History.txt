@@ -1,6 +1,7 @@
 Version 0.4.28, 2012-
 --------------
 x Ztring: UTF-16 conversion routines crash if the provided string size is odd.
+x GNU: forcing stdc++ at link
 
 Version 0.4.27, 2012-05-22
 --------------
