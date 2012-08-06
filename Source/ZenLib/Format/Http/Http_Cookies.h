@@ -46,7 +46,7 @@ namespace Http
 {
 
 //***************************************************************************
-/// @brief 
+/// @brief
 //***************************************************************************
 
 struct Cookie
@@ -63,7 +63,7 @@ struct Cookie
         Secure=false;
     }
 };
- 
+
 extern std::string EmptyString; //Must not change
 
 class Cookies : public std::map<std::string, Cookie>

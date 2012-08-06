@@ -503,7 +503,7 @@ Thread::returnvalue Thread::Run()
     pthread_attr_t Attr;
     pthread_attr_init(&Attr);
     pthread_attr_setdetachstate(&Attr, PTHREAD_CREATE_DETACHED);
-    
+
     //Running
     pthread_create((pthread_t*)&ThreadPointer, &Attr, Thread_Start, (void*)this);
 

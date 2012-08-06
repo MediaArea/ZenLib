@@ -58,7 +58,7 @@ Handler::Handler()
     Foreign_Port=0;
     Local_Port=0;
     HeadersOnly=false;
-    
+
     //Out
     Response_HTTP_Code=200;
 }

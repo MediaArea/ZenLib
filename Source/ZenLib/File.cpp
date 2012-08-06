@@ -432,7 +432,7 @@ size_t File::Write (const int8u* Buffer, size_t Buffer_Size)
             else
             {
                 if (Position!=(int64u)-1)
-                    Position+=Buffer_Size;    
+                    Position+=Buffer_Size;
                 return Buffer_Size;
             }
         #elif defined WINDOWS
@@ -440,7 +440,7 @@ size_t File::Write (const int8u* Buffer, size_t Buffer_Size)
             if (WriteFile(File_Handle, Buffer, (DWORD)Buffer_Size, &Buffer_Size_Written, NULL))
             {
                 if (Position!=(int64u)-1)
-                    Position+=Buffer_Size_Written;    
+                    Position+=Buffer_Size_Written;
                 return Buffer_Size_Written;
             }
             else
@@ -622,7 +622,7 @@ int64u File::Size_Get()
         #elif defined WINDOWS
             DWORD High;DWORD Low=GetFileSize(File_Handle, &High);
             if (Low==INVALID_FILE_SIZE && GetLastError()!=NO_ERROR)
-                return (int64u)-1;    
+                return (int64u)-1;
             Size=0x100000000ULL*High+Low;
             return Size;
         #endif

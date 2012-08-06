@@ -389,12 +389,12 @@ New
 - I don't remember :(
 
 Bug fixes
-- 
+-
 
 Version 0.0.2.0 2003-07-25
 ---------------
 New
-- 
+-
 
 Bug fixes
-- 
+-

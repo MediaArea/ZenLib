@@ -350,17 +350,17 @@ void ZtringListList::Write(const Ztring &ToWrite)
                     InQuotes=!InQuotes; //This is not double quotes, so this is a normal quote
                     /*if (!InQuotes)
                     {
-                        C1=ToWrite.substr(PosC, Pos_End-PosC); 
+                        C1=ToWrite.substr(PosC, Pos_End-PosC);
                         break;
                     }*/
                 }
 
                 if (!InQuotes && Pos_End+WriteSeparator.size()<=ToWrite.size() && ToWrite[Pos_End]==WriteSeparator[0])
                 {
-                    C1=ToWrite.substr(PosC, Pos_End-PosC); 
+                    C1=ToWrite.substr(PosC, Pos_End-PosC);
                     break;
                 }
-                
+
                 if (InQuotes && Pos_End+Quote.size()*2<ToWrite.size() && ToWrite[Pos_End]==Quote[0] && ToWrite[Pos_End+1]==Quote[0])
                     Pos_End+=2;
                 else

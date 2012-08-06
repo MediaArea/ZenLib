@@ -170,7 +170,7 @@ int16u Ztring_ISO_8859_2[96]=
     0x0163,
     0x02D9,
 };
-    
+
 //---------------------------------------------------------------------------
 Ztring EmptyZtring;
 //---------------------------------------------------------------------------
@@ -323,7 +323,7 @@ Ztring& Ztring::From_UTF8 (const char* S)
     #else //ZENLIB_USEWX
         #ifdef _UNICODE
             // Don't use MultiByteToWideChar(), some characters are not well decoded
-			clear();
+            clear();
             const int8u* Z=(const int8u*)S;
             while (*Z) //0 is end
             {
@@ -1549,7 +1549,7 @@ std::string Ztring::To_UTF8 () const
     #ifdef _UNICODE
         //Correction thanks to Andrew Jang
         // Don't use WideCharToMultiByte(), some characters are not well converted
-		std::string ToReturn;
+        std::string ToReturn;
         ToReturn.reserve(size()); // more efficient
 
         const wchar_t* Z=c_str();
@@ -1727,7 +1727,7 @@ int128u Ztring::To_UUID () const
                         Pos++; //Skipping dash in the test
         }
     }
-    
+
     int128u I;
     I.hi=((int64u)((int8u)(Temp[ 0]-'0'))<<60)
        | ((int64u)((int8u)(Temp[ 1]-'0'))<<56)
@@ -2106,7 +2106,7 @@ int128u Ztring::To_int128u (int8u, ztring_t) const
             Temp[Pos]+=_T('9')+1;
         }
     }
-    
+
     int128u I;
     I.hi=((int64u)((int8u)(Temp[ 0]-'0'))<<60)
        | ((int64u)((int8u)(Temp[ 1]-'0'))<<56)
