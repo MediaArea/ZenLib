@@ -40,16 +40,16 @@ namespace ZenLib
 
 //End of line
 #ifdef WINDOWS
-    const Char* EOL=_T("\r\n");
-    const Char  PathSeparator=_T('\\');
+    const Char* EOL=__T("\r\n");
+    const Char  PathSeparator=__T('\\');
 #endif
 #ifdef UNIX
-    const Char* EOL=_T("\n");
-    const Char  PathSeparator=_T('/');
+    const Char* EOL=__T("\n");
+    const Char  PathSeparator=__T('/');
 #endif
 #if defined (MACOS) || defined (MACOSX)
-    const Char* EOL=_T("\r");
-    const Char  PathSeparator=_T('/');
+    const Char* EOL=__T("\r");
+    const Char  PathSeparator=__T('/');
 #endif
 
 //***************************************************************************

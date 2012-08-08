@@ -326,13 +326,13 @@ public :
         /// @brief convert into uppercase
     Ztring &MakeUpperCase();
         /// @brief Remove leading whitespaces from a string
-    Ztring &TrimLeft(Char ToTrim=_T(' '));
+    Ztring &TrimLeft(Char ToTrim=__T(' '));
         /// @brief Remove trailing whitespaces from a string
-    Ztring &TrimRight(Char ToTrim=_T(' '));
+    Ztring &TrimRight(Char ToTrim=__T(' '));
         /// @brief Remove leading and trailing whitespaces from a string
-    Ztring &Trim(Char ToTrim=_T(' '));
+    Ztring &Trim(Char ToTrim=__T(' '));
         /// @brief Quotes a string
-    Ztring &Quote(Char ToTrim=_T('\"'));
+    Ztring &Quote(Char ToTrim=__T('\"'));
         /// @brief return a string between two strings
         /// @param Begin First string
         /// @param End Second string
@@ -363,7 +363,7 @@ public :
         /// @param Options Options for comaparing \n
         ///                Available : Ztring_CaseSensitive
         /// @return The result of comparasion
-    bool Compare (const Ztring &ToCompare, const Ztring &Comparator=_T("=="), ztring_t Options=Ztring_Nothing) const;
+    bool Compare (const Ztring &ToCompare, const Ztring &Comparator=__T("=="), ztring_t Options=Ztring_Nothing) const;
 };
 
 } //NameSpace

@@ -80,9 +80,9 @@ void Shell_Execute(const Ztring &ToExecute)
                 if (IsWin9X())
                     ShellExecuteA(NULL, "open", ToExecute.To_Local().c_str(), NULL, NULL, 0);
                 else
-                    ShellExecute (NULL, _T("open"), ToExecute.c_str(), NULL, NULL, 0);
+                    ShellExecute (NULL, __T("open"), ToExecute.c_str(), NULL, NULL, 0);
             #else
-                ShellExecute(NULL, _T("open"), ToExecute.c_str(), NULL, NULL, 0);
+                ShellExecute(NULL, __T("open"), ToExecute.c_str(), NULL, NULL, 0);
             #endif
         #else
             //Not supported

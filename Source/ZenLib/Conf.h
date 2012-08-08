@@ -219,19 +219,13 @@ namespace ZenLib
 
 //---------------------------------------------------------------------------
 //Char types
-#undef  _T
-#define _T(__x)     __T(__x)
-#undef  _TEXT
-#define _TEXT(__x)  __T(__x)
-#undef  __TEXT
-#define __TEXT(__x) __T(__x)
 #if defined(__UNICODE__)
     #if defined (_MSC_VER) && !defined (_NATIVE_WCHAR_T_DEFINED)
         #pragma message Native wchar_t is not defined, not tested, you should put /Zc:wchar_t in compiler options
     #endif
     typedef wchar_t Char;
     #undef  __T
-    #define __T(__x) L##__x
+    #define __T(__x) L ## __x
 #else // defined(__UNICODE__)
     typedef char Char;
     #undef  __T

@@ -644,10 +644,10 @@ Ztring File::Created_Get()
         return Ztring();
 
     #ifdef ZENLIB_USEWX
-        return _T(""); //Not implemented
+        return __T(""); //Not implemented
     #else //ZENLIB_USEWX
         #ifdef ZENLIB_STANDARD
-            return _T(""); //Not implemented
+            return __T(""); //Not implemented
         #elif defined WINDOWS
             FILETIME TimeFT;
             if (GetFileTime(File_Handle, &TimeFT, NULL, NULL))
@@ -657,7 +657,7 @@ Ztring File::Created_Get()
                 return Time;
             }
             else
-                return _T(""); //There was a problem
+                return __T(""); //There was a problem
         #endif
     #endif //ZENLIB_USEWX
 }
@@ -677,10 +677,10 @@ Ztring File::Created_Local_Get()
         return Ztring();
 
     #ifdef ZENLIB_USEWX
-        return _T(""); //Not implemented
+        return __T(""); //Not implemented
     #else //ZENLIB_USEWX
         #ifdef ZENLIB_STANDARD
-            return _T(""); //Not implemented
+            return __T(""); //Not implemented
         #elif defined WINDOWS
             FILETIME TimeFT;
             if (GetFileTime(File_Handle, &TimeFT, NULL, NULL))
@@ -697,11 +697,11 @@ Ztring File::Created_Local_Get()
                         Time64-=((int64s)Info.StandardBias)*60*1000*1000*10;
                 }
                 Ztring Time; Time.Date_From_Milliseconds_1601(Time64/10000);
-                Time.FindAndReplace(_T("UTC "), _T(""));
+                Time.FindAndReplace(__T("UTC "), __T(""));
                 return Time;
             }
             else
-                return _T(""); //There was a problem
+                return __T(""); //There was a problem
         #endif
     #endif //ZENLIB_USEWX
 }
@@ -721,13 +721,13 @@ Ztring File::Modified_Get()
         return Ztring();
 
     #ifdef ZENLIB_USEWX
-        return _T(""); //Not implemented
+        return __T(""); //Not implemented
     #else //ZENLIB_USEWX
         #ifdef ZENLIB_STANDARD
             struct stat Stat;
             int Result=stat(File_Name.To_Local().c_str(), &Stat);
             if (Result<0)
-                return _T(""); //Error
+                return __T(""); //Error
             Ztring Time; Time.Date_From_Seconds_1970(Stat.st_mtime);
             return Time;
         #elif defined WINDOWS
@@ -739,7 +739,7 @@ Ztring File::Modified_Get()
                 return Time;
             }
             else
-                return _T(""); //There was a problem
+                return __T(""); //There was a problem
         #endif
     #endif //ZENLIB_USEWX
 }
@@ -759,13 +759,13 @@ Ztring File::Modified_Local_Get()
         return Ztring();
 
     #ifdef ZENLIB_USEWX
-        return _T(""); //Not implemented
+        return __T(""); //Not implemented
     #else //ZENLIB_USEWX
         #ifdef ZENLIB_STANDARD
             struct stat Stat;
             int Result=stat(File_Name.To_Local().c_str(), &Stat);
             if (Result<0)
-                return _T(""); //Error
+                return __T(""); //Error
             Ztring Time; Time.Date_From_Seconds_1970_Local(Stat.st_mtime);
             return Time;
         #elif defined WINDOWS
@@ -784,11 +784,11 @@ Ztring File::Modified_Local_Get()
                         Time64-=((int64s)Info.StandardBias)*60*1000*1000*10;
                 }
                 Ztring Time; Time.Date_From_Milliseconds_1601(Time64/10000);
-                Time.FindAndReplace(_T("UTC "), _T(""));
+                Time.FindAndReplace(__T("UTC "), __T(""));
                 return Time;
             }
             else
-                return _T(""); //There was a problem
+                return __T(""); //There was a problem
         #endif
     #endif //ZENLIB_USEWX
 }
@@ -836,7 +836,7 @@ Ztring File::Modified_Get(const Ztring &File_Name)
 //---------------------------------------------------------------------------
 bool File::Exists(const Ztring &File_Name)
 {
-    if (File_Name.find(_T('*'))!=std::string::npos || File_Name.find(_T('?'))!=std::string::npos)
+    if (File_Name.find(__T('*'))!=std::string::npos || File_Name.find(__T('?'))!=std::string::npos)
         return false;
 
     #ifdef ZENLIB_USEWX

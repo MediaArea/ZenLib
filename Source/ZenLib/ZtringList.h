@@ -78,7 +78,7 @@ public :
 
     //Information
     /// @brief Find the position of the string in the vector
-    size_type Find (const Ztring &ToFind, size_type PosBegin=0, const Ztring &Comparator=_T("=="), ztring_t Options=Ztring_Nothing) const;
+    size_type Find (const Ztring &ToFind, size_type PosBegin=0, const Ztring &Comparator=__T("=="), ztring_t Options=Ztring_Nothing) const;
     /// @brief Return the length of the longest string in the list.
     size_type MaxStringLength_Get ();
 

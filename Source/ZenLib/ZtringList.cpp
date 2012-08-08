@@ -58,8 +58,8 @@ extern Ztring EmptyZtring;
 ZtringList::ZtringList ()
 : std::vector<ZenLib::Ztring, std::allocator<ZenLib::Ztring> > ()
 {
-    Separator[0]=_T(";");
-    Quote=_T("\"");
+    Separator[0]=__T(";");
+    Quote=__T("\"");
     Max[0]=Error;
 }
 
@@ -76,16 +76,16 @@ ZtringList::ZtringList(const ZtringList &Source)
 
 ZtringList::ZtringList (const Ztring &Source)
 {
-    Separator[0]=_T(";");
-    Quote=_T("\"");
+    Separator[0]=__T(";");
+    Quote=__T("\"");
     Max[0]=Error;
     Write(Source.c_str());
 }
 
 ZtringList::ZtringList (const Char *Source)
 {
-    Separator[0]=_T(";");
-    Quote=_T("\"");
+    Separator[0]=__T(";");
+    Quote=__T("\"");
     Max[0]=Error;
     Write(Source);
 }
@@ -169,7 +169,7 @@ Ztring ZtringList::Read () const
         return Ztring();
 
     Ztring Retour;
-    Ztring ToFind=Separator[0]+Quote[0]+_T("\r\n");
+    Ztring ToFind=Separator[0]+Quote[0]+__T("\r\n");
     for (size_type Pos=0; Pos<size(); Pos++)
     {
         if (operator[](Pos).find_first_of(ToFind)==std::string::npos)
