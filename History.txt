@@ -1,5 +1,7 @@
 Version 0.4.28, 2012-
 --------------
++ Removing _T() in order to be compatible with LLVM compiler
+
 x Ztring: UTF-16 conversion routines crash if the provided string size is odd.
 x GNU: forcing stdc++ at link
 
