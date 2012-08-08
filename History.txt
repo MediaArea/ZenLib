@@ -1,4 +1,4 @@
-Version 0.4.28, 2012-
+Version 0.4.28, 2012-08-06
 --------------
 + Removing _T() in order to be compatible with LLVM compiler
 

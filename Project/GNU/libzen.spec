@@ -6,7 +6,7 @@
 
 # norootforbuild
 
-%define libzen_version			0.4.27
+%define libzen_version			0.4.28
 
 Name:			libzen
 Version:		%libzen_version
@@ -129,6 +129,6 @@ done
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
-* Tue Jan 01 2009 MediaArea.net SARL <info@mediaarea.net> - 0.4.27-0
+* Tue Jan 01 2009 MediaArea.net SARL <info@mediaarea.net> - 0.4.28-0
 - See History.txt for more info and real dates
 - Previous packages made by Toni Graffy <toni@links2linux.de>
