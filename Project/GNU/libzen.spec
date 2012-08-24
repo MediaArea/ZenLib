@@ -23,6 +23,9 @@ BuildRequires:	dos2unix
 BuildRequires:	doxygen
 BuildRequires:	gcc-c++
 BuildRequires:	glibc-devel
+BuildRequires:  libtool
+BuildRequires:  automake
+BuildRequires:  autoconf
 
 %description
 ZenLib is a C++ utility library. It includes classes for handling strings,
