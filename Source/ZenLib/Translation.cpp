@@ -94,7 +94,7 @@ Ztring Translation::Get () const
         ToReturn+=Separator[1];
         ToReturn+=Temp->second;
         ToReturn+=Separator[0];
-        Temp++;
+        ++Temp;
     }
     return ToReturn;
 }
