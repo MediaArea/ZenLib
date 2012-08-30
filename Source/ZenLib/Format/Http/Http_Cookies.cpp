@@ -115,4 +115,3 @@ void Cookies::Create_Lines(std::ostream& Out)
 } //Namespace
 
 } //Namespace
-

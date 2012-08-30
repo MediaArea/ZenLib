@@ -33,8 +33,6 @@ int main(char argc, char ** argv)
     wprintf (L"%s\r\n", ZLL.Read(1, 1).c_str());
 
 
-
-
     //Debug Mode
     char* A=new char[50]; //Search for a file Debug_MemoryLeak.txt
 
@@ -42,4 +40,3 @@ int main(char argc, char ** argv)
 
 }
 //---------------------------------------------------------------------------
-

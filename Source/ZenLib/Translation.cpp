@@ -164,11 +164,3 @@ void Translation::Separator_Set (size_type Level, const Ztring &NewSeparator)
 //***************************************************************************
 
 } //namespace
-
-
-
-
-
-
-
-
