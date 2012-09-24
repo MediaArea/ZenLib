@@ -38,7 +38,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="../../../../Shared/Include"
+				AdditionalIncludeDirectories="../../../Source"
 				PreprocessorDefinitions="WIN32;NDEBUG"
 				WarningLevel="4"
 			/>
@@ -106,7 +106,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="../../../../Shared/Include"
+				AdditionalIncludeDirectories="../../../Source"
 				PreprocessorDefinitions="WIN32;NDEBUG"
 				WarningLevel="4"
 			/>

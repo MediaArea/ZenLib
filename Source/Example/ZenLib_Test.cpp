@@ -8,9 +8,8 @@
 #include "ZenLib/MemoryDebug.h"
 
 using namespace ZenLib;
-using namespace std;
 
-int main(char argc, char ** argv)
+int main(char /*argc*/, char ** /*argv*/)
 {
     //Ztring and Unicode
     //-How To Use
