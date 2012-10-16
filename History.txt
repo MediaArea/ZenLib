@@ -5,7 +5,6 @@ x Ztring: Ztring_NoZero option was not correctly implemented
 Version 0.4.28, 2012-08-06
 --------------
 + Removing _T() in order to be compatible with LLVM compiler
-
 x Ztring: UTF-16 conversion routines crash if the provided string size is odd.
 x GNU: forcing stdc++ at link
 
