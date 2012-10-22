@@ -2225,7 +2225,7 @@ float80 Ztring::To_float80(ztring_t) const
 // Retourne une partie de la chaine
 Ztring Ztring::SubString (const tstring &Begin, const tstring &End, size_type Pos, ztring_t Options) const
 {
-    //Recherche D�but
+    //Recherche Debut
     size_type I_Debut=find(Begin, Pos);
     if (I_Debut==Error)
         return Ztring();
