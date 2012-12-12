@@ -1,6 +1,7 @@
 Version 0.4.29
 --------------
 x Ztring: Ztring_NoZero option was not correctly implemented
+x File: Write only is not possible with ios_base::out (file is truncated) on Linux
 
 Version 0.4.28, 2012-08-06
 --------------
