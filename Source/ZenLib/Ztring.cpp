@@ -52,9 +52,6 @@
 #ifdef __MINGW32__
     #include <windows.h>
 #endif //__MINGW32__
-#ifdef SS
-   #undef SS //Solaris defines this in cstdlib
-#endif
 #include <algorithm>
 #include <iomanip>
 #include <cmath>
@@ -799,13 +796,13 @@ Ztring& Ztring::From_Number (const int8s I, int8u Radix)
         assign (C1);
         delete[] C1; //C1=NULL;
     #else
-        toStringStream SS;
+        toStringStream Stream;
         #ifdef UNICODE
-            SS << setbase(Radix) << I;
+            Stream << setbase(Radix) << I;
         #else //UNICODE
-            SS << setbase(Radix) << (size_t)I; //On linux (at least), (un)signed char is detected as a char
+            Stream << setbase(Radix) << (size_t)I; //On linux (at least), (un)signed char is detected as a char
         #endif //UNICODE
-        assign(SS.str());
+        assign(Stream.str());
     #endif
     MakeUpperCase();
     return *this;
@@ -840,13 +837,13 @@ Ztring& Ztring::From_Number (const int8u I, int8u Radix)
         }
         else
         {
-            toStringStream SS;
+            toStringStream Stream;
             #ifdef UNICODE
-                SS << setbase(Radix) << I;
+                Stream << setbase(Radix) << I;
             #else //UNICODE
-                SS << setbase(Radix) << (size_t)I; //On linux (at least), (un)signed char is detected as a char
+                Stream << setbase(Radix) << (size_t)I; //On linux (at least), (un)signed char is detected as a char
             #endif //UNICODE
-            assign(SS.str());
+            assign(Stream.str());
         }
     #endif
     MakeUpperCase();
@@ -870,9 +867,9 @@ Ztring& Ztring::From_Number (const int16s I, int8u Radix)
         assign (C1);
         delete[] C1; //C1=NULL;
     #else
-        toStringStream SS;
-        SS << setbase(Radix) << I;
-        assign(SS.str());
+        toStringStream Stream;
+        Stream << setbase(Radix) << I;
+        assign(Stream.str());
     #endif
     MakeUpperCase();
     return *this;
@@ -907,9 +904,9 @@ Ztring& Ztring::From_Number (const int16u I, int8u Radix)
         }
         else
         {
-            toStringStream SS;
-            SS << setbase(Radix) << I;
-            assign(SS.str());
+            toStringStream Stream;
+            Stream << setbase(Radix) << I;
+            assign(Stream.str());
         }
     #endif
     MakeUpperCase();
@@ -933,9 +930,9 @@ Ztring& Ztring::From_Number (const int32s I, int8u Radix)
         assign (C1);
         delete[] C1; //C1=NULL;
     #else
-        toStringStream SS;
-        SS << setbase(Radix) << I;
-        assign(SS.str());
+        toStringStream Stream;
+        Stream << setbase(Radix) << I;
+        assign(Stream.str());
     #endif
     MakeUpperCase();
     return *this;
@@ -970,9 +967,9 @@ Ztring& Ztring::From_Number (const int32u I, int8u Radix)
         }
         else
         {
-            toStringStream SS;
-            SS << setbase(Radix) << I;
-            assign(SS.str());
+            toStringStream Stream;
+            Stream << setbase(Radix) << I;
+            assign(Stream.str());
         }
     #endif
     MakeUpperCase();
@@ -996,9 +993,9 @@ Ztring& Ztring::From_Number (const int64s I, int8u Radix)
         assign (C1);
         delete[] C1; //C1=NULL;
     #else
-        toStringStream SS;
-        SS << setbase(Radix) << I;
-        assign(SS.str());
+        toStringStream Stream;
+        Stream << setbase(Radix) << I;
+        assign(Stream.str());
     #endif
     MakeUpperCase();
     return *this;
@@ -1033,9 +1030,9 @@ Ztring& Ztring::From_Number (const int64u I, int8u Radix)
         }
         else
         {
-            toStringStream SS;
-            SS << setbase(Radix) << I;
-            assign(SS.str());
+            toStringStream Stream;
+            Stream << setbase(Radix) << I;
+            assign(Stream.str());
         }
     #endif
     MakeUpperCase();
@@ -1056,9 +1053,9 @@ Ztring& Ztring::From_Number (const float32 F, int8u Precision, ztring_t Options)
         _tnprintf (C1, 99, (Ztring(__T("%."))+Ztring::ToZtring(Precision)+__T("f")).c_str(), F);
         assign(C1);
     #else
-        toStringStream SS;
-        SS << setprecision(Precision) << fixed << F;
-        assign(SS.str());
+        toStringStream Stream;
+        Stream << setprecision(Precision) << fixed << F;
+        assign(Stream.str());
         #if defined(__BORLANDC__)
             FindAndReplace(__T(","), __T(".")); //Borland C++ Builder 2010+Windows Seven put a comma for istringstream, but does not support comma for ostringstream
         #endif
@@ -1082,9 +1079,9 @@ Ztring& Ztring::From_Number (const float64 F, int8u Precision, ztring_t Options)
         _tnprintf (C1, 99, (Ztring(__T("%."))+Ztring::ToZtring(Precision)+__T("f")).c_str(), F);
         assign(C1);
     #else
-        toStringStream SS;
-        SS << setprecision(Precision) << fixed << F;
-        assign(SS.str());
+        toStringStream Stream;
+        Stream << setprecision(Precision) << fixed << F;
+        assign(Stream.str());
         #if defined(__BORLANDC__)
             FindAndReplace(__T(","), __T(".")); //Borland C++ Builder 2010+Windows Seven put a comma for istringstream, but does not support comma for ostringstream
         #endif
@@ -1108,9 +1105,9 @@ Ztring& Ztring::From_Number (const float80 F, int8u Precision, ztring_t Options)
         _tnprintf (C1, 99, (Ztring(__T("%."))+Ztring::ToZtring(Precision)+__T("f")).c_str(), F);
         assign(C1);
     #else
-        toStringStream SS;
-        SS << setprecision(Precision) << fixed << F;
-        assign(SS.str());
+        toStringStream Stream;
+        Stream << setprecision(Precision) << fixed << F;
+        assign(Stream.str());
         #if defined(__BORLANDC__)
             FindAndReplace(__T(","), __T(".")); //Borland C++ Builder 2010+Windows Seven put a comma for istringstream, but does not support comma for ostringstream
         #endif
@@ -1135,9 +1132,9 @@ Ztring& Ztring::From_Number (const size_t I, int8u Radix)
         _tnprintf(C1, 64, Radix==10?__T("%zu"):(Radix==16?__T("%zx"):(Radix==8?__T("%zo"):__T(""))), I);
         assign(C1);
     #else
-        toStringStream SS;
-        SS << setbase(Radix) << I;
-        assign(SS.str());
+        toStringStream Stream;
+        Stream << setbase(Radix) << I;
+        assign(Stream.str());
         #if defined(__BORLANDC__)
             FindAndReplace(__T(","), __T(".")); //Borland C++ Builder 2010+Windows Seven put a comma for istringstream, but does not support comma for ostringstream
         #endif
@@ -1154,10 +1151,10 @@ Ztring& Ztring::From_BCD     (const int8u I)
         append(1, __T('0')+I/0x10);
         append(1, __T('0')+I%0x10);
     #else
-        toStringStream SS;
-        SS << I/0x10;
-        SS << I%0x10;
-        assign(SS.str());
+        toStringStream Stream;
+        Stream << I/0x10;
+        Stream << I%0x10;
+        assign(Stream.str());
     #endif
     return *this;
 }
@@ -1175,8 +1172,8 @@ Ztring& Ztring::Duration_From_Milliseconds (const int64s Value_)
 
     int64u HH=(int8u)(Value/1000/60/60);
     int64u MM=Value/1000/60   -((HH*60));
-    int64u SS=Value/1000      -((HH*60+MM)*60);
-    int64u MS=Value           -((HH*60+MM)*60+SS)*1000;
+    int64u Stream=Value/1000      -((HH*60+MM)*60);
+    int64u MS=Value           -((HH*60+MM)*60+Stream)*1000;
     Ztring DateT;
     Ztring Date;
     DateT.From_Number(HH); if (DateT.size()<2){DateT=Ztring(__T("0"))+DateT;}
@@ -1185,7 +1182,7 @@ Ztring& Ztring::Duration_From_Milliseconds (const int64s Value_)
     DateT.From_Number(MM); if (DateT.size()<2){DateT=Ztring(__T("0"))+DateT;}
     Date+=DateT;
     Date+=__T(":");
-    DateT.From_Number(SS); if (DateT.size()<2){DateT=Ztring(__T("0"))+DateT;}
+    DateT.From_Number(Stream); if (DateT.size()<2){DateT=Ztring(__T("0"))+DateT;}
     Date+=DateT;
     Date+=__T(".");
     DateT.From_Number(MS); if (DateT.size()<2){DateT=Ztring(__T("00"))+DateT;} else if (DateT.size()<3){DateT=Ztring(__T("0"))+DateT;}
@@ -1205,8 +1202,8 @@ Ztring& Ztring::Duration_From_Milliseconds (const int64u Value)
 {
     int64u HH=(int8u)(Value/1000/60/60);
     int64u MM=Value/1000/60   -((HH*60));
-    int64u SS=Value/1000      -((HH*60+MM)*60);
-    int64u MS=Value           -((HH*60+MM)*60+SS)*1000;
+    int64u Stream=Value/1000      -((HH*60+MM)*60);
+    int64u MS=Value           -((HH*60+MM)*60+Stream)*1000;
     Ztring DateT;
     Ztring Date;
     DateT.From_Number(HH); if (DateT.size()<2){DateT=Ztring(__T("0"))+DateT;}
@@ -1215,7 +1212,7 @@ Ztring& Ztring::Duration_From_Milliseconds (const int64u Value)
     DateT.From_Number(MM); if (DateT.size()<2){DateT=Ztring(__T("0"))+DateT;}
     Date+=DateT;
     Date+=__T(":");
-    DateT.From_Number(SS); if (DateT.size()<2){DateT=Ztring(__T("0"))+DateT;}
+    DateT.From_Number(Stream); if (DateT.size()<2){DateT=Ztring(__T("0"))+DateT;}
     Date+=DateT;
     Date+=__T(".");
     DateT.From_Number(MS); if (DateT.size()<2){DateT=Ztring(__T("00"))+DateT;} else if (DateT.size()<3){DateT=Ztring(__T("0"))+DateT;}
@@ -1792,9 +1789,9 @@ int8s Ztring::To_int8s (int8u Radix, ztring_t Options) const
             I=atoi(c_str());
         #endif //UNICODE
     #else
-        tStringStream SS(*this);
-        SS >> setbase(Radix) >> I;
-        if (SS.fail())
+        tStringStream Stream(*this);
+        Stream >> setbase(Radix) >> I;
+        if (Stream.fail())
             return 0;
     #endif
 
@@ -1830,9 +1827,9 @@ int8u Ztring::To_int8u (int8u Radix, ztring_t Options) const
             I=atoi(c_str());
         #endif //defined(UNICODE)
     #else
-        tStringStream SS(*this);
-        SS >> setbase(Radix) >> I;
-        if (SS.fail())
+        tStringStream Stream(*this);
+        Stream >> setbase(Radix) >> I;
+        if (Stream.fail())
             return 0;
     #endif
 
@@ -1868,9 +1865,9 @@ int16s Ztring::To_int16s (int8u Radix, ztring_t Options) const
             I=atoi(c_str());
         #endif //defined(UNICODE)
     #else
-        tStringStream SS(*this);
-        SS >> setbase(Radix) >> I;
-        if (SS.fail())
+        tStringStream Stream(*this);
+        Stream >> setbase(Radix) >> I;
+        if (Stream.fail())
             return 0;
     #endif
 
@@ -1906,9 +1903,9 @@ int16u Ztring::To_int16u (int8u Radix, ztring_t Options) const
             I=atoi(c_str());
         #endif //defined(UNICODE)
     #else
-        tStringStream SS(*this);
-        SS >> setbase(Radix) >> I;
-        if (SS.fail())
+        tStringStream Stream(*this);
+        Stream >> setbase(Radix) >> I;
+        if (Stream.fail())
             return 0;
     #endif
 
@@ -1944,9 +1941,9 @@ int32s Ztring::To_int32s (int8u Radix, ztring_t Options) const
             I=atol(c_str());
         #endif //defined(UNICODE)
     #else
-        tStringStream SS(*this);
-        SS >> setbase(Radix) >> I;
-        if (SS.fail())
+        tStringStream Stream(*this);
+        Stream >> setbase(Radix) >> I;
+        if (Stream.fail())
             return 0;
     #endif
 
@@ -1982,9 +1979,9 @@ int32u Ztring::To_int32u (int8u Radix, ztring_t Options) const
             I=atol(c_str());
         #endif //defined(UNICODE)
     #else
-        tStringStream SS(*this);
-        SS >> setbase(Radix) >> I;
-        if (SS.fail())
+        tStringStream Stream(*this);
+        Stream >> setbase(Radix) >> I;
+        if (Stream.fail())
             return 0;
     #endif
 
@@ -2020,9 +2017,9 @@ int64s Ztring::To_int64s (int8u Radix, ztring_t Options) const
             I=atoll(c_str());
         #endif //defined(UNICODE)
     #else
-        tStringStream SS(*this);
-        SS >> setbase(Radix) >> I;
-        if (SS.fail())
+        tStringStream Stream(*this);
+        Stream >> setbase(Radix) >> I;
+        if (Stream.fail())
             return 0;
     #endif
 
@@ -2058,9 +2055,9 @@ int64u Ztring::To_int64u (int8u Radix, ztring_t Options) const
             I=atoll(c_str());
         #endif //defined(UNICODE)
     #else
-        tStringStream SS(*this);
-        SS >> setbase(Radix) >> I;
-        if (SS.fail())
+        tStringStream Stream(*this);
+        Stream >> setbase(Radix) >> I;
+        if (Stream.fail())
             return 0;
     #endif
 
@@ -2156,9 +2153,9 @@ float32 Ztring::To_float32(ztring_t) const
         #endif
     #else
         float32 F;
-        tStringStream SS(*this);
-        SS >> F;
-        if (SS.fail())
+        tStringStream Stream(*this);
+        Stream >> F;
+        if (Stream.fail())
             return 0;
 
         return F;
@@ -2182,9 +2179,9 @@ float64 Ztring::To_float64(ztring_t) const
         #endif
     #else
         float64 F;
-        tStringStream SS(*this);
-        SS >> F;
-        if (SS.fail())
+        tStringStream Stream(*this);
+        Stream >> F;
+        if (Stream.fail())
             return 0;
 
         return F;
@@ -2208,9 +2205,9 @@ float80 Ztring::To_float80(ztring_t) const
         #endif
     #else
         float80 F;
-        tStringStream SS(*this);
-        SS >> F;
-        if (SS.fail())
+        tStringStream Stream(*this);
+        Stream >> F;
+        if (Stream.fail())
             return 0;
 
         return F;
