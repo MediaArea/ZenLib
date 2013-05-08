@@ -27,6 +27,12 @@
 
 //---------------------------------------------------------------------------
 #include "ZenLib/Ztring.h"
+#ifdef WINDOWS
+#ifndef ZENLIB_NO_WIN9X_SUPPORT
+    #undef __TEXT
+    #include "windows.h"
+#endif //ZENLIB_NO_WIN9X_SUPPORT
+#endif //WINDOWS
 //---------------------------------------------------------------------------
 
 namespace ZenLib
