@@ -59,9 +59,10 @@ public :
     void  Free(void* Ptr, bool Array);
     void  NextDelete(const char*, int Line); //Sauvegarde les infos sur la désallocation courante
 
+    void ReportLeaks();
+
 private :
     MemoryDebug();
-    void ReportLeaks();
     struct TBlock
     {
         std::size_t Size;  // Taille allouée
