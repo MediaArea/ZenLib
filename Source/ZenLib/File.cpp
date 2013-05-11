@@ -836,14 +836,13 @@ Ztring File::Modified_Get(const Ztring &File_Name)
 //---------------------------------------------------------------------------
 bool File::Exists(const Ztring &File_Name)
 {
-    if (File_Name.find(__T('*'))!=std::string::npos || File_Name.find(__T('?'))!=std::string::npos)
-        return false;
-
     #ifdef ZENLIB_USEWX
         wxFileName FN(File_Name.c_str());
         return FN.FileExists();
     #else //ZENLIB_USEWX
         #ifdef ZENLIB_STANDARD
+            if (File_Name.find(__T('*'))!=std::string::npos || File_Name.find(__T('?'))!=std::string::npos)
+                return false;
             struct stat buffer;
             int         status;
             #ifdef UNICODE
@@ -853,6 +852,8 @@ bool File::Exists(const Ztring &File_Name)
             #endif //UNICODE
             return status==0 && S_ISREG(buffer.st_mode);
         #elif defined WINDOWS
+            if (File_Name.find(__T('*'))!=std::string::npos || (File_Name.find(__T("\\\\?\\"))!=0 && File_Name.find(__T('?'))!=std::string::npos) || (File_Name.find(__T("\\\\?\\"))==0 && File_Name.find(__T('?'), 4)!=std::string::npos))
+                return false;
             #ifdef UNICODE
                 DWORD FileAttributes;
                 #ifndef ZENLIB_NO_WIN9X_SUPPORT
