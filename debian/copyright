@@ -9,14 +9,14 @@ Upstream Author(s):
 
 Copyright:
 
-    <Copyright (C) 2008 Jerome Martinez>
+    <Copyright (c) MediaArea.net SARL>
 
 License:
 
-    BSD
+    Zlib
 
 The Debian packaging is (C) 2009, MediaArea.net SARL <info@mediaarea.net> and
-is licensed under the GPL, see `/usr/share/common-licenses/GPL'.
+is licensed under the Zlib license.
 
 # Please also look if there are files or directories which have a
 # different copyright/license attached and list them here.

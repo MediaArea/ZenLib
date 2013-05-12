@@ -13,7 +13,7 @@ Version:		%libzen_version
 Release:		1
 Summary:		ZenLib C++ utility library
 Group:			System/Libraries
-License:		zlib
+License:		Zlib
 URL:			http://sourceforge.net/projects/zenlib
 Packager:		MediaArea.net SARL <info@mediaarea.net>
 Source:			libzen_%{version}-1.tar.gz
