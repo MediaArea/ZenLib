@@ -1,3 +1,5 @@
+#!/bin/bash
+
 if test "$1" = "CXXFLAGS"; then
 echo @ZenLib_CXXFLAGS@
 fi
