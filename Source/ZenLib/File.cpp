@@ -609,7 +609,7 @@ int64u File::Size_Get()
                 if (bRet == FALSE)
                     return (int64u)-1;
                 Size=x.QuadPart;
-            #else 
+            #else
                 DWORD High;DWORD Low=GetFileSize(File_Handle, &High);
                 if (Low==INVALID_FILE_SIZE && GetLastError()!=NO_ERROR)
                     return (int64u)-1;
