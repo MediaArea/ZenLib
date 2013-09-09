@@ -1,30 +1,33 @@
-@rem echo off
-@rem --- General ---
-cd ..
-del *.~* *.obj *.o *.tds *.dcu *.ddp *.opt *.ncb *.suo *.ilk *.idb *.pdb *.pch *.plg *.aps *.user *.win *.layout *.local *.depend *.identcache *.tgs *.tgw *.sdf /Q /S
-del *.~* *.obj *.o *.tds *.dcu *.ddp *.opt *.ncb *.suo *.ilk *.idb *.pdb *.pch *.plg *.aps *.user *.win *.layout *.local *.depend  *.identcache *.tgs *.tgw *.sdf /AH /Q /S
-cd Release
+@echo off
+rem --- General ---
+pushd ..
+del /Q /S     *.~* *.obj *.o *.tds *.dcu *.ddp *.opt *.ncb *.suo *.ilk *.idb *.pdb *.pch *.plg *.aps *.user *.win *.layout *.local *.depend *.identcache *.tgs *.tgw *.sdf
+del /AH /Q /S *.~* *.obj *.o *.tds *.dcu *.ddp *.opt *.ncb *.suo *.ilk *.idb *.pdb *.pch *.plg *.aps *.user *.win *.layout *.local *.depend *.identcache *.tgs *.tgw *.sdf
+popd
 
-@rem Borland Developper Studio ---
-cd ..\Project\BCB
+rem Borland Developper Studio ---
+pushd ..\Project\BCB
 call CleanUp
-cd ..\..\Release
+popd
 
-@rem Code::Blocks ---
-cd ..\Project\CodeBlocks
+rem Code::Blocks ---
+pushd ..\Project\CodeBlocks
 call CleanUp
-cd ..\..\Release
+popd
 
-@rem MS Visual Studio ---
-cd ..\Project\MSVC2010
+rem MS Visual Studio ---
+pushd ..\Project\MSVC2012
 call CleanUp
-cd ..\..\Release
-cd ..\Project\MSVC2008
+popd
+pushd ..\Project\MSVC2010
 call CleanUp
-cd ..\..\Release
-cd ..\Project\MSVC2005
+popd
+pushd ..\Project\MSVC2008
 call CleanUp
-cd ..\..\Release
+popd
+pushd ..\Project\MSVC2005
+call CleanUp
+popd
 
-@rem Release ---
-del *.zip *.gz *.bz2 *.7z /Q /S
+rem Release ---
+del /Q /S *.zip *.gz *.bz2 *.7z
