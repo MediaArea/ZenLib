@@ -29,44 +29,34 @@ namespace ZenLib
 
     //-----------------------------------------------------------------------
     // Arbitrary size - To Unaligned
-    #define memcpy_Unaligned_Unaligned(destination, source, num) \
-            memcpy (destination, source, num)
-    #define memcpy_Aligned128_Unaligned(destination, source, num) \
-            memcpy (destination, source, num)
+    #define memcpy_Unaligned_Unaligned memcpy 
+    #define memcpy_Aligned128_Unaligned memcpy
 
     //-----------------------------------------------------------------------
     // Arbitrary size - To Aligned 128 bits (16 bytes)
-    #define memcpy_Unaligned_Aligned128(destination, source, num) \
-            memcpy (destination, source, num)
-    #define memcpy_Aligned128_Aligned128(destination, source, num) \
-            memcpy (destination, source, num)
+    #define memcpy_Unaligned_Aligned128 memcpy
+    #define memcpy_Aligned128_Aligned128 memcpy
 
     //-----------------------------------------------------------------------
     // 128 bits - To Unaligned
-    #define memcpy_Unaligned_Unaligned_Once128(destination, source) \
-            memcpy (destination, source, num)
+    #define memcpy_Unaligned_Unaligned_Once128 memcpy
 
     //-----------------------------------------------------------------------
     // 128 bits - To Aligned 128 bits (16 bytes)
-    #define memcpy_Aligned128_Aligned128_Once128(destination, source, num) \
-            memcpy (destination, source, num)
+    #define memcpy_Aligned128_Aligned128_Once128 memcpy
 
     //-----------------------------------------------------------------------
     // 1024 bits - To Unaligned
-    #define memcpy_Unaligned_Unaligned_Once1024(destination, source) \
-            memcpy (destination, source, 128)
+    #define memcpy_Unaligned_Unaligned_Once1024 memcpy
 
     //-----------------------------------------------------------------------
     // 1024 bits - To Aligned 128 bits (16 bytes)
-    #define memcpy_Aligned128_Aligned128_Once1024(destination, source) \
-            memcpy (destination, source, 128)
+    #define memcpy_Aligned128_Aligned128_Once1024 memcpy
 
     //-----------------------------------------------------------------------
     // 128-bit multiple - To Aligned 128 bits (16 bytes)
-    #define memcpy_Unaligned_Aligned128_Size128(destination, source, num) \
-            memcpy (destination, source, num)
-    #define memcpy_Aligned128_Aligned128_Size128(destination, source, num) \
-            memcpy (destination, source, num)
+    #define memcpy_Unaligned_Aligned128_Size128 memcpy
+    #define memcpy_Aligned128_Aligned128_Size128 memcpy
 
 #else // ZENLIB_MEMUTILS_SSE2
 
