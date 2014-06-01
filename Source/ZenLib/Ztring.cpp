@@ -1372,7 +1372,7 @@ Ztring& Ztring::Date_From_String (const char* Value, size_t Value_Size)
             ToReturn+=__T(" ");
             ToReturn+=Date.FormatISOTime();
         }
-        else if (ToReturn.size()<5)
+        else
             ToReturn+=DateS;
 
         assign (ToReturn.c_str());
