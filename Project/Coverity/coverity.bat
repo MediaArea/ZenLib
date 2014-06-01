@@ -30,9 +30,10 @@ IF EXIST "ZenLib.tgz"  DEL "ZenLib.tgz"
 
 :Main
 SET MSBUILD_SWITCHES=/nologo /consoleloggerparameters:Verbosity=minimal /maxcpucount^
- /nodeReuse:true /target:ZenLib:Rebuild /property:Configuration="Release";Platform=Win32
+ /nodeReuse:true /target:ZenLib:Rebuild /property:Configuration="Release";Platform=%1
 
-"%COVDIR%\bin\cov-build.exe" --dir cov-int MSBuild "..\MSVC2013\ZenLib_MSVC.sln" %MSBUILD_SWITCHES%
+"%COVDIR%\bin\cov-build.exe" --dir cov-int MSBuild "..\MSVC2013\ZenLib_MSVC.sln" %MSBUILD_SWITCHES%Win32
+"%COVDIR%\bin\cov-build.exe" --dir cov-int MSBuild "..\MSVC2013\ZenLib_MSVC.sln" %MSBUILD_SWITCHES%x64
 
 
 :tar
