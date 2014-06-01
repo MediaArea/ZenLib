@@ -443,11 +443,11 @@ bool File::Truncate (int64u Offset)
         return false;
 
     #ifdef ZENLIB_USEWX
-        return false; Not supported
+        return false; //Not supported
     #else //ZENLIB_USEWX
         #ifdef ZENLIB_STANDARD
             #if defined(WINDOWS)
-                return false; //No supported
+                return false; //Not supported
             #else //defined(WINDOWS)
                 //Need to close the file, use truncate, reopen it
                 if (Offset==(int64u)-1)
