@@ -431,6 +431,7 @@
     <ClInclude Include="..\..\..\Source\ZenLib\int128s.h" />
     <ClInclude Include="..\..\..\Source\ZenLib\int128u.h" />
     <ClInclude Include="..\..\..\Source\ZenLib\MemoryDebug.h" />
+    <ClInclude Include="..\..\..\Source\ZenLib\MemoryUtils.h" />
     <ClInclude Include="..\..\..\Source\ZenLib\OS_Utils.h" />
     <ClInclude Include="..\..\..\Source\ZenLib\PreComp.h" />
     <ClInclude Include="..\..\..\Source\ZenLib\Thread.h" />

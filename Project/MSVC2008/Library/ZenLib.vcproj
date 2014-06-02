@@ -904,6 +904,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\Source\ZenLib\MemoryUtils.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\Source\ZenLib\OS_Utils.h"
 				>
 			</File>
