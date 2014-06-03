@@ -497,12 +497,7 @@ bool File::GoTo (int64s Position_ToMove, move_t MoveMethod)
         #elif defined WINDOWS
             LARGE_INTEGER GoTo;
             GoTo.QuadPart=Position_ToMove;
-            //return SetFilePointerEx(File_Handle, GoTo, NULL, MoveMethod)!=0; //Not on win9X
-            GoTo.LowPart=SetFilePointer(File_Handle, GoTo.LowPart, &GoTo.HighPart, MoveMethod);
-            if (GoTo.LowPart==INVALID_SET_FILE_POINTER && GetLastError()!=NO_ERROR)
-                return false;
-            else
-                return true;
+            return SetFilePointerEx(File_Handle, GoTo, NULL, MoveMethod)!=0;
         #endif
     #endif //ZENLIB_USEWX
 }
