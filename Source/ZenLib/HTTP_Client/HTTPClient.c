@@ -1884,7 +1884,7 @@ static UINT32 HTTPIntrnSend (P_HTTP_SESSION pHTTPSession,
                 }
                 if(nRetCode == SOCKET_ERROR)
                 {
-                    nRetCode = SocketGetErr(pHTTPSession->HttpConnection.HttpSocket);
+                    //nRetCode = SocketGetErr(pHTTPSession->HttpConnection.HttpSocket); //Jerome: is reassigned in the next line
                     nRetCode = HTTP_CLIENT_ERROR_SOCKET_SEND;
                     break;
                 }
@@ -2832,7 +2832,7 @@ static UINT32 HTTPIntrnHeadersSend(P_HTTP_SESSION pHTTPSession,
             pHTTPSession->HttpCounters.nSentHeaderBytes += nBytes;
         }
         // Request HTTP Version
-        memset(RequestCmd,0x00,16);
+        //memset(RequestCmd+1,0x00,15); //Jerome: memory is overwritten in the next line
         strcpy(RequestCmd," ");
         strcat(RequestCmd,HTTP_CLIENT_DEFAULT_VER);
         strcat(RequestCmd,HTTP_CLIENT_CRLF);
@@ -3065,7 +3065,7 @@ static UINT32 HTTPIntrnAuthSendBasic (P_HTTP_SESSION pHTTPSession)
                 strcat(Cred,":");
                 strcat(Cred,pHTTPSession->HttpProxy.ProxyPassword);
                 nSrcLength  = strlen(Cred);
-                nDestLength = HTTP_CLIENT_MAX_64_ENCODED_CRED;
+                //nDestLength = HTTP_CLIENT_MAX_64_ENCODED_CRED; //Jerome: is reassigned few lines later
 
                 // Convert to base 64
                 HTTPBase64Encoder((unsigned char *)Cred64,(unsigned char *)Cred,nSrcLength);
