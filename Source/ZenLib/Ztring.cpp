@@ -235,11 +235,6 @@ Ztring& Ztring::From_Unicode (const wchar_t* S)
                 assign(wxConvCurrent->cWC2MB(S));
         #else //ZENLIB_USEWX
             #ifdef WINDOWS
-                if (IsWin9X())
-                {
-                    clear();
-                    return *this; //Is not possible, UTF-8 is not supported by Win9X
-                }
                 int Size=WideCharToMultiByte(CP_UTF8, 0, S, -1, NULL, 0, NULL, NULL);
                 if (Size!=0)
                 {

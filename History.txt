@@ -1,6 +1,7 @@
 Version 0.4.30
 --------------
 + New MemoryUtils.h functions for SSE2 memcpy
++ Removed Win9X support
 x int128: was not compiling on Cygwin
 
 Version 0.4.29, 2013-05-13
