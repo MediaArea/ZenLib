@@ -39,7 +39,7 @@ int main(char /*argc*/, char ** /*argv*/)
 
 
     //Debug Mode
-    char* A=new char[50]; //Search for a file Debug_MemoryLeak.txt
+    char* MemoryLeakDetectionTest=new char[50]; //Search for a file Debug_MemoryLeak.txt
 
     system("PAUSE");
 
