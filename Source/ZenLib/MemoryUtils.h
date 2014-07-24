@@ -15,6 +15,9 @@
 //---------------------------------------------------------------------------
 
 #include <cstring>
+#ifdef ZENLIB_MEMUTILS_SSE2
+    #include <emmintrin.h>
+#endif //ZENLIB_MEMUTILS_SSE2
 
 namespace ZenLib
 {
