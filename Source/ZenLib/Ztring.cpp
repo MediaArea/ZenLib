@@ -41,6 +41,7 @@
 #include <algorithm>
 #include <iomanip>
 #include <cmath>
+#include <ctime>
 #include "ZenLib/OS_Utils.h"
 #include "ZenLib/File.h"
 using namespace std;
