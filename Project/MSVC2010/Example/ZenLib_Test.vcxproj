@@ -49,7 +49,7 @@
     <Link>
       <AdditionalDependencies>comctl32.lib;WxJpeg.lib;WxPng.lib;WxTiff.lib;WxWidgets.lib;ZenLib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>../../../Release/MSVC/Library;../../../../Shared/Library/MSVC</AdditionalLibraryDirectories>
-      <AdditionalDependencies>comctl32.lib;WxJpeg.lib;WxPng.lib;WxTiff.lib;WxWidgets.lib;ZenLib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>comctl32.lib;ZenLib.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_Ansi|Win32'">
