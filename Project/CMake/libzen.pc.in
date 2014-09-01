@@ -1,0 +1,11 @@
+prefix=@CMAKE_INSTALL_PREFIX@
+exec_prefix=${prefix}
+libdir=@LIB_INSTALL_DIR@
+includedir=@INCLUDE_INSTALL_DIR@
+
+Name: libzen
+Version: @ZenLib_VERSION_STRING@
+Description: ZenLib
+Libs: -L${libdir} -lzen -lpthread -lstdc++
+Cflags: -I${includedir} @ZenLib_CXXFLAGS@
+Requires: zlib
