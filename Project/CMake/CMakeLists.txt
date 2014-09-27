@@ -3,7 +3,9 @@ project(ZenLib)
 cmake_minimum_required(VERSION 2.8.11)
 
 if(WIN32)
-  set(BUILD_SHARED_LIBS OFF)
+  option(BUILD_SHARED_LIBS "Build shared libs" OFF)
+else()
+  option(BUILD_SHARED_LIBS "Build shared libs" ON)
 endif()
 
 option(ENABLE_UNICODE "Enable unicode support" ON)
