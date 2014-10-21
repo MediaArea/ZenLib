@@ -31,6 +31,7 @@ libzen_la_LDFLAGS     = -no-undefined -version-info 0:0:0
 zenincludedir = $(includedir)/ZenLib
 zeninclude_HEADERS = \
  ../../../Source/ZenLib/BitStream.h \
+ ../../../Source/ZenLib/BitStream_Fast.h \
  ../../../Source/ZenLib/BitStream_LE.h \
  ../../../Source/ZenLib/Conf.h \
  ../../../Source/ZenLib/Conf_Internal.h \
