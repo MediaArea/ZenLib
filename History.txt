@@ -5,6 +5,7 @@ Version 0.4.30
 + Removed Win9X support
 + CMake: scripts improvements, thanks to Ivan Romanov
 x int128: was not compiling on Cygwin
+x Windows: file open in append mode has shared read/write
 
 Version 0.4.29, 2013-05-13
 --------------
