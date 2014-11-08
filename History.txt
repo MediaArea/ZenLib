@@ -4,6 +4,7 @@ Version 0.4.30
 + Ztring::From_Unicode(const wchar_t S)
 + Removed Win9X support
 + CMake: scripts improvements, thanks to Ivan Romanov
++ Mac: EOL definitely moved from \r to \n
 x int128: was not compiling on Cygwin
 x Windows: file open in append mode has shared read/write
 
