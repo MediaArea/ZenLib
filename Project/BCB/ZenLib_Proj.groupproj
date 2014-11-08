@@ -1,6 +1,6 @@
 ﻿	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 		<PropertyGroup>
-			<ProjectGuid>{6207A6E9-41E0-4B6C-9AF6-FC5260D43FE5}</ProjectGuid>
+			<ProjectGuid>{DE2BA2E9-6347-4E7C-926C-C6F9BA01C65F}</ProjectGuid>
 		</PropertyGroup>
 		<ItemGroup>
 			<Projects Include="Library\ZenLib.cbproj">
@@ -21,19 +21,19 @@
 			<MSBuild Projects="Library\ZenLib.cbproj"/>
 		</Target>
 		<Target Name="ZenLib:Clean">
-			<MSBuild Targets="Clean" Projects="Library\ZenLib.cbproj"/>
+			<MSBuild Projects="Library\ZenLib.cbproj" Targets="Clean"/>
 		</Target>
 		<Target Name="ZenLib:Make">
-			<MSBuild Targets="Make" Projects="Library\ZenLib.cbproj"/>
+			<MSBuild Projects="Library\ZenLib.cbproj" Targets="Make"/>
 		</Target>
 		<Target Name="ZenLib_Test">
 			<MSBuild Projects="Example\ZenLib_Test.cbproj"/>
 		</Target>
 		<Target Name="ZenLib_Test:Clean">
-			<MSBuild Targets="Clean" Projects="Example\ZenLib_Test.cbproj"/>
+			<MSBuild Projects="Example\ZenLib_Test.cbproj" Targets="Clean"/>
 		</Target>
 		<Target Name="ZenLib_Test:Make">
-			<MSBuild Targets="Make" Projects="Example\ZenLib_Test.cbproj"/>
+			<MSBuild Projects="Example\ZenLib_Test.cbproj" Targets="Make"/>
 		</Target>
 		<Target Name="Build">
 			<CallTarget Targets="ZenLib;ZenLib_Test"/>
@@ -44,5 +44,5 @@
 		<Target Name="Make">
 			<CallTarget Targets="ZenLib:Make;ZenLib_Test:Make"/>
 		</Target>
-		<Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+		<Import Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')" Project="$(BDS)\Bin\CodeGear.Group.Targets"/>
 	</Project>
