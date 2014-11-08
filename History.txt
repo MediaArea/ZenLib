@@ -1,4 +1,4 @@
-Version 0.4.30
+Version 0.4.30, 2014-11-09
 --------------
 + New MemoryUtils.h functions for SSE2 memcpy
 + Ztring::From_Unicode(const wchar_t S)
