@@ -2,6 +2,7 @@ prefix=@CMAKE_INSTALL_PREFIX@
 exec_prefix=${prefix}
 libdir=@LIB_INSTALL_DIR@
 includedir=@INCLUDE_INSTALL_DIR@
+Unicode=@ZenLib_Unicode@
 
 Name: libzen
 Version: @ZenLib_VERSION_STRING@

@@ -96,8 +96,11 @@ set(ZenLib_SRCS
 
 add_library(zen ${ZenLib_SRCS} ${ZenLib_HDRS})
 if(ENABLE_UNICODE)
+  set(ZenLib_Unicode "yes")
   set(ZenLib_CXXFLAGS -DUNICODE)
   target_compile_definitions(zen PUBLIC UNICODE)
+else()
+  set(ZenLib_Unicode "no")
 endif()
 
 try_compile(SIZE_T_IS_NOT_LONG ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/size_t_is_long_check.cpp)
