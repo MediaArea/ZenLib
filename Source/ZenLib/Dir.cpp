@@ -263,6 +263,142 @@ bool Dir::Create(const Ztring &File_Name)
 }
 
 //***************************************************************************
+// GetAllFileNames
+//***************************************************************************
+
+#ifdef WINDOWS
+class GetAllFileNames_Private
+{
+public:
+    Ztring Dir_Name;
+    Ztring Path;
+    Dir::dirlist_t Options;
+    HANDLE hFind;
+    #ifdef UNICODE
+        WIN32_FIND_DATAW FindFileDataW;
+    #else
+        WIN32_FIND_DATA FindFileData;
+    #endif //UNICODE
+
+    GetAllFileNames_Private()
+        : hFind(INVALID_HANDLE_VALUE)
+    {
+    }
+};
+#endif //WINDOWS
+
+//---------------------------------------------------------------------------
+GetAllFileNames::GetAllFileNames()
+    : p(NULL)
+{
+}
+
+//---------------------------------------------------------------------------
+GetAllFileNames::~GetAllFileNames()
+{
+    Close();
+}
+
+//---------------------------------------------------------------------------
+void GetAllFileNames::Start  (const Ztring &Dir_Name_, Dir::dirlist_t Options_)
+{
+    delete p; p=new GetAllFileNames_Private;
+    p->Dir_Name=Dir_Name_;
+    p->Options=Options_;
+
+    #ifdef WINDOWS
+        //Is a dir?
+        if (Dir::Exists(p->Dir_Name))
+            p->Dir_Name+=__T("\\*");
+
+        //Path
+        p->Path=FileName::Path_Get(p->Dir_Name);
+        if (p->Path.empty())
+        {
+            DWORD Path_Size=GetFullPathName(p->Dir_Name.c_str(), 0, NULL, NULL);
+            Char* PathTemp=new Char[Path_Size+1];
+            if (GetFullPathName(p->Dir_Name.c_str(), Path_Size+1, PathTemp, NULL))
+                p->Path=FileName::Path_Get(PathTemp);
+            delete [] PathTemp;
+        }
+    #else //WINDOWS
+    #endif
+}
+
+bool GetAllFileNames::Next (Ztring& Name)
+{
+    if (!p)
+        return false;
+
+    #ifdef WINDOWS
+        for (;;)
+        {
+            if (p->hFind==INVALID_HANDLE_VALUE)
+            {
+                #ifdef UNICODE
+                    p->hFind=FindFirstFileW(p->Dir_Name.c_str(), &p->FindFileDataW);
+                #else
+                    p->hFind=FindFirstFile(p->Dir_Name.c_str(), &p->FindFileData);
+                #endif //UNICODE
+
+                if (p->hFind==INVALID_HANDLE_VALUE)
+                    break;
+            }
+            else
+            {
+                BOOL ReturnValue;
+                #ifdef UNICODE
+                    ReturnValue=FindNextFileW(p->hFind, &p->FindFileDataW);
+                #else
+                    ReturnValue=FindNextFile(p->hFind, &p->FindFileData);
+                #endif //UNICODE
+                if (!ReturnValue)
+                    break;
+            }
+
+            #ifdef UNICODE
+                Ztring File_Name(p->FindFileDataW.cFileName);
+            #else
+                Ztring File_Name(p->FindFileData.cFileName);
+            #endif //UNICODE
+            if (File_Name!=__T(".") && File_Name!=__T("..")) //Avoid . an ..
+            {
+                bool IsOk=false;
+                #ifdef UNICODE
+                    if (p->FindFileDataW.dwFileAttributes&FILE_ATTRIBUTE_DIRECTORY)
+                #else
+                    if (p->FindFileData.dwFileAttributes&FILE_ATTRIBUTE_DIRECTORY)
+                #endif //UNICODE
+                {
+                    if (p->Options&Dir::Include_Dirs)
+                        IsOk=true; //A dir
+                }
+                else if ((p->Options&Dir::Include_Files) && ((p->Options&Dir::Include_Hidden) || (!File_Name.empty() && File_Name[0]!=__T('.'))))
+                    IsOk=true; //A file
+                if (IsOk)
+                {
+                    Name=p->Path+__T("\\")+File_Name;
+                    return true;
+                }
+            }
+        }
+    #else //WINDOWS
+    #endif
+
+    Close();
+    return false;
+}
+
+void GetAllFileNames::Close ()
+{
+    if (!p)
+        return;
+
+    FindClose(p->hFind); p->hFind=INVALID_HANDLE_VALUE;
+    delete p; p=NULL;
+}
+
+//***************************************************************************
 //
 //***************************************************************************
 
