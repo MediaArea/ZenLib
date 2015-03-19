@@ -45,6 +45,97 @@
 namespace ZenLib
 {
 
+//---------------------------------------------------------------------------
+// Debug
+#ifdef ZENLIB_DEBUG
+    #include <stdio.h>
+    #include <windows.h>
+    namespace ZenLib_Dir_Debug
+    {
+        FILE* F;
+        std::string Debug;
+        SYSTEMTIME st_In;
+
+        void Debug_Open(bool Out)
+        {
+            F=fopen("C:\\Temp\\ZenLib_Debug.txt", "a+t");
+            Debug.clear();
+            SYSTEMTIME st;
+            GetLocalTime( &st );
+
+            char Duration[100];
+            if (Out)
+            {
+                FILETIME ft_In;
+                if (SystemTimeToFileTime(&st_In, &ft_In))
+                {
+                    FILETIME ft_Out;
+                    if (SystemTimeToFileTime(&st, &ft_Out))
+                    {
+                        ULARGE_INTEGER UI_In;
+                        UI_In.HighPart=ft_In.dwHighDateTime;
+                        UI_In.LowPart=ft_In.dwLowDateTime;
+
+                        ULARGE_INTEGER UI_Out;
+                        UI_Out.HighPart=ft_Out.dwHighDateTime;
+                        UI_Out.LowPart=ft_Out.dwLowDateTime;
+
+                        ULARGE_INTEGER UI_Diff;
+                        UI_Diff.QuadPart=UI_Out.QuadPart-UI_In.QuadPart;
+
+                        FILETIME ft_Diff;
+                        ft_Diff.dwHighDateTime=UI_Diff.HighPart;
+                        ft_Diff.dwLowDateTime=UI_Diff.LowPart;
+
+                        SYSTEMTIME st_Diff;
+                        if (FileTimeToSystemTime(&ft_Diff, &st_Diff))
+                        {
+                            sprintf(Duration, "%02hd:%02hd:%02hd.%03hd", st_Diff.wHour, st_Diff.wMinute, st_Diff.wSecond, st_Diff.wMilliseconds);
+                        }
+                        else
+                            strcpy(Duration, "            ");
+                    }
+                    else
+                        strcpy(Duration, "            ");
+
+                }
+                else
+                    strcpy(Duration, "            ");
+            }
+            else
+            {
+                st_In=st;
+                strcpy(Duration, "            ");
+            }
+            
+            fprintf(F,"                                       %02hd:%02hd:%02hd.%03hd %s", st.wHour, st.wMinute, st.wSecond, st.wMilliseconds, Duration);
+        }
+
+        void Debug_Close()
+        {
+            Debug += "\r\n";
+            fwrite(Debug.c_str(), Debug.size(), 1, F); \
+            fclose(F);
+        }
+    }
+    using namespace ZenLib_Dir_Debug;
+
+    #define ZENLIB_DEBUG1(_NAME,_TOAPPEND) \
+        Debug_Open(false); \
+        Debug+=", ";Debug+=_NAME; \
+        _TOAPPEND; \
+        Debug_Close();
+
+    #define ZENLIB_DEBUG2(_NAME,_TOAPPEND) \
+        Debug_Open(true); \
+        Debug+=", ";Debug+=_NAME; \
+        _TOAPPEND; \
+        Debug_Close();
+#else // ZENLIB_DEBUG
+    #define ZENLIB_DEBUG1(_TOAPPEND)
+    #define ZENLIB_DEBUG2(_TOAPPEND)
+#endif // ZENLIB_DEBUG
+
 //***************************************************************************
 // Constructor/Destructor
 //***************************************************************************
@@ -56,6 +147,9 @@ namespace ZenLib
 
 ZtringList Dir::GetAllFileNames(const Ztring &Dir_Name_, dirlist_t Options)
 {
+    ZENLIB_DEBUG1(     "Dir GetAllFileNames",
+                        Debug+=", Dir_Name="; Debug+=Ztring(Dir_Name_).To_UTF8(); Debug+=", Options="; Debug +=Ztring::ToZtring(Options).To_UTF8())
+
     ZtringList ToReturn;
     Ztring Dir_Name=Dir_Name_;
 
@@ -117,7 +211,12 @@ ZtringList Dir::GetAllFileNames(const Ztring &Dir_Name_, dirlist_t Options)
             #endif //UNICODE
 
             if (hFind==INVALID_HANDLE_VALUE)
+            {
+                ZENLIB_DEBUG2(   "Dir GetAllFileNames",
+                                    Debug+=", returns with files count="; Debug +=Ztring::ToZtring(ToReturn.size()).To_UTF8())
+
                 return ZtringList();
+            }
 
             BOOL ReturnValue;
             do
@@ -210,6 +309,9 @@ ZtringList Dir::GetAllFileNames(const Ztring &Dir_Name_, dirlist_t Options)
         #endif
     #endif //ZENLIB_USEWX
 
+    ZENLIB_DEBUG2(   "Dir GetAllFileNames",
+                        Debug+=", files count="; Debug +=Ztring::ToZtring(ToReturn.size()).To_UTF8())
+
     return ToReturn;
 }
 
@@ -220,6 +322,9 @@ ZtringList Dir::GetAllFileNames(const Ztring &Dir_Name_, dirlist_t Options)
 //---------------------------------------------------------------------------
 bool Dir::Exists(const Ztring &File_Name)
 {
+    ZENLIB_DEBUG1(     "Dir Exists",
+                        Debug+=", Dir_Name="; Debug+=Ztring(File_Name).To_UTF8();)
+
     #ifdef ZENLIB_USEWX
         wxFileName FN(File_Name.c_str());
         return FN.DirExists();
@@ -230,6 +335,10 @@ bool Dir::Exists(const Ztring &File_Name)
             #else
                 DWORD FileAttributes=GetFileAttributes(File_Name.c_str());
             #endif //UNICODE
+
+            ZENLIB_DEBUG2(   "Dir Exists",
+                                Debug+=", returns "; Debug +=Ztring::ToZtring(((FileAttributes!=INVALID_FILE_ATTRIBUTES) && (FileAttributes&FILE_ATTRIBUTE_DIRECTORY))?1:0).To_UTF8())
+
             return ((FileAttributes!=INVALID_FILE_ATTRIBUTES) && (FileAttributes&FILE_ATTRIBUTE_DIRECTORY));
         #else //WINDOWS
             struct stat buffer;
@@ -302,6 +411,9 @@ GetAllFileNames::~GetAllFileNames()
 //---------------------------------------------------------------------------
 void GetAllFileNames::Start  (const Ztring &Dir_Name_, Dir::dirlist_t Options_)
 {
+    ZENLIB_DEBUG1(     "GetAllFileNames Start",
+                        Debug+=", Dir_Name="; Debug+=Ztring(Dir_Name_).To_UTF8(); Debug+=", Options="; Debug +=Ztring::ToZtring(Options_).To_UTF8())
+
     delete p; p=new GetAllFileNames_Private;
     p->Dir_Name=Dir_Name_;
     p->Options=Options_;
@@ -323,12 +435,18 @@ void GetAllFileNames::Start  (const Ztring &Dir_Name_, Dir::dirlist_t Options_)
         }
     #else //WINDOWS
     #endif
+
+    ZENLIB_DEBUG2(   "GetAllFileNames Start",
+                        )
 }
 
 bool GetAllFileNames::Next (Ztring& Name)
 {
     if (!p)
         return false;
+
+    ZENLIB_DEBUG1(     "GetAllFileNames Next",
+                        Debug+=",  Dir_Name="; Debug+=Ztring(p->Dir_Name).To_UTF8())
 
     #ifdef WINDOWS
         for (;;)
@@ -378,6 +496,10 @@ bool GetAllFileNames::Next (Ztring& Name)
                 if (IsOk)
                 {
                     Name=p->Path+__T("\\")+File_Name;
+
+                    ZENLIB_DEBUG2(   "GetAllFileNames Next",
+                                        Debug+=", File_Name="; Debug +=Name.To_UTF8())
+
                     return true;
                 }
             }
@@ -394,8 +516,14 @@ void GetAllFileNames::Close ()
     if (!p)
         return;
 
+    ZENLIB_DEBUG1(     "GetAllFileNames Close",
+                        Debug+=", Dir_Name="; Debug+=Ztring(p->Dir_Name).To_UTF8())
+
     FindClose(p->hFind); p->hFind=INVALID_HANDLE_VALUE;
     delete p; p=NULL;
+
+    ZENLIB_DEBUG2(   "GetAllFileNames Close",
+                        )
 }
 
 //***************************************************************************
