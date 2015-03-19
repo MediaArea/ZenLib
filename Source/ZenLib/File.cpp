@@ -174,6 +174,7 @@ bool File::Open (const tstring &File_Name_, access_t Access)
             #else
                 File_Handle=CreateFile(File_Name.c_str(), dwDesiredAccess, dwShareMode, NULL, dwCreationDisposition, 0, NULL);
             #endif //UNICODE
+            #if 0 //Disabled
             if (File_Handle==INVALID_HANDLE_VALUE)
             {
                 //Sometimes the file is locked for few milliseconds, we try again later
@@ -198,6 +199,7 @@ bool File::Open (const tstring &File_Name_, access_t Access)
                     #endif //UNICODE
                 }
             }
+            #endif //0
             if (File_Handle==INVALID_HANDLE_VALUE)
                 //File is not openable
                 return false;
@@ -278,6 +280,7 @@ bool File::Create (const Ztring &File_Name_, bool OverWrite)
             #else
                 File_Handle=CreateFile(File_Name.c_str(), dwDesiredAccess, dwShareMode, NULL, dwCreationDisposition, 0, NULL);
             #endif //UNICODE
+            #if 0 //Disabled
             if (File_Handle==INVALID_HANDLE_VALUE)
             {
                 //Sometime the file is locked for few milliseconds, we try again later
@@ -288,6 +291,7 @@ bool File::Create (const Ztring &File_Name_, bool OverWrite)
                     File_Handle=CreateFile(File_Name.c_str(), dwDesiredAccess, dwShareMode, NULL, dwCreationDisposition, 0, NULL);
                 #endif //UNICODE
             }
+            #endif //0
             if (File_Handle==INVALID_HANDLE_VALUE)
                 //File is not openable
                 return false;
