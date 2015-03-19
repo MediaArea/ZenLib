@@ -132,8 +132,8 @@ namespace ZenLib
         _TOAPPEND; \
         Debug_Close();
 #else // ZENLIB_DEBUG
-    #define ZENLIB_DEBUG1(_TOAPPEND)
-    #define ZENLIB_DEBUG2(_TOAPPEND)
+    #define ZENLIB_DEBUG1(_NAME,_TOAPPEND)
+    #define ZENLIB_DEBUG2(_NAME,_TOAPPEND)
 #endif // ZENLIB_DEBUG
 
 //***************************************************************************
