@@ -1,6 +1,7 @@
 Version 0.4.31
 --------------
 x BigEndian2float16() was buggy
+x <new> is possible only with C++
 
 Version 0.4.30, 2014-11-09
 --------------
