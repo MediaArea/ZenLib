@@ -394,7 +394,6 @@ public:
     {
     }
 };
-#endif //WINDOWS
 
 //---------------------------------------------------------------------------
 GetAllFileNames::GetAllFileNames()
@@ -525,6 +524,7 @@ void GetAllFileNames::Close ()
     ZENLIB_DEBUG2(   "GetAllFileNames Close",
                         )
 }
+#endif //WINDOWS
 
 //***************************************************************************
 //
