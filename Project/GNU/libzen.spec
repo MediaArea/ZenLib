@@ -1,4 +1,4 @@
-%define libzen_version            0.4.30
+%define libzen_version            0.4.31
 
 Name:           libzen
 Version:        %{libzen_version}
