@@ -1,4 +1,6 @@
-function btask.UpdateZenLib.run () {
+# Upgrade the version number of ZenLib
+
+function btask.UpgradeVersion.run () {
     
     if [ $(b.opt.get_opt --source-path) ]; then
         ZL_source=$(sanitize_arg $(b.opt.get_opt --source-path))
@@ -28,7 +30,6 @@ function btask.UpdateZenLib.run () {
         echo "${ZL_source}/${ZL_file}"
         updateFile $Version_old_dot $Version_new "${ZL_source}/${ZL_file}"
     done
-    unset -v ZL_files index
 
     echo
     echo "Replace major/minor/patch in ${ZL_source}/Project/CMake/CMakeLists.txt"
@@ -42,5 +43,5 @@ function btask.UpdateZenLib.run () {
         "set(ZenLib_PATCH_VERSION \"$Version_new_patch\")" \
         "${ZL_source}/Project/CMake/CMakeLists.txt"
 
-    unset -v ZL_source
+    unset -v ZL_files index ZL_source
 }
