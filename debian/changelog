@@ -1,5 +1,146 @@
-libzen (0.4.31-1) unstable; urgency=low
+libzen (0.4.31-1) experimental; urgency=medium
 
-  * See History.txt for more info and real dates
+  * [374490a] Imported Upstream version 0.4.31
+  * [045cf87] Drop zenlib-missed-cmake-files.patch.
+    Applied upstream
+  * [2ae0146] Specify -B when using dh_auto_*
+    Debhelper's cmake subsystem prefers to use out-of-tree building, at
+    obj-${DEB_HOST_GNU_TYPE}, but this is an implementation detail we shouldn't
+    rely on. So, explicitly set the builddir instead so that we know where to
+    find the .pc file.
+  * [1b2b7e9] Patch CMakeLists to use GNUInstallDirs.
+    This gives us automatic multiarch support.
+  * [3e9fa36] Update libzen-dev.install to look for .pc in debian/tmp
 
- -- MediaArea.net SARL <info@mediaarea.net>  Thu, 01 Jan 2009 00:04:31 +0000
+ -- Chow Loong Jin <hyperair@debian.org>  Thu, 16 Apr 2015 12:15:44 +0800
+
+libzen (0.4.30-2) UNRELEASED; urgency=low
+
+  * [4d65fb4] Use cmake
+  * [8b3e390] Re-add missing cmake files in a patch.
+    Thanks to Ivan Romanov
+  * [a6c4410] Mangle the cmake .pc, not the autofoo one
+
+ -- Chow Loong Jin <hyperair@debian.org>  Thu, 16 Apr 2015 12:09:44 +0800
+
+libzen (0.4.30-1) experimental; urgency=medium
+
+  * [0c54249] Update Vcs-* fields
+    libzen resides in pkg-multimedia now, not in collab-maint.
+    Thanks to Thomas Otto <thomas.c.otto@gmx.net>
+  * [58c8a65] Imported Upstream version 0.4.30
+  * [283c9f8] Update symbols file
+  * [3dfbf94] Install .pc file to multiarch directory
+  * [c0f040e] No-change bump of Standard-Version to 3.9.6
+
+ -- Chow Loong Jin <hyperair@debian.org>  Sat, 22 Nov 2014 10:46:21 +0800
+
+libzen (0.4.29-1) unstable; urgency=low
+
+  * [27b1766] Imported Upstream version 0.4.29
+  * [de7c824] Fix dep5 field name typo
+
+ -- Chow Loong Jin <hyperair@debian.org>  Wed, 15 May 2013 21:28:44 +0800
+
+libzen (0.4.28-2) experimental; urgency=low
+
+  * [c0b2e49] Fix unlisted std:: symbol in libzen0.symbols (Closes: #701314)
+  * [32d1a5b] Bump Standards-Version to 3.9.4
+
+ -- Chow Loong Jin <hyperair@debian.org>  Sun, 24 Feb 2013 01:05:22 +0800
+
+libzen (0.4.28-1) experimental; urgency=low
+
+  * [0c202c7] Imported Upstream version 0.4.28
+
+ -- Chow Loong Jin <hyperair@debian.org>  Sun, 19 Aug 2012 19:39:18 +0800
+
+libzen (0.4.27-2) unstable; urgency=low
+
+  * [6704d62] Ignore inline ToZtring symbols.
+    This fixes build failures arising from spurious ToZtring symbols appearing when
+    they get uninlined on certain architectures.
+  * [25a304e] Sort libzen0.symbols
+
+ -- Chow Loong Jin <hyperair@debian.org>  Sun, 03 Jun 2012 16:49:28 +0800
+
+libzen (0.4.27-1) unstable; urgency=low
+
+  * [735e67f] Imported Upstream version 0.4.27
+  * [0816384] Call dpkg-gensymbols with -c4.
+    This ensures the symbols file is always kept up to date.
+  * [4399009] Update optional symbols regex for std:: functions
+  * [cb88073] Add --parallel to dh invocation
+
+ -- Chow Loong Jin <hyperair@debian.org>  Sun, 03 Jun 2012 13:33:44 +0800
+
+libzen (0.4.26-1) unstable; urgency=low
+
+  * [192a9e3] Imported Upstream version 0.4.26:
+    - Better support of machines lacking of std::stringstream
+    - Better support of machines requesting explicit stdc++ library link option
+      (e.g. some ARM embedded devices)
+  * [1122615] Bump debhelper build-dep version to 9
+  * [0ef5511] Bump Standards-Version to 3.9.3
+    - Update copyright format URL
+
+ -- Chow Loong Jin <hyperair@debian.org>  Sun, 22 Apr 2012 18:14:20 +0800
+
+libzen (0.4.25-1) UNRELEASED; urgency=low
+
+  * [5cb095b] Update watch url
+  * [8bc5267] Imported Upstream version 0.4.25:
+    + Fast bitstream parser
+    + Removing Win9X detection on 64-bit CPU
+    + Ztring: integer to text conversion with radix=2
+    + Updated Linux compilation scripts
+  * [e1dc5fd] Add missing clause to zlib license
+
+ -- Chow Loong Jin <hyperair@debian.org>  Fri, 30 Mar 2012 00:42:53 +0800
+
+libzen (0.4.24-2) unstable; urgency=low
+
+  * [15eb4bc] Remove Doxygen-generated files during clean.
+    This fixes issues with the package being built twice.
+
+ -- Chow Loong Jin <hyperair@debian.org>  Sun, 29 Jan 2012 06:11:26 +0800
+
+libzen (0.4.24-1) unstable; urgency=low
+
+  * [9fccad3] Imported Upstream version 0.4.24
+  * [9bbc628] Drop all patches -- applied upstream
+  * [931d09d] Drop removed paths from .install
+  * [586970b] Use download.mediaarea.net in watchfile
+  * [a35bfce] Drop gbp.conf.
+    Use tgz from download.mediaarea.net instead
+  * [003e14d] Use download.mediaarea.net in watchfile
+
+ -- Chow Loong Jin <hyperair@debian.org>  Wed, 25 Jan 2012 03:42:26 +0800
+
+libzen (0.4.23-4) unstable; urgency=low
+
+  * [75c6135] Fix NEED_SIZET patch to avoid 32-bit breakage.
+    Thanks to Peter Green (Closes: #656717)
+  * [1ae30af] Install arch-specific libzenconfig.h to libzen-dev
+
+ -- Chow Loong Jin <hyperair@debian.org>  Sun, 22 Jan 2012 15:26:40 +0800
+
+libzen (0.4.23-3) unstable; urgency=low
+
+  * [773397c] Add patch to fix libmediainfo FTBFS on s390
+
+ -- Chow Loong Jin <hyperair@debian.org>  Fri, 20 Jan 2012 20:09:30 +0800
+
+libzen (0.4.23-2) unstable; urgency=low
+
+  * [ec1ccfa] Make long double symbols replaceable with __float128b.
+    This fixes build issues with powerpc, sparc and s390(x)
+
+ -- Chow Loong Jin <hyperair@debian.org>  Fri, 20 Jan 2012 11:53:42 +0800
+
+libzen (0.4.23-1) unstable; urgency=low
+
+  * Initial release (Closes: #654185)
+
+ -- Chow Loong Jin <hyperair@debian.org>  Mon, 02 Jan 2012 01:49:36 +0800
+
