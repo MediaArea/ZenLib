@@ -1,4 +1,4 @@
-libzen (0.4.31-1) experimental; urgency=medium
+libzen (0.4.31) experimental; urgency=medium
 
   * [374490a] Imported Upstream version 0.4.31
   * [045cf87] Drop zenlib-missed-cmake-files.patch.

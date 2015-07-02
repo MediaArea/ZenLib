@@ -15,7 +15,7 @@ Package: libzen-dev
 Section: libdevel
 Architecture: any
 Pre-Depends: ${misc:Pre-Depends}
-Depends: libzen0 (= ${binary:Version}), libtinyxml-dev, ${misc:Depends}
+Depends: libzen0 (= ${binary:Version}), ${misc:Depends}
 Description: ZenLib C++ utility library -- development files
  ZenLib is a C++ utility library. It includes classes for handling strings,
  configuration, bit streams, threading, translation, and cross-platform
