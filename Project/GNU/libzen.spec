@@ -9,7 +9,7 @@ License:        Zlib
 Group:          System/Libraries
 URL:            http://sourceforge.net/projects/zenlib
 Packager:       MediaArea.net SARL <info@mediaarea.net>
-Source:         %{name}_%{version}.tar.xz
+Source:         %{name}_%{version}.tar.gz
 
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root
 BuildRequires:  gcc-c++
