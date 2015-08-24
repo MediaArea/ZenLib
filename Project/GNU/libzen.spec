@@ -9,7 +9,7 @@ License:        Zlib
 Group:          System/Libraries
 URL:            http://sourceforge.net/projects/zenlib
 Packager:       MediaArea.net SARL <info@mediaarea.net>
-Source:         %{name}_%{version}-1.tar.gz
+Source:         %{name}_%{version}.tar.xz
 
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root
 BuildRequires:  gcc-c++
@@ -141,7 +141,7 @@ install -m 644 Project/GNU/Library/%{name}.pc \
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
-* Tue Jan 01 2009 MediaArea.net SARL <info@mediaarea.net> - 0.4.30-0
+* Tue Jan 01 2009 MediaArea.net SARL <info@mediaarea.net> - 0.4.31-0
 - See History.txt for more info and real dates
 - Previous packages made by Toni Graffy <toni@links2linux.de>
 - Fedora style made by Vasiliy N. Glazov <vascom2@gmail.com>
