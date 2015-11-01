@@ -1,5 +1,10 @@
+Version 0.4.32
+--------------
+x Ztring::From_UTF8() was not handling 4 bytes UTF8 codes correctly
+
 Version 0.4.31, 2015-04-09
 --------------
+x Ztring::From_UTF8() was not handling 4 bytes UTF8 codes correctly
 x BigEndian2float16() was buggy
 x <new> is possible only with C++
 

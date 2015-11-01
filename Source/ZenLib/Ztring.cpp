@@ -350,7 +350,7 @@ Ztring& Ztring::From_UTF8 (const char* S)
                 {
                     if ((*(Z+1)&0xC0)==0x80 && (*(Z+2)&0xC0)==0x80 && (*(Z+3)&0xC0)==0x80)
                     {
-                        operator += ((((wchar_t)(*Z&0x0F))<<18)|((*(Z+1)&0x3F)<<12)||((*(Z+2)&0x3F)<<6)|(*(Z+3)&0x3F));
+                        operator += ((((wchar_t)(*Z&0x0F))<<18)|((*(Z+1)&0x3F)<<12)|((*(Z+2)&0x3F)<<6)|(*(Z+3)&0x3F));
                         Z+=4;
                     }
                     else
