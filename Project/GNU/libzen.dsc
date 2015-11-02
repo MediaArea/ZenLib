@@ -2,7 +2,7 @@ Format: 3.0 (native)
 Source: libzen
 Binary: libzen-dev, libzen0, libzen-doc
 Architecture: any all
-Version: 0.4.31
+Version: 0.4.32
 Maintainer: MediaArea.net SARL <info@mediaarea.net>
 Homepage: http://mediainfo.sourceforge.net
 Standards-Version: 3.9.6
@@ -14,8 +14,8 @@ Package-List:
  libzen-doc deb doc optional arch=all
  libzen0 deb libs optional arch=any
 Checksums-Sha1:
- 0000000000000000000000000000000000000000 000000 libzen_0.4.31.tar.xz
+ 0000000000000000000000000000000000000000 000000 libzen_0.4.32.tar.xz
 Checksums-Sha256:
- 0000000000000000000000000000000000000000000000000000000000000000 000000 libzen_0.4.31.tar.xz
+ 0000000000000000000000000000000000000000000000000000000000000000 000000 libzen_0.4.32.tar.xz
 Files:
- 00000000000000000000000000000000 000000 libzen_0.4.31.tar.xz
+ 00000000000000000000000000000000 000000 libzen_0.4.32.tar.xz

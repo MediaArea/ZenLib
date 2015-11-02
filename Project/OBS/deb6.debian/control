@@ -11,7 +11,7 @@ Vcs-Browser: http://zenlib.svn.sourceforge.net/viewvc/zenlib/ZenLib/
 Package: libzen-dev
 Section: libdevel
 Architecture: any
-Depends: libzen0 (>=0.4.31)
+Depends: libzen0 (>=0.4.32)
 Description: libmediainfo mandatory library (dev)
  This package includes the development support files
 
