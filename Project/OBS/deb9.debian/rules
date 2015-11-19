@@ -1,0 +1,39 @@
+#!/usr/bin/make -f
+# -*- makefile -*-
+
+version = $(shell dpkg-parsechangelog | sed -nre 's/^Version: (.*)-.*/\1/p')
+
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
+
+libpath = Project/CMake
+builddir = build/
+
+override_dh_auto_configure:
+	mkdir -p $(builddir)
+	dh_auto_configure -D$(libpath) -B$(builddir)
+
+override_dh_auto_build:
+	cd Source/Doc && doxygen Doxyfile
+	cp Source/Doc/*.html ./
+
+	sed -i -e 's|Version: |Version: $(version)|g' $(builddir)/libzen.pc
+
+	dh_auto_build -D$(libpath) -B$(builddir)
+
+override_dh_auto_clean:
+	dh_auto_clean -D$(libpath) -B$(builddir)
+	rm -rf Doc/ *.html
+
+override_dh_auto_install:
+	dh_auto_install -D$(libpath) -B$(builddir)
+
+override_dh_installdocs:
+	dh_installdocs
+	fromdos debian/*/usr/share/doc/*/*.txt
+
+override_dh_makeshlibs:
+	dh_makeshlibs -- -c4
+
+%:
+	dh $@ --parallel
