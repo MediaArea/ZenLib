@@ -46,8 +46,8 @@ License: Zlib and rfc
 Comment: Some functions in these files have been lifted from RFC2617
 
 Files: debian/*
-Copyright: 2009-2015, MediaArea.net SARL <info@mediaarea.net>
-           2012-2015, Chow Loong Jin <hyperair@debian.org>
+Copyright: 2009, MediaArea.net SARL <info@mediaarea.net>
+           2012, Chow Loong Jin <hyperair@debian.org>
 License: GPL-3+
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
