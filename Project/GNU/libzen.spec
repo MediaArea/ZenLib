@@ -141,7 +141,7 @@ install -m 644 Project/GNU/Library/%{name}.pc \
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
-* Tue Jan 01 2009 MediaArea.net SARL <info@mediaarea.net> - 0.4.32-0
+* Thu Jan 01 2009 MediaArea.net SARL <info@mediaarea.net> - 0.4.32-0
 - See History.txt for more info and real dates
 - Previous packages made by Toni Graffy <toni@links2linux.de>
 - Fedora style made by Vasiliy N. Glazov <vascom2@gmail.com>
