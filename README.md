@@ -7,5 +7,5 @@ Small C++ derivate classes to have an easier life
 ZenLib - https://github.com/MediaArea/ZenLib  
 Copyright (c) MediaArea.net SARL. All Rights Reserved.
 
-This program is freeware under zlib licence conditions.  
-See Licence.txt for more information
+This program is freeware under zlib license conditions.
+See License.txt for more information
