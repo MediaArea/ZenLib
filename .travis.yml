@@ -1,0 +1,4 @@
+sudo: false
+language: cpp
+compiler: gcc
+script: cd Project/GNU/Library/ && ./autogen.sh && ./configure && make
