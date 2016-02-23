@@ -1,0 +1,11 @@
+In order to build with qmake:
+
+# in ZenLib
+cp Contrib/ZenLib.pro Source/ZenLib
+cd Source
+mkdir ZenLib.build
+cd ZenLib.build
+qmake ../ZenLib/ZenLib.pro 
+make
+
+This will create Library/libZenLib.a
