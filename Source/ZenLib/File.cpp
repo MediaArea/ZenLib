@@ -259,7 +259,7 @@ bool File::Open (const tstring &File_Name_, access_t Access)
                 case Access_Read         : dwDesiredAccess=FILE_READ_DATA; dwShareMode=FILE_SHARE_READ|FILE_SHARE_WRITE; dwCreationDisposition=OPEN_EXISTING;   break;
                 case Access_Write        : dwDesiredAccess=GENERIC_WRITE;   dwShareMode=0;                                 dwCreationDisposition=OPEN_ALWAYS;   break;
                 case Access_Read_Write   : dwDesiredAccess=FILE_READ_DATA|GENERIC_WRITE;   dwShareMode=0; dwCreationDisposition=OPEN_ALWAYS;                    break;
-                case Access_Write_Append : dwDesiredAccess=FILE_APPEND_DATA; dwShareMode=FILE_SHARE_READ|FILE_SHARE_WRITE; dwCreationDisposition = OPEN_ALWAYS; break;
+                case Access_Write_Append : dwDesiredAccess = FILE_APPEND_DATA; dwShareMode = FILE_SHARE_READ | FILE_SHARE_WRITE; dwCreationDisposition = OPEN_ALWAYS; break;
                 default                  : dwDesiredAccess=0;               dwShareMode=0;                                 dwCreationDisposition=0;             break;
             }
 
@@ -970,8 +970,10 @@ bool File::Exists(const Ztring &File_Name)
         return FN.FileExists();
     #else //ZENLIB_USEWX
         #ifdef ZENLIB_STANDARD
-            if (File_Name.find(__T('*'))!=std::string::npos || File_Name.find(__T('?'))!=std::string::npos)
-                return false;
+            #if defined WINDOWS
+                if (File_Name.find(__T('*'))!=std::string::npos || (File_Name.find(__T("\\\\?\\"))!=0 && File_Name.find(__T('?'))!=std::string::npos) || (File_Name.find(__T("\\\\?\\"))==0 && File_Name.find(__T('?'), 4)!=std::string::npos))
+                    return false;
+            #endif //defined WINDOWS
             struct stat buffer;
             int         status;
             #ifdef UNICODE
