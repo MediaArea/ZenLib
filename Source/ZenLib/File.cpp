@@ -259,7 +259,7 @@ bool File::Open (const tstring &File_Name_, access_t Access)
                 case Access_Read         : dwDesiredAccess=FILE_READ_DATA; dwShareMode=FILE_SHARE_READ|FILE_SHARE_WRITE; dwCreationDisposition=OPEN_EXISTING;   break;
                 case Access_Write        : dwDesiredAccess=GENERIC_WRITE;   dwShareMode=0;                                 dwCreationDisposition=OPEN_ALWAYS;   break;
                 case Access_Read_Write   : dwDesiredAccess=FILE_READ_DATA|GENERIC_WRITE;   dwShareMode=0; dwCreationDisposition=OPEN_ALWAYS;                    break;
-                case Access_Write_Append : dwDesiredAccess=GENERIC_WRITE;   dwShareMode=FILE_SHARE_READ|FILE_SHARE_WRITE; dwCreationDisposition=OPEN_ALWAYS;   break;
+                case Access_Write_Append : dwDesiredAccess=FILE_APPEND_DATA; dwShareMode=FILE_SHARE_READ|FILE_SHARE_WRITE; dwCreationDisposition = OPEN_ALWAYS; break;
                 default                  : dwDesiredAccess=0;               dwShareMode=0;                                 dwCreationDisposition=0;             break;
             }
 
@@ -305,10 +305,6 @@ bool File::Open (const tstring &File_Name_, access_t Access)
 
             ZENLIB_DEBUG2(      "File Open",
                                 Debug+=", returns 1";)
-
-            //Append
-            if (Access==Access_Write_Append)
-                GoTo(0, FromEnd);
 
             return true;
         #endif
