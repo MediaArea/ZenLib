@@ -2,6 +2,7 @@ Version 0.4.32, 2016-02-29
 --------------
 x File::Open(): using now FILE_APPEND_DATA on windows when append mode is requested
 x File::Open(): accept file names with * and ? characters on non-Windows platforms
+x Better MinGW and CygWin compatibility
 
 Version 0.4.32, 2015-11-02
 --------------
