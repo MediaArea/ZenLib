@@ -1,3 +1,5 @@
+#!/bin/sh
+
 #libtoolize 
 if test "$(uname)" = "Darwin" ; then
   #Darwin based Systems like Mac OS X: libtoolize is called glibtoolize.
