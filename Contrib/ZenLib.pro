@@ -13,6 +13,8 @@ QMAKE_CXXFLAGS += -D_UNICODE
 # these should be looked at one group at a time
 QMAKE_CFLAGS_WARN_ON -= -Wall
 QMAKE_CXXFLAGS_WARN_ON -= -Wall
+
+!win32-msvc* {
 QMAKE_CXXFLAGS_WARN_ON += -Wno-unused-parameter \
 -Wno-unused-private-field \
 -Wno-unused-const-variable \
@@ -22,6 +24,7 @@ QMAKE_CXXFLAGS_WARN_ON += -Wno-unused-parameter \
 -Wno-invalid-source-encoding \
 -Wno-pointer-sign \
 -Wno-parentheses
+}
 
 # Input
 HEADERS += \

@@ -5,7 +5,7 @@ dnl #########################################################################
 dnl -------------------------------------------------------------------------
 dnl Name and version
 dnl
-AC_INIT([libzen], [0.4.32])
+AC_INIT([libzen], [0.4.33])
 
 dnl -------------------------------------------------------------------------
 dnl Test if we are at the good place
@@ -204,8 +204,14 @@ dnl -------------------------------------------------------------------------
 dnl GNU compiler
 dnl
 if test "$GXX" = yes ; then
-	CFLAGS="$CFLAGS -fPIC"
-	CXXFLAGS="$CXXFLAGS -fPIC"
+    case "${build}" in
+      *mingw* | *cygwin* ) ;;
+      *)
+        CFLAGS="$CFLAGS -fPIC"
+        CXXFLAGS="$CXXFLAGS -fPIC"
+        LDFLAGS="$LDFLAGS -fPIC"
+      ;;
+    esac
 	if test "$enable_debug" = "yes"; then
 		CFLAGS="$CFLAGS -O0 -g -Wall -Wundef"
 		CXXFLAGS="$CXXFLAGS -O0 -g -Wall -W -Wundef -Wcast-qual -Wno-ctor-dtor-privacy"
