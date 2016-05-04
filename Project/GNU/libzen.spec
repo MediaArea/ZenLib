@@ -1,15 +1,30 @@
 %define libzen_version            0.4.33
 
-Name:           libzen
+%if 0%{?fedora} || 0%{?centos_version} >= 600 || 0%{?rhel_version} >= 600
+%define package_with_0_ending 0
+%define libzen_name libzen
+%else
+%define package_with_0_ending 1
+%define libzen_name libzen0
+%endif
+
+%define name_without_0_ending libzen
+
+Name:           %{libzen_name}
 Version:        %{libzen_version}
 Release:        1
-Summary:        C++ utility library
+Summary:        C++ utility library -- runtime
 
 License:        Zlib
 Group:          System/Libraries
 URL:            http://sourceforge.net/projects/zenlib
 Packager:       MediaArea.net SARL <info@mediaarea.net>
-Source:         %{name}_%{version}.tar.gz
+Source:         %{name_without_0_ending}_%{version}.tar.gz
+Requires:       glibc
+%if !%{package_with_0_ending}
+Provides:       %{name_without_0_ending}0 = %{version}
+Obsoletes:      %{name_without_0_ending}0 < %{version}
+%endif
 
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root
 BuildRequires:  gcc-c++
@@ -25,38 +40,31 @@ ZenLib is a C++ utility library. It includes classes for handling strings,
 configuration, bit streams, threading, translation, and cross-platform
 operating system functions.
 
-%package -n %{name}0
-Summary:		C++ utility library -- runtime
-Group:			System/Libraries
-Requires:		glibc
-
-%description -n %{name}0
-ZenLib is a C++ utility library. It includes classes for handling strings,
-configuration, bit streams, threading, translation, and cross-platform
-operating system functions.
-
 This package contains the headers required for compiling applications/libraries
 which use this library.
 
-%package        doc
+%package        -n %{name_without_0_ending}-doc
 Summary:        C++ utility library -- documentation
 Group:          Development/Libraries
-Requires:       %{name}0 = %{version}
+Requires:       %{name} = %{version}
+%if !0%{?suse_version} || 0%{?suse_version} >= 1200
+BuildArch:      noarch
+%endif
 
-%description    doc
+%description    -n %{name_without_0_ending}-doc
 ZenLib is a C++ utility library. It includes classes for handling strings,
 configuration, bit streams, threading, translation, and cross-platform
 operating system functions.
 
 This package contains the documentation
 
-%package        devel
+%package        -n %{name_without_0_ending}-devel
 Summary:        C++ utility library -- development
 Group:          Development/Libraries
-Requires:    	%{name}0%{?_isa} = %{version}
-Requires:    	glibc-devel
+Requires:       %{name}%{?_isa} = %{version}
+Requires:       glibc-devel
 
-%description    devel
+%description    -n %{name_without_0_ending}-devel
 ZenLib is a C++ utility library. It includes classes for handling strings,
 configuration, bit streams, threading, translation, and cross-platform
 operating system functions.
@@ -85,6 +93,7 @@ export CXXFLAGS="%{optflags}"
 
 #Make documentation
 pushd Source/Doc/
+    doxygen -u Doxyfile
     doxygen Doxyfile
 popd
 cp Source/Doc/*.html ./
@@ -112,32 +121,37 @@ for i in HTTP_Client Format/Html Format/Http; do
 done
 
 sed -i -e 's|Version: |Version: %{version}|g' \
-    Project/GNU/Library/%{name}.pc
+    Project/GNU/Library/%{name_without_0_ending}.pc
 install -dm 755 %{buildroot}%{_libdir}/pkgconfig
-install -m 644 Project/GNU/Library/%{name}.pc \
+install -m 644 Project/GNU/Library/%{name_without_0_ending}.pc \
     %{buildroot}%{_libdir}/pkgconfig
 
+%post -p /sbin/ldconfig
 
-%post -n %{name}0 -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
 
-%postun -n %{name}0 -p /sbin/ldconfig
-
-%files -n %{name}0
+%files
 %defattr(-,root,root,-)
-%doc History.txt License.txt ReadMe.txt
-%{_libdir}/%{name}.so.*
+%doc History.txt ReadMe.txt
+%if 0%{?fedora} || 0%{?centos_version} >= 700 || 0%{?rhel_version} >= 700
+%license License.txt
+%else
+%doc License.txt
+%endif
+%{_libdir}/%{name_without_0_ending}.so.*
 
-%files doc
+
+%files -n %{name_without_0_ending}-doc
 %defattr(-,root,root,-)
 %doc Documentation.html
 %doc Doc
 
-%files devel
+%files -n %{name_without_0_ending}-devel
 %defattr(-,root,root,-)
-%{_bindir}/%{name}-config
+%{_bindir}/%{name_without_0_ending}-config
 %{_includedir}/ZenLib
-%{_libdir}/%{name}.so
-%{_libdir}/%{name}.la
+%{_libdir}/%{name_without_0_ending}.so
+%{_libdir}/%{name_without_0_ending}.la
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
