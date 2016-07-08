@@ -1,5 +1,14 @@
 @echo off
 
+rem --- Search binaries ---
+set BPATH=
+if exist "%~dp0\..\..\..\MediaArea-Utils-Binaries" set BPATH="%~dp0\..\..\..\MediaArea-Utils-Binaries"
+if exist "%~dp0\..\..\MediaArea-Utils-Binaries" set BPATH="%~dp0\..\..\MediaArea-Utils-Binaries"
+if "%BPATH%"=="" (
+    echo "ERROR: binaries path not found"
+    exit /b 1
+)
+
 rem --- Clean up ---
 if exist ZenLib_GNU_Prepare.7z del ZenLib_GNU_Prepare.7z
 if exist ZenLib_GNU_Prepare    rmdir ZenLib_GNU_Prepare /S /Q
@@ -23,7 +32,7 @@ copy ..\*.txt ZenLib_GNU_Prepare\
 
 rem --- Compressing Archive ---
 if "%2"=="SkipCompression" goto SkipCompression
-..\..\Shared\Binary\Win32\7-Zip\7z a -r -t7z -mx9 ZenLib_GNU_Prepare.7z ZenLib_GNU_Prepare\*
+%BPATH%\Windows\7-Zip\7z a -r -t7z -mx9 ZenLib_GNU_Prepare.7z ZenLib_GNU_Prepare\*
 :SkipCompression
 
 rem --- Clean up ---
