@@ -1,5 +1,14 @@
 @echo off
 
+rem --- Search binaries ---
+set BPATH=
+if exist "%~dp0\..\..\..\MediaArea-Utils-Binaries" set BPATH="%~dp0\..\..\..\MediaArea-Utils-Binaries"
+if exist "%~dp0\..\..\MediaArea-Utils-Binaries" set BPATH="%~dp0\..\..\MediaArea-Utils-Binaries"
+if "%BPATH%"=="" (
+    echo "ERROR: binaries path not found"
+    exit /b 1
+)
+
 rem --- Clean up ---
 if exist ZenLib_Source del ZenLib_Source.7z
 if exist ZenLib_Source rmdir ZenLib_Source /S /Q
@@ -67,9 +76,9 @@ copy ..\*.cvsignore ZenLib_Source\
 rem --- Compressing Archive ---
 if "%2"=="SkipCompression" goto SkipCompression
 move ZenLib_Source ZenLib
-..\..\Shared\Binary\Windows_i386\7-Zip\7z a -r -ttar -mx9 ZenLib_Source.tar ZenLib\*
-..\..\Shared\Binary\Windows_i386\7-Zip\7z a -r -tbzip2 -mx9 libzen_.tar.bz2 ZenLib_Source.tar
-..\..\Shared\Binary\Windows_i386\7-Zip\7z a -r -tgzip -mx9 libzen_-1.tar.gz ZenLib_Source.tar
+%BPATH%\Windows\7-Zip\7z a -r -ttar -mx9 ZenLib_Source.tar ZenLib\*
+%BPATH%\Windows\7-Zip\7z a -r -tbzip2 -mx9 libzen_.tar.bz2 ZenLib_Source.tar
+%BPATH%\Windows\7-Zip\7z a -r -tgzip -mx9 libzen_-1.tar.gz ZenLib_Source.tar
 del ZenLib_Source.tar
 move ZenLib ZenLib_Source
 :SkipCompression
