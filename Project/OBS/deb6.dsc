@@ -1,6 +1,6 @@
 Format: 1.0
 Source: libzen
-Binary: libzen-dev, libzen0
+Binary: libzen-dev, libzen0, libzen0-dbg
 Architecture: any
 Version: 0.4.33-1deb6
 Maintainer: MediaArea.net SARL <info@mediaarea.net>

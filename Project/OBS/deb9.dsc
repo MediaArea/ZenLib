@@ -13,6 +13,7 @@ Package-List:
  libzen-dev deb libdevel optional arch=any
  libzen-doc deb doc optional arch=all
  libzen0v5 deb libs optional arch=any
+ libzen0v5-dbg deb debug optional arch=any
 Checksums-Sha1:
  0000000000000000000000000000000000000000 000000 libzen_0.4.33.orig.tar.xz
  0000000000000000000000000000000000000000 000000 libzen_0.4.33-1deb9.debian.tar.xz
