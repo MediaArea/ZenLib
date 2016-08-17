@@ -48,3 +48,15 @@ Description: ZenLib C++ utility library -- documentation
  .
  This package contains the Doxygen generated API reference for developing
  applications/libraries using this library.
+
+Package: libzen0-dbg
+Architecture: any
+Section: debug
+Priority: extra
+Depends: libzen0 (= ${binary:Version}), ${misc:Depends}
+Description: ZenLib C++ utility library -- debugging symbol
+ ZenLib is a C++ utility library. It includes classes for handling strings,
+ configuration, bit streams, threading, translation, and cross-platform
+ operating system functions.
+ .
+ This package contains the debugging symbols of this library.
