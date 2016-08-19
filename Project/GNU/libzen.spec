@@ -140,6 +140,10 @@ install -m 644 Project/GNU/Library/%{name_without_0_ending}.pc \
 %endif
 %{_libdir}/%{name_without_0_ending}.so.*
 
+%if 0%{?rhel} == 5
+%exclude %{_usr}/lib/debug
+%exclude %{_usr}/src/debug
+%endif
 
 %files -n %{name_without_0_ending}-doc
 %defattr(-,root,root,-)
