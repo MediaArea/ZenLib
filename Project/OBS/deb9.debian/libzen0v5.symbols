@@ -129,7 +129,6 @@ libzen.so.0 libzen0v5 #MINVER#
  (c++)"ZenLib::Format::Html::Request::Request(ZenLib::Format::Html::Request const&)@Base" 0.4.23
  (c++)"ZenLib::Format::Http::Char2Hex(unsigned char)@Base" 0.4.23
  (c++)"ZenLib::Format::Http::Char2Hex(wchar_t)@Base" 0.4.23
- (c++)"ZenLib::Format::Http::Cookie::~Cookie()@Base" 0.4.23
  (c++)"ZenLib::Format::Http::Cookies::Cookies()@Base" 0.4.23
  (c++)"ZenLib::Format::Http::Cookies::Create_Lines(std::basic_ostream<char, std::char_traits<char> >&)@Base" 0.4.23
  (c++)"ZenLib::Format::Http::Cookies::Set(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, long, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, bool)@Base" 0.4.31-2~
@@ -416,4 +415,5 @@ libzen.so.0 libzen0v5 #MINVER#
  (optional|c++|regex)"^std::" 0.4.23
  (optional|c++|regex)"^(void|ZenLib::ZtringList\*|ZenLib::Ztring\*|bool|wchar_t\*) std::" 0.4.23
  (optional|c++|regex)"^ZenLib::Ztring::ToZtring" 0.4.23
+ (optional|c++)"ZenLib::Format::Http::Cookie::~Cookie()@Base" 0.4.23
  (optional|c++)"ZenLib::Ztring::From_Number(unsigned long, unsigned char)@Base" 0.4.23
