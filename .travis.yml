@@ -1,4 +1,5 @@
-sudo: false
+sudo: required
+dist: trusty
 language: cpp
 compiler: gcc
-script: cd Project/GNU/Library/ && ./autogen.sh && ./configure && make
+script: cd Project/GNU/Library/ && ./autogen.sh && ./configure && make && mkdir ../../CMake/Build && cd ../../CMake/Build && cmake .. && make
