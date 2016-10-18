@@ -1,8 +1,6 @@
 #!/usr/bin/make -f
 # -*- makefile -*-
 
-version = $(shell dpkg-parsechangelog | sed -nre 's/^Version: (.*)-.*/\1/p')
-
 # Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1
 
@@ -16,8 +14,6 @@ override_dh_auto_configure:
 override_dh_auto_build:
 	cd Source/Doc && doxygen Doxyfile
 	cp Source/Doc/*.html ./
-
-	sed -i -e 's|Version: |Version: $(version)|g' Project/GNU/Library/libzen.pc
 
 	dh_auto_build -D$(libpath)
 

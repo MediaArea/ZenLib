@@ -17,7 +17,7 @@ md5sums=('00000000000000000000000000000000')
 build() {
   cd $srcdir/ZenLib/Project/GNU/Library
   [ -x configure ] || sh ./autogen.sh
-  [ -f Makefile ] || ./configure --prefix=/usr --enable-shared
+  [ -f Makefile ] || ./configure --prefix=/usr --enable-shared --disable-static
   make clean
   make
 }
@@ -31,9 +31,6 @@ package() {
     install -dm0755 $pkgdir/usr/include/ZenLib/$i
     install -m0644 $srcdir/ZenLib/Source/ZenLib/$i/*.h $pkgdir/usr/include/ZenLib/$i
   done
-  install -dm 755 $pkgdir/usr/lib/pkgconfig
-  install -m 644 $srcdir/ZenLib/Project/GNU/Library/libzen.pc $pkgdir/usr/lib/pkgconfig
-  sed -i -e 's|Version: |Version: '$pkgver'|g' $pkgdir/usr/lib/pkgconfig/libzen.pc
   install -D -m 644 $srcdir/ZenLib/License.txt $pkgdir/usr/share/licenses/libzen/License.txt
 }
 

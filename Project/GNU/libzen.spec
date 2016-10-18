@@ -110,7 +110,7 @@ pushd Project/GNU/Library
     make install DESTDIR=%{buildroot}
 popd
 
-#Install headers and ZenLib-config
+#Install headers
 install -dm 755 %{buildroot}%{_includedir}/ZenLib
 install -m 644 Source/ZenLib/*.h \
     %{buildroot}%{_includedir}/ZenLib
@@ -119,12 +119,6 @@ for i in HTTP_Client Format/Html Format/Http; do
     install -m 644 Source/ZenLib/$i/*.h \
         %{buildroot}%{_includedir}/ZenLib/$i
 done
-
-sed -i -e 's|Version: |Version: %{version}|g' \
-    Project/GNU/Library/%{name_without_0_ending}.pc
-install -dm 755 %{buildroot}%{_libdir}/pkgconfig
-install -m 644 Project/GNU/Library/%{name_without_0_ending}.pc \
-    %{buildroot}%{_libdir}/pkgconfig
 
 %post -p /sbin/ldconfig
 
@@ -152,7 +146,6 @@ install -m 644 Project/GNU/Library/%{name_without_0_ending}.pc \
 
 %files -n %{name_without_0_ending}-devel
 %defattr(-,root,root,-)
-%{_bindir}/%{name_without_0_ending}-config
 %{_includedir}/ZenLib
 %{_libdir}/%{name_without_0_ending}.so
 %{_libdir}/%{name_without_0_ending}.la
