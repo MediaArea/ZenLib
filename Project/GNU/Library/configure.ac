@@ -24,7 +24,7 @@ dnl
 AC_PROG_CC
 AC_PROG_CXX
 AC_PROG_CPP
-AC_DISABLE_SHARED
+AC_DISABLE_STATIC
 AC_LIBTOOL_WIN32_DLL
 AC_PROG_LIBTOOL
 AC_PROG_INSTALL
@@ -123,8 +123,12 @@ dnl #########################################################################
 dnl -------------------------------------------------------------------------
 dnl Common
 dnl
+if test "$enable_shared" = "yes"; then
 ZenLib_LIBS="-L$(pwd) -lzen -lpthread -lstdc++ $ZenLib_LIBS"
+fi
+if test "$enable_static" = "yes"; then
 ZenLib_LIBS_Static="$(pwd)/.libs/libzen.a -lpthread -lstdc++ $ZenLib_LIBS_Static"
+fi
 
 dnl #########################################################################
 dnl ### C/C++ compiler options used to compile
