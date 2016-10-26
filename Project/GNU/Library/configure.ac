@@ -124,10 +124,10 @@ dnl -------------------------------------------------------------------------
 dnl Common
 dnl
 if test "$enable_shared" = "yes"; then
-ZenLib_LIBS="-L$(pwd) -lzen -lpthread -lstdc++ $ZenLib_LIBS"
+    ZenLib_LIBS="-L$(pwd)/.libs -lzen -lpthread -lstdc++ $ZenLib_LIBS"
 fi
 if test "$enable_static" = "yes"; then
-ZenLib_LIBS_Static="$(pwd)/.libs/libzen.a -lpthread -lstdc++ $ZenLib_LIBS_Static"
+    ZenLib_LIBS_Static="$(pwd)/.libs/libzen.a -lpthread -lstdc++ $ZenLib_LIBS_Static"
 fi
 
 dnl #########################################################################
