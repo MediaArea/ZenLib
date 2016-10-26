@@ -35,3 +35,5 @@ Release_Build
 Thumbs.db
 Win32
 x64
+/Project/MSVC2015/*.opendb
+/Project/MSVC2015/*.db
