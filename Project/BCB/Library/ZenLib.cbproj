@@ -27,12 +27,6 @@
 			<CfgParent>Base</CfgParent>
 			<Base>true</Base>
 		</PropertyGroup>
-		<PropertyGroup Condition="('$(Platform)'=='Win32' and '$(Cfg_2)'=='true') or '$(Cfg_2_Win32)'!=''">
-			<Cfg_2_Win32>true</Cfg_2_Win32>
-			<CfgParent>Cfg_2</CfgParent>
-			<Cfg_2>true</Cfg_2>
-			<Base>true</Base>
-		</PropertyGroup>
 		<PropertyGroup Condition="'$(Base)'!=''">
 			<IncludePath>..\..\..\Source\ZenLib\HTTP_Client\;..\..\..\Source\ZenLib\Format\Http\;..\..\..\Source\ZenLib\Format\Html\;..\..\..\Source\;..\..\..\Source\ZenLib\;$(IncludePath)</IncludePath>
 			<Manifest_File>None</Manifest_File>
@@ -77,11 +71,6 @@
 		<PropertyGroup Condition="'$(Cfg_2)'!=''">
 			<Defines>NDEBUG;$(Defines)</Defines>
 			<TASM_Debugging>None</TASM_Debugging>
-		</PropertyGroup>
-		<PropertyGroup Condition="'$(Cfg_2_Win32)'!=''">
-			<VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0</VerInfo_Keys>
-			<Manifest_File>None</Manifest_File>
-			<VerInfo_Locale>1036</VerInfo_Locale>
 		</PropertyGroup>
 		<ItemGroup>
 			<CppCompile Include="..\..\..\Source\ZenLib\Conf.cpp">

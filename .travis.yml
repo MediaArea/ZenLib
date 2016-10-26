@@ -1,10 +1,5 @@
+sudo: required
+dist: trusty
 language: cpp
-compiler:
-  - gcc
-  - clang
-before_script:
-  - cd Project
-  - cd CMake
-  - cmake .
-script:
-  - make
+compiler: gcc
+script: cd Project/GNU/Library/ && ./autogen.sh && ./configure && make && mkdir ../../CMake/Build && cd ../../CMake/Build && cmake .. && make

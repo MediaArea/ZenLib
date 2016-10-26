@@ -5,7 +5,7 @@ dnl #########################################################################
 dnl -------------------------------------------------------------------------
 dnl Name and version
 dnl
-AC_INIT([libzen], [0.4.25])
+AC_INIT([libzen], [0.4.33])
 
 dnl -------------------------------------------------------------------------
 dnl Test if we are at the good place
@@ -24,7 +24,7 @@ dnl
 AC_PROG_CC
 AC_PROG_CXX
 AC_PROG_CPP
-AC_DISABLE_SHARED
+AC_DISABLE_STATIC
 AC_LIBTOOL_WIN32_DLL
 AC_PROG_LIBTOOL
 AC_PROG_INSTALL
@@ -123,8 +123,12 @@ dnl #########################################################################
 dnl -------------------------------------------------------------------------
 dnl Common
 dnl
+if test "$enable_shared" = "yes"; then
 ZenLib_LIBS="-L$(pwd) -lzen -lpthread -lstdc++ $ZenLib_LIBS"
+fi
+if test "$enable_static" = "yes"; then
 ZenLib_LIBS_Static="$(pwd)/.libs/libzen.a -lpthread -lstdc++ $ZenLib_LIBS_Static"
+fi
 
 dnl #########################################################################
 dnl ### C/C++ compiler options used to compile
@@ -171,11 +175,11 @@ dnl -------------------------------------------------------------------------
 dnl Check if size_t is long
 dnl
 AC_LANG([C++])
-AC_COMPILE_IFELSE([
+AC_COMPILE_IFELSE([AC_LANG_SOURCE([
 	#include <cstdlib>
 	void foo(signed int) {}
 	void foo(unsigned int) {}
-	int main () {foo(size_t(0)); return 0;}], [size_t_is_long="no"], [size_t_is_long="yes"])
+	int main () {foo(size_t(0)); return 0;}])], [size_t_is_long="no"], [size_t_is_long="yes"])
 
 if test "$size_t_is_long" = "yes"; then
 	CXXFLAGS="$CXXFLAGS -DSIZE_T_IS_LONG"
@@ -187,13 +191,13 @@ dnl Check if stream is available
 dnl
 AC_LANG([C++])
 if test "$enable_unicode" = "yes"; then
-    AC_COMPILE_IFELSE([
+    AC_COMPILE_IFELSE([AC_LANG_SOURCE([
         #include <sstream>
-        int main () {std::wstringstream message; message<<1.0; return 0;}], , [enable_stream_missing="yes"])
+        int main () {std::wstringstream message; message<<1.0; return 0;}])], , [enable_stream_missing="yes"])
 else
-    AC_COMPILE_IFELSE([
+    AC_COMPILE_IFELSE([AC_LANG_SOURCE([
         #include <sstream>
-        int main () {std::stringstream message; message<<1.0; return 0;}], , [enable_stream_missing="yes"])
+        int main () {std::stringstream message; message<<1.0; return 0;}])], , [enable_stream_missing="yes"])
 fi
 
 if test "$enable_stream_missing" = "yes"; then
@@ -204,8 +208,14 @@ dnl -------------------------------------------------------------------------
 dnl GNU compiler
 dnl
 if test "$GXX" = yes ; then
-	CFLAGS="$CFLAGS -fPIC"
-	CXXFLAGS="$CXXFLAGS -fPIC"
+    case "${build}" in
+      *mingw* | *cygwin* ) ;;
+      *)
+        CFLAGS="$CFLAGS -fPIC"
+        CXXFLAGS="$CXXFLAGS -fPIC"
+        LDFLAGS="$LDFLAGS -fPIC"
+      ;;
+    esac
 	if test "$enable_debug" = "yes"; then
 		CFLAGS="$CFLAGS -O0 -g -Wall -Wundef"
 		CXXFLAGS="$CXXFLAGS -O0 -g -Wall -W -Wundef -Wcast-qual -Wno-ctor-dtor-privacy"

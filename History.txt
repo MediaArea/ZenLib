@@ -1,3 +1,20 @@
+Version 0.4.33, 2016-02-29
+--------------
+x File::Open(): using now FILE_APPEND_DATA on windows when append mode is requested
+x File::Open(): accept file names with * and ? characters on non-Windows platforms
+x Better MinGW and CygWin compatibility
+x autogen.sh: Adding missing shebang
+x Dir/Create: create the parents directory if not existing
+
+Version 0.4.32, 2015-11-02
+--------------
+x Ztring::From_UTF8() was not handling 4 bytes UTF8 codes correctly
+
+Version 0.4.31, 2015-04-09
+--------------
+x BigEndian2float16() was buggy
+x <new> is possible only with C++
+
 Version 0.4.30, 2014-11-09
 --------------
 + New MemoryUtils.h functions for SSE2 memcpy

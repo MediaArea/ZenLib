@@ -1,0 +1,419 @@
+libzen.so.0 libzen0v5 #MINVER#
+ (c++|regex)"ZenLib::File::Read\(unsigned char\*, unsigned (int|long)\)@Base" 0.4.23
+ (c++|regex)"ZenLib::File::Write\(unsigned char const\*, unsigned (int|long)\)@Base" 0.4.23
+ (c++|regex)"ZenLib::InfoMap::Get\(ZenLib::Ztring const&, unsigned (int|long)\) const@Base" 0.4.23
+ (c++|regex)"ZenLib::InfoMap::Get\(ZenLib::Ztring const&, unsigned (int|long), ZenLib::Ztring const&, unsigned (int|long)\) const@Base" 0.4.23
+ (c++|regex)"ZenLib::InfoMap::Separator_Set\(unsigned (int|long), ZenLib::Ztring const&\)@Base" 0.4.23
+ (c++|regex)"ZenLib::int128::int128\((long double|__float128) const&\)@Base" 0.4.23
+ (c++|regex)"ZenLib::Thread::Sleep\(unsigned (int|long)\)@Base" 0.4.23
+ (c++|regex)"ZenLib::Translation::Separator_Set\(unsigned (int|long), ZenLib::Ztring const&\)@Base" 0.4.23
+ (c++|regex)"ZenLib::uint128::uint128\((long double|__float128) const&\)@Base" 0.4.23
+ (c++|regex)"ZenLib::Ztring::Date_From_String\(char const\*, unsigned (int|long)\)@Base" 0.4.23
+ (c++|regex)"ZenLib::Ztring::FindAndReplace\(std::__cxx11::basic_string<wchar_t, std::char_traits<wchar_t>, std::allocator<wchar_t> > const&, std::__cxx11::basic_string<wchar_t, std::char_traits<wchar_t>, std::allocator<wchar_t> > const&, unsigned (int|long), ZenLib::ztring_t\)@Base" 0.4.31-2~
+ (c++|regex)"ZenLib::Ztring::From_ISO_8859_1\(char const\*, unsigned (int|long), unsigned (int|long)\)@Base" 0.4.23
+ (c++|regex)"ZenLib::Ztring::From_ISO_8859_2\(char const\*, unsigned (int|long), unsigned (int|long)\)@Base" 0.4.23
+ (c++|regex)"ZenLib::Ztring::From_Local\(char const\*, unsigned (int|long), unsigned (int|long)\)@Base" 0.4.23
+ (c++|regex)"ZenLib::Ztring::From_Number\((long double|__float128), unsigned char, ZenLib::ztring_t\)@Base" 0.4.23
+ (c++|regex)"ZenLib::Ztring::From_Unicode\(wchar_t const\*, unsigned (int|long), unsigned (int|long)\)@Base" 0.4.23
+ (c++|regex)"ZenLib::Ztring::From_UTF16BE\(char const\*, unsigned (int|long), unsigned (int|long)\)@Base" 0.4.23
+ (c++|regex)"ZenLib::Ztring::From_UTF16\(char const\*, unsigned (int|long), unsigned (int|long)\)@Base" 0.4.23
+ (c++|regex)"ZenLib::Ztring::From_UTF16LE\(char const\*, unsigned (int|long), unsigned (int|long)\)@Base" 0.4.23
+ (c++|regex)"ZenLib::Ztring::From_UTF8\(char const\*, unsigned (int|long), unsigned (int|long)\)@Base" 0.4.23
+ (c++|regex)"ZenLib::ZtringList::Find\(ZenLib::Ztring const&, unsigned (int|long), ZenLib::Ztring const&, ZenLib::ztring_t\) const@Base" 0.4.23
+ (c++|regex)"ZenLib::ZtringListList::Delete1\(unsigned (int|long)\)@Base" 0.4.23
+ (c++|regex)"ZenLib::ZtringListList::Delete\(ZenLib::Ztring const&, unsigned (int|long), ZenLib::Ztring const&, ZenLib::ztring_t\)@Base" 0.4.23
+ (c++|regex)"ZenLib::ZtringListList::Find_Filled\(unsigned (int|long), unsigned (int|long)\) const@Base" 0.4.23
+ (c++|regex)"ZenLib::ZtringListList::FindValue\(ZenLib::Ztring const&, unsigned (int|long), unsigned (int|long), unsigned (int|long), ZenLib::Ztring const&, ZenLib::ztring_t\) const@Base" 0.4.23
+ (c++|regex)"ZenLib::ZtringListList::Find\(ZenLib::Ztring const&, unsigned (int|long), unsigned (int|long)\) const@Base" 0.4.23
+ (c++|regex)"ZenLib::ZtringListList::Find\(ZenLib::Ztring const&, unsigned (int|long), unsigned (int|long), ZenLib::Ztring const&, ZenLib::ztring_t\) const@Base" 0.4.23
+ (c++|regex)"ZenLib::ZtringListList::Insert1\(ZenLib::Ztring const&, unsigned (int|long)\)@Base" 0.4.23
+ (c++|regex)"ZenLib::ZtringListList::Max_Set\(unsigned (int|long), unsigned (int|long)\)@Base" 0.4.23
+ (c++|regex)"ZenLib::ZtringListList::operator\(\)\(unsigned (int|long)\)@Base" 0.4.23
+ (c++|regex)"ZenLib::ZtringListList::operator\(\)\(unsigned (int|long), unsigned (int|long)\)@Base" 0.4.23
+ (c++|regex)"ZenLib::ZtringListList::operator\(\)\(ZenLib::Ztring const&, unsigned (int|long), unsigned (int|long)\)@Base" 0.4.23
+ (c++|regex)"ZenLib::ZtringListList::Read1\(unsigned (int|long)\) const@Base" 0.4.23
+ (c++|regex)"ZenLib::ZtringListList::Read\(unsigned (int|long)\) const@Base" 0.4.23
+ (c++|regex)"ZenLib::ZtringListList::Read\(unsigned (int|long), unsigned (int|long)\) const@Base" 0.4.23
+ (c++|regex)"ZenLib::ZtringListList::Read\(ZenLib::Ztring const&, unsigned (int|long)\) const@Base" 0.4.23
+ (c++|regex)"ZenLib::ZtringListList::Read\(ZenLib::Ztring const&, unsigned (int|long), unsigned (int|long)\) const@Base" 0.4.23
+ (c++|regex)"ZenLib::ZtringListList::Read\(ZenLib::Ztring const&, ZenLib::Ztring const&, unsigned (int|long)\) const@Base" 0.4.23
+ (c++|regex)"ZenLib::ZtringListList::Read\(ZenLib::Ztring const&, ZenLib::Ztring const&, unsigned (int|long), unsigned (int|long)\) const@Base" 0.4.23
+ (c++|regex)"ZenLib::ZtringListList::Separator_Set\(unsigned (int|long), ZenLib::Ztring const&\)@Base" 0.4.23
+ (c++|regex)"ZenLib::ZtringListList::Sort\(unsigned (int|long), ZenLib::ztring_t\)@Base" 0.4.23
+ (c++|regex)"ZenLib::ZtringListList::SubSheet\(ZenLib::Ztring const&, unsigned (int|long), unsigned (int|long), ZenLib::Ztring const&, ZenLib::ztring_t\) const@Base" 0.4.23
+ (c++|regex)"ZenLib::ZtringListList::Swap1\(unsigned (int|long), unsigned (int|long)\)@Base" 0.4.23
+ (c++|regex)"ZenLib::ZtringListList::Swap\(unsigned (int|long), unsigned (int|long)\)@Base" 0.4.23
+ (c++|regex)"ZenLib::ZtringListList::Write\(ZenLib::Ztring const&, unsigned (int|long), unsigned (int|long)\)@Base" 0.4.23
+ (c++|regex)"ZenLib::ZtringListList::Write\(ZenLib::ZtringList const&, unsigned (int|long)\)@Base" 0.4.23
+ (c++|regex)"ZenLib::ZtringList::Max_Set\(unsigned (int|long), unsigned (int|long)\)@Base" 0.4.23
+ (c++|regex)"ZenLib::ZtringList::operator\(\)\(unsigned (int|long)\)@Base" 0.4.23
+ (c++|regex)"ZenLib::ZtringList::Read\(unsigned (int|long)\) const@Base" 0.4.23
+ (c++|regex)"ZenLib::ZtringList::Separator_Set\(unsigned (int|long), ZenLib::Ztring const&\)@Base" 0.4.23
+ (c++|regex)"ZenLib::ZtringList::Swap\(unsigned (int|long), unsigned (int|long)\)@Base" 0.4.23
+ (c++|regex)"ZenLib::ZtringList::Write\(ZenLib::Ztring const&, unsigned (int|long)\)@Base" 0.4.23
+ (c++|regex)"ZenLib::Ztring::operator\(\)\(unsigned (int|long)\)@Base" 0.4.23
+ (c++|regex)"ZenLib::Ztring::SubString\(std::__cxx11::basic_string<wchar_t, std::char_traits<wchar_t>, std::allocator<wchar_t> > const&, std::__cxx11::basic_string<wchar_t, std::char_traits<wchar_t>, std::allocator<wchar_t> > const&, unsigned (int|long), ZenLib::ztring_t\) const@Base" 0.4.31-2~
+ (c++)"typeinfo for ZenLib::Thread@Base" 0.4.23
+ (c++)"typeinfo name for ZenLib::Thread@Base" 0.4.23
+ (c++)"vtable for ZenLib::Thread@Base" 0.4.23
+ (c++)"ZenLib::BigEndian2float16(char const*)@Base" 0.4.23
+ (c++)"ZenLib::BigEndian2float32(char const*)@Base" 0.4.23
+ (c++)"ZenLib::BigEndian2float64(char const*)@Base" 0.4.23
+ (c++)"ZenLib::BigEndian2float80(char const*)@Base" 0.4.23
+ (c++)"ZenLib::BigEndian2int128u(char const*)@Base" 0.4.23
+ (c++)"ZenLib::BigEndian2int16s(char const*)@Base" 0.4.23
+ (c++)"ZenLib::BigEndian2int16u(char const*)@Base" 0.4.23
+ (c++)"ZenLib::BigEndian2int24s(char const*)@Base" 0.4.23
+ (c++)"ZenLib::BigEndian2int24u(char const*)@Base" 0.4.23
+ (c++)"ZenLib::BigEndian2int32s(char const*)@Base" 0.4.23
+ (c++)"ZenLib::BigEndian2int32u(char const*)@Base" 0.4.23
+ (c++)"ZenLib::BigEndian2int40s(char const*)@Base" 0.4.23
+ (c++)"ZenLib::BigEndian2int40u(char const*)@Base" 0.4.23
+ (c++)"ZenLib::BigEndian2int48s(char const*)@Base" 0.4.23
+ (c++)"ZenLib::BigEndian2int48u(char const*)@Base" 0.4.23
+ (c++)"ZenLib::BigEndian2int56s(char const*)@Base" 0.4.23
+ (c++)"ZenLib::BigEndian2int56u(char const*)@Base" 0.4.23
+ (c++)"ZenLib::BigEndian2int64s(char const*)@Base" 0.4.23
+ (c++)"ZenLib::BigEndian2int64u(char const*)@Base" 0.4.23
+ (c++)"ZenLib::BigEndian2int8s(char const*)@Base" 0.4.23
+ (c++)"ZenLib::BigEndian2int8u(char const*)@Base" 0.4.23
+ (c++)"ZenLib::CriticalSection::~CriticalSection()@Base" 0.4.23
+ (c++)"ZenLib::CriticalSection::CriticalSection()@Base" 0.4.23
+ (c++)"ZenLib::CriticalSection::Enter()@Base" 0.4.23
+ (c++)"ZenLib::CriticalSection::Leave()@Base" 0.4.23
+ (c++)"ZenLib::Dir::Create(ZenLib::Ztring const&)@Base" 0.4.23
+ (c++)"ZenLib::Directory_Select_Caption@Base" 0.4.23
+ (c++)"ZenLib::Dir::Exists(ZenLib::Ztring const&)@Base" 0.4.23
+ (c++)"ZenLib::Dir::GetAllFileNames(ZenLib::Ztring const&, ZenLib::Dir::dirlist_t)@Base" 0.4.23
+ (c++)"ZenLib::EmptyZtring@Base" 0.4.23
+ (c++)"ZenLib::EOL@Base" 0.4.23
+ (c++)"ZenLib::File::Close()@Base" 0.4.23
+ (c++)"ZenLib::File::Copy(ZenLib::Ztring const&, ZenLib::Ztring const&, bool)@Base" 0.4.23
+ (c++)"ZenLib::File::Created_Get()@Base" 0.4.23
+ (c++)"ZenLib::File::Created_Get(ZenLib::Ztring const&)@Base" 0.4.23
+ (c++)"ZenLib::File::Created_Local_Get()@Base" 0.4.23
+ (c++)"ZenLib::File::Create(ZenLib::Ztring const&, bool)@Base" 0.4.23
+ (c++)"ZenLib::File::Delete(ZenLib::Ztring const&)@Base" 0.4.23
+ (c++)"ZenLib::File::Exists(ZenLib::Ztring const&)@Base" 0.4.23
+ (c++)"ZenLib::File::~File()@Base" 0.4.23
+ (c++)"ZenLib::File::File()@Base" 0.4.23
+ (c++)"ZenLib::File::File(ZenLib::Ztring, ZenLib::File::access_t)@Base" 0.4.23
+ (c++)"ZenLib::File::GoTo(long long, ZenLib::File::move_t)@Base" 0.4.23
+ (c++)"ZenLib::File::Modified_Get()@Base" 0.4.23
+ (c++)"ZenLib::File::Modified_Get(ZenLib::Ztring const&)@Base" 0.4.23
+ (c++)"ZenLib::File::Modified_Local_Get()@Base" 0.4.23
+ (c++)"ZenLib::File::Move(ZenLib::Ztring const&, ZenLib::Ztring const&, bool)@Base" 0.4.23
+ (c++)"ZenLib::FileName::Extension_Get() const@Base" 0.4.23
+ (c++)"ZenLib::FileName::Extension_Set(ZenLib::Ztring const&)@Base" 0.4.23
+ (c++)"ZenLib::FileName::Name_Get() const@Base" 0.4.23
+ (c++)"ZenLib::FileName::Name_Set(ZenLib::Ztring const&)@Base" 0.4.23
+ (c++)"ZenLib::FileName::Path_Get() const@Base" 0.4.23
+ (c++)"ZenLib::FileName_PathSeparator@Base" 0.4.23
+ (c++)"ZenLib::FileName::Path_Set(ZenLib::Ztring const&)@Base" 0.4.23
+ (c++)"ZenLib::FileName::TempFileName_Create(ZenLib::Ztring const&)@Base" 0.4.23
+ (c++)"ZenLib::File::Opened_Get()@Base" 0.4.23
+ (c++)"ZenLib::File::Open(std::__cxx11::basic_string<wchar_t, std::char_traits<wchar_t>, std::allocator<wchar_t> > const&, ZenLib::File::access_t)@Base" 0.4.31-2~
+ (c++)"ZenLib::File::Position_Get()@Base" 0.4.23
+ (c++)"ZenLib::File::Size_Get()@Base" 0.4.23
+ (c++)"ZenLib::File::Size_Get(ZenLib::Ztring const&)@Base" 0.4.23
+ (c++)"ZenLib::File::Truncate(unsigned long long)@Base" 0.4.23
+ (c++)"ZenLib::File::Write(ZenLib::Ztring const&)@Base" 0.4.23
+ (c++)"ZenLib::float32_int32s(float, bool)@Base" 0.4.23
+ (c++)"ZenLib::float32_int64s(float, bool)@Base" 0.4.23
+ (c++)"ZenLib::float64_int32s(double, bool)@Base" 0.4.23
+ (c++)"ZenLib::float64_int64s(double, bool)@Base" 0.4.23
+ (c++)"ZenLib::Format::Html::Handler::CleanUp()@Base" 0.4.23
+ (c++)"ZenLib::Format::Html::Handler::Handler()@Base" 0.4.23
+ (c++)"ZenLib::Format::Html::Request::~Request()@Base" 0.4.23
+ (c++)"ZenLib::Format::Html::Request::Request()@Base" 0.4.23
+ (c++)"ZenLib::Format::Html::Request::Request(ZenLib::Format::Html::Request const&)@Base" 0.4.23
+ (c++)"ZenLib::Format::Http::Char2Hex(unsigned char)@Base" 0.4.23
+ (c++)"ZenLib::Format::Http::Char2Hex(wchar_t)@Base" 0.4.23
+ (c++)"ZenLib::Format::Http::Cookies::Cookies()@Base" 0.4.23
+ (c++)"ZenLib::Format::Http::Cookies::Create_Lines(std::basic_ostream<char, std::char_traits<char> >&)@Base" 0.4.23
+ (c++)"ZenLib::Format::Http::Cookies::Set(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, long, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, bool)@Base" 0.4.31-2~
+ (c++)"ZenLib::Format::Http::EmptyString[abi:cxx11]@Base" 0.4.31-2~
+ (c++)"ZenLib::Format::Http::Handler::Handler()@Base" 0.4.23
+ (c++)"ZenLib::Format::Http::Hex2Char[abi:cxx11](unsigned char)@Base" 0.4.31-2~
+ (c++)"ZenLib::Format::Http::Hex2Char[abi:cxx11](wchar_t)@Base" 0.4.31-2~
+ (c++)"ZenLib::Format::Http::Request::Http_Begin(std::basic_istream<char, std::char_traits<char> >&, std::basic_ostream<char, std::char_traits<char> >&)@Base" 0.4.23
+ (c++)"ZenLib::Format::Http::Request::Http_End(std::basic_ostream<char, std::char_traits<char> >&)@Base" 0.4.23
+ (c++)"ZenLib::Format::Http::Request::~Request()@Base" 0.4.23
+ (c++)"ZenLib::Format::Http::Request::Request()@Base" 0.4.23
+ (c++)"ZenLib::Format::Http::Request::Request(ZenLib::Format::Http::Request const&)@Base" 0.4.23
+ (c++)"ZenLib::Format::Http::TrimLeft(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&, char)@Base" 0.4.31-2~
+ (c++)"ZenLib::Format::Http::URL_Encoded_Decode(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&)@Base" 0.4.31-2~
+ (c++)"ZenLib::Format::Http::URL_Encoded_Decode(std::__cxx11::basic_string<wchar_t, std::char_traits<wchar_t>, std::allocator<wchar_t> > const&)@Base" 0.4.31-2~
+ (c++)"ZenLib::Format::Http::URL_Encoded_Encode(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&)@Base" 0.4.31-2~
+ (c++)"ZenLib::Format::Http::URL_Encoded_Encode(std::__cxx11::basic_string<wchar_t, std::char_traits<wchar_t>, std::allocator<wchar_t> > const&)@Base" 0.4.31-2~
+ (c++)"ZenLib::InfoMap::InfoMap()@Base" 0.4.23
+ (c++)"ZenLib::InfoMap::InfoMap(char const*)@Base" 0.4.23
+ (c++)"ZenLib::InfoMap::InfoMap(wchar_t const*)@Base" 0.4.23
+ (c++)"ZenLib::InfoMap::InfoMap(ZenLib::Ztring const&)@Base" 0.4.23
+ (c++)"ZenLib::InfoMap::Write(ZenLib::Ztring const&)@Base" 0.4.23
+ (c++)"ZenLib::int128::bit(unsigned int, bool)@Base" 0.4.23
+ (c++)"ZenLib::int128::bit(unsigned int) const@Base" 0.4.23
+ (c++)"ZenLib::int128::div(ZenLib::int128 const&, ZenLib::int128&) const@Base" 0.4.23
+ (c++)"ZenLib::int128::int128(char const*)@Base" 0.4.23
+ (c++)"ZenLib::int128::int128(double const&)@Base" 0.4.23
+ (c++)"ZenLib::int128::int128(float)@Base" 0.4.23
+ (c++)"ZenLib::int128::operator--()@Base" 0.4.23
+ (c++)"ZenLib::int128::operator++()@Base" 0.4.23
+ (c++)"ZenLib::int128::operator~() const@Base" 0.4.23
+ (c++)"ZenLib::int128::operator-() const@Base" 0.4.23
+ (c++)"ZenLib::int128::operator!() const@Base" 0.4.23
+ (c++)"ZenLib::int128::operator--(int)@Base" 0.4.23
+ (c++)"ZenLib::int128::operator++(int)@Base" 0.4.23
+ (c++)"ZenLib::int128::operator<<=(unsigned int)@Base" 0.4.23
+ (c++)"ZenLib::int128::operator>>=(unsigned int)@Base" 0.4.23
+ (c++)"ZenLib::int128::operator^=(ZenLib::int128 const&)@Base" 0.4.23
+ (c++)"ZenLib::int128::operator|=(ZenLib::int128 const&)@Base" 0.4.23
+ (c++)"ZenLib::int128::operator*=(ZenLib::int128 const&)@Base" 0.4.23
+ (c++)"ZenLib::int128::operator&=(ZenLib::int128 const&)@Base" 0.4.23
+ (c++)"ZenLib::int128::operator+=(ZenLib::int128 const&)@Base" 0.4.23
+ (c++)"ZenLib::int128::toDouble() const@Base" 0.4.23
+ (c++)"ZenLib::int128::toFloat() const@Base" 0.4.23
+ (c++)"ZenLib::int128::toLongDouble() const@Base" 0.4.23
+ (c++)"ZenLib::int128::toString(unsigned int) const@Base" 0.4.23
+ (c++)"ZenLib::int128u2BigEndian(char*, ZenLib::uint128)@Base" 0.4.23
+ (c++)"ZenLib::int128u2LittleEndian(char*, ZenLib::uint128)@Base" 0.4.23
+ (c++)"ZenLib::int16s2BigEndian(char*, short)@Base" 0.4.23
+ (c++)"ZenLib::int16s2LittleEndian(char*, short)@Base" 0.4.23
+ (c++)"ZenLib::int16u2BigEndian(char*, unsigned short)@Base" 0.4.23
+ (c++)"ZenLib::int16u2LittleEndian(char*, unsigned short)@Base" 0.4.23
+ (c++)"ZenLib::int24s2BigEndian(char*, int)@Base" 0.4.23
+ (c++)"ZenLib::int24s2LittleEndian(char*, int)@Base" 0.4.23
+ (c++)"ZenLib::int24u2BigEndian(char*, unsigned int)@Base" 0.4.23
+ (c++)"ZenLib::int24u2LittleEndian(char*, unsigned int)@Base" 0.4.23
+ (c++)"ZenLib::int32s2BigEndian(char*, int)@Base" 0.4.23
+ (c++)"ZenLib::int32s2LittleEndian(char*, int)@Base" 0.4.23
+ (c++)"ZenLib::int32s_int64s(int, unsigned int)@Base" 0.4.23
+ (c++)"ZenLib::int32s_int64s(long long&, int, unsigned int)@Base" 0.4.23
+ (c++)"ZenLib::int32u2BigEndian(char*, unsigned int)@Base" 0.4.23
+ (c++)"ZenLib::int32u2LittleEndian(char*, unsigned int)@Base" 0.4.23
+ (c++)"ZenLib::int32u_int64u(long long&, unsigned int, unsigned int)@Base" 0.4.23
+ (c++)"ZenLib::int32u_int64u(unsigned int, unsigned int)@Base" 0.4.23
+ (c++)"ZenLib::int40s2BigEndian(char*, long long)@Base" 0.4.23
+ (c++)"ZenLib::int40s2LittleEndian(char*, long long)@Base" 0.4.23
+ (c++)"ZenLib::int40u2BigEndian(char*, unsigned long long)@Base" 0.4.23
+ (c++)"ZenLib::int40u2LittleEndian(char*, unsigned long long)@Base" 0.4.23
+ (c++)"ZenLib::int48s2BigEndian(char*, long long)@Base" 0.4.23
+ (c++)"ZenLib::int48s2LittleEndian(char*, long long)@Base" 0.4.23
+ (c++)"ZenLib::int48u2BigEndian(char*, unsigned long long)@Base" 0.4.23
+ (c++)"ZenLib::int48u2LittleEndian(char*, unsigned long long)@Base" 0.4.23
+ (c++)"ZenLib::int56s2BigEndian(char*, long long)@Base" 0.4.23
+ (c++)"ZenLib::int56s2LittleEndian(char*, long long)@Base" 0.4.23
+ (c++)"ZenLib::int56u2BigEndian(char*, unsigned long long)@Base" 0.4.23
+ (c++)"ZenLib::int56u2LittleEndian(char*, unsigned long long)@Base" 0.4.23
+ (c++)"ZenLib::int64s2BigEndian(char*, long long)@Base" 0.4.23
+ (c++)"ZenLib::int64s2LittleEndian(char*, long long)@Base" 0.4.23
+ (c++)"ZenLib::int64s_int32s(long long, int&, unsigned int&)@Base" 0.4.23
+ (c++)"ZenLib::int64u2BigEndian(char*, unsigned long long)@Base" 0.4.23
+ (c++)"ZenLib::int64u2LittleEndian(char*, unsigned long long)@Base" 0.4.23
+ (c++)"ZenLib::int64u_int32u(unsigned long long, unsigned int&, unsigned int&)@Base" 0.4.23
+ (c++)"ZenLib::int8s2BigEndian(char*, signed char)@Base" 0.4.23
+ (c++)"ZenLib::int8s2LittleEndian(char*, signed char)@Base" 0.4.23
+ (c++)"ZenLib::int8u2BigEndian(char*, unsigned char)@Base" 0.4.23
+ (c++)"ZenLib::int8u2LittleEndian(char*, unsigned char)@Base" 0.4.23
+ (c++)"ZenLib::IsWin9X()@Base" 0.4.23
+ (c++)"ZenLib::LittleEndian2float16(char const*)@Base" 0.4.23
+ (c++)"ZenLib::LittleEndian2float32(char const*)@Base" 0.4.23
+ (c++)"ZenLib::LittleEndian2float64(char const*)@Base" 0.4.23
+ (c++)"ZenLib::LittleEndian2float80(char const*)@Base" 0.4.23
+ (c++)"ZenLib::LittleEndian2int128u(char const*)@Base" 0.4.23
+ (c++)"ZenLib::LittleEndian2int16s(char const*)@Base" 0.4.23
+ (c++)"ZenLib::LittleEndian2int16u(char const*)@Base" 0.4.23
+ (c++)"ZenLib::LittleEndian2int24s(char const*)@Base" 0.4.23
+ (c++)"ZenLib::LittleEndian2int24u(char const*)@Base" 0.4.23
+ (c++)"ZenLib::LittleEndian2int32s(char const*)@Base" 0.4.23
+ (c++)"ZenLib::LittleEndian2int32u(char const*)@Base" 0.4.23
+ (c++)"ZenLib::LittleEndian2int40s(char const*)@Base" 0.4.23
+ (c++)"ZenLib::LittleEndian2int40u(char const*)@Base" 0.4.23
+ (c++)"ZenLib::LittleEndian2int48s(char const*)@Base" 0.4.23
+ (c++)"ZenLib::LittleEndian2int48u(char const*)@Base" 0.4.23
+ (c++)"ZenLib::LittleEndian2int56s(char const*)@Base" 0.4.23
+ (c++)"ZenLib::LittleEndian2int56u(char const*)@Base" 0.4.23
+ (c++)"ZenLib::LittleEndian2int64s(char const*)@Base" 0.4.23
+ (c++)"ZenLib::LittleEndian2int64u(char const*)@Base" 0.4.23
+ (c++)"ZenLib::LittleEndian2int8s(char const*)@Base" 0.4.23
+ (c++)"ZenLib::LittleEndian2int8u(char const*)@Base" 0.4.23
+ (c++)"ZenLib::operator<(ZenLib::int128 const&, ZenLib::int128 const&)@Base" 0.4.23
+ (c++)"ZenLib::operator==(ZenLib::int128 const&, ZenLib::int128 const&)@Base" 0.4.23
+ (c++)"ZenLib::operator||(ZenLib::int128 const&, ZenLib::int128 const&)@Base" 0.4.23
+ (c++)"ZenLib::operator&&(ZenLib::int128 const&, ZenLib::int128 const&)@Base" 0.4.23
+ (c++)"ZenLib::operator<(ZenLib::uint128 const&, ZenLib::uint128 const&)@Base" 0.4.23
+ (c++)"ZenLib::operator==(ZenLib::uint128 const&, ZenLib::uint128 const&)@Base" 0.4.23
+ (c++)"ZenLib::operator||(ZenLib::uint128 const&, ZenLib::uint128 const&)@Base" 0.4.23
+ (c++)"ZenLib::operator&&(ZenLib::uint128 const&, ZenLib::uint128 const&)@Base" 0.4.23
+ (c++)"ZenLib::PathSeparator@Base" 0.4.23
+ (c++)"ZenLib::Shell_Execute(ZenLib::Ztring const&)@Base" 0.4.23
+ (c++)"ZenLib::Thread::Entry()@Base" 0.4.23
+ (c++)"ZenLib::Thread::ForceTerminate()@Base" 0.4.23
+ (c++)"ZenLib::Thread::Internal_Exit()@Base" 0.4.23
+ (c++)"ZenLib::Thread::IsExited()@Base" 0.4.23
+ (c++)"ZenLib::Thread::IsRunning()@Base" 0.4.23
+ (c++)"ZenLib::Thread::IsTerminating()@Base" 0.4.23
+ (c++)"ZenLib::Thread::Pause()@Base" 0.4.23
+ (c++)"ZenLib::Thread::RequestTerminate()@Base" 0.4.23
+ (c++)"ZenLib::Thread::RunAgain()@Base" 0.4.23
+ (c++)"ZenLib::Thread::Run()@Base" 0.4.23
+ (c++)"ZenLib::Thread_Start(void*)@Base" 0.4.23
+ (c++)"ZenLib::Thread::~Thread()@Base" 0.4.23
+ (c++)"ZenLib::Thread::Thread()@Base" 0.4.23
+ (c++)"ZenLib::Thread::Yield()@Base" 0.4.23
+ (c++)"ZenLib::Translation::Get() const@Base" 0.4.23
+ (c++)"ZenLib::Translation::Get(ZenLib::Ztring const&)@Base" 0.4.23
+ (c++)"ZenLib::Translation::Get(ZenLib::Ztring const&, ZenLib::Ztring const&)@Base" 0.4.23
+ (c++)"ZenLib::Translation::Translation()@Base" 0.4.23
+ (c++)"ZenLib::Translation::Translation(char const*)@Base" 0.4.23
+ (c++)"ZenLib::Translation::Translation(wchar_t const*)@Base" 0.4.23
+ (c++)"ZenLib::Translation::Translation(ZenLib::Ztring const&)@Base" 0.4.23
+ (c++)"ZenLib::Translation::Write(ZenLib::Ztring const&)@Base" 0.4.23
+ (c++)"ZenLib::Translation::Write(ZenLib::Ztring const&, ZenLib::Ztring const&)@Base" 0.4.23
+ (c++)"ZenLib::uint128::bit(unsigned int, bool)@Base" 0.4.23
+ (c++)"ZenLib::uint128::bit(unsigned int) const@Base" 0.4.23
+ (c++)"ZenLib::uint128::div(ZenLib::uint128 const&, ZenLib::uint128&) const@Base" 0.4.23
+ (c++)"ZenLib::uint128::operator--()@Base" 0.4.23
+ (c++)"ZenLib::uint128::operator++()@Base" 0.4.23
+ (c++)"ZenLib::uint128::operator~() const@Base" 0.4.23
+ (c++)"ZenLib::uint128::operator-() const@Base" 0.4.23
+ (c++)"ZenLib::uint128::operator!() const@Base" 0.4.23
+ (c++)"ZenLib::uint128::operator--(int)@Base" 0.4.23
+ (c++)"ZenLib::uint128::operator++(int)@Base" 0.4.23
+ (c++)"ZenLib::uint128::operator<<=(unsigned int)@Base" 0.4.23
+ (c++)"ZenLib::uint128::operator>>=(unsigned int)@Base" 0.4.23
+ (c++)"ZenLib::uint128::operator^=(ZenLib::uint128 const&)@Base" 0.4.23
+ (c++)"ZenLib::uint128::operator|=(ZenLib::uint128 const&)@Base" 0.4.23
+ (c++)"ZenLib::uint128::operator*=(ZenLib::uint128 const&)@Base" 0.4.23
+ (c++)"ZenLib::uint128::operator&=(ZenLib::uint128 const&)@Base" 0.4.23
+ (c++)"ZenLib::uint128::operator+=(ZenLib::uint128 const&)@Base" 0.4.23
+ (c++)"ZenLib::uint128::toDouble() const@Base" 0.4.23
+ (c++)"ZenLib::uint128::toFloat() const@Base" 0.4.23
+ (c++)"ZenLib::uint128::toLongDouble() const@Base" 0.4.23
+ (c++)"ZenLib::uint128::toString(unsigned int) const@Base" 0.4.23
+ (c++)"ZenLib::uint128::uint128(char const*)@Base" 0.4.23
+ (c++)"ZenLib::uint128::uint128(double const&)@Base" 0.4.23
+ (c++)"ZenLib::uint128::uint128(float)@Base" 0.4.23
+ (c++)"ZenLib::Ztring::Assign_FromFile(ZenLib::Ztring const&)@Base" 0.4.23
+ (c++)"ZenLib::Ztring::Compare(ZenLib::Ztring const&, ZenLib::Ztring const&, ZenLib::ztring_t) const@Base" 0.4.23
+ (c++)"ZenLib::Ztring::Count(ZenLib::Ztring const&, ZenLib::ztring_t) const@Base" 0.4.23
+ (c++)"ZenLib::Ztring::Date_From_Milliseconds_1601(unsigned long long)@Base" 0.4.23
+ (c++)"ZenLib::Ztring::Date_From_Numbers(unsigned char, unsigned char, unsigned char, unsigned char, unsigned char, unsigned char)@Base" 0.4.23
+ (c++)"ZenLib::Ztring::Date_From_Seconds_1601(unsigned long long)@Base" 0.4.23
+ (c++)"ZenLib::Ztring::Date_From_Seconds_1900(long long)@Base" 0.4.30
+ (c++)"ZenLib::Ztring::Date_From_Seconds_1900(unsigned int)@Base" 0.4.30
+ (c++)"ZenLib::Ztring::Date_From_Seconds_1904(long long)@Base" 0.4.30
+ (c++)"ZenLib::Ztring::Date_From_Seconds_1904(unsigned int)@Base" 0.4.30
+ (c++)"ZenLib::Ztring::Date_From_Seconds_1904(unsigned long long)@Base" 0.4.23
+ (c++)"ZenLib::Ztring::Date_From_Seconds_1970(int)@Base" 0.4.30
+ (c++)"ZenLib::Ztring::Date_From_Seconds_1970_Local(unsigned int)@Base" 0.4.23
+ (c++)"ZenLib::Ztring::Date_From_Seconds_1970(long long)@Base" 0.4.30
+ (c++)"ZenLib::Ztring::Date_From_Seconds_1970(unsigned int)@Base" 0.4.23
+ (c++)"ZenLib::Ztring::Duration_From_Milliseconds(long long)@Base" 0.4.23
+ (c++)"ZenLib::Ztring::Duration_From_Milliseconds(unsigned long long)@Base" 0.4.23
+ (c++)"ZenLib::Ztring::From_BCD(unsigned char)@Base" 0.4.23
+ (c++)"ZenLib::Ztring::From_CC1(unsigned char)@Base" 0.4.23
+ (c++)"ZenLib::Ztring::From_CC2(unsigned short)@Base" 0.4.23
+ (c++)"ZenLib::Ztring::From_CC3(unsigned int)@Base" 0.4.23
+ (c++)"ZenLib::Ztring::From_CC4(unsigned int)@Base" 0.4.23
+ (c++)"ZenLib::Ztring::From_GUID(ZenLib::uint128)@Base" 0.4.23
+ (c++)"ZenLib::Ztring::From_ISO_8859_1(char const*)@Base" 0.4.23
+ (c++)"ZenLib::Ztring::From_ISO_8859_2(char const*)@Base" 0.4.23
+ (c++)"ZenLib::Ztring::From_Local(char const*)@Base" 0.4.23
+ (c++)"ZenLib::Ztring::From_Number(double, unsigned char, ZenLib::ztring_t)@Base" 0.4.23
+ (c++)"ZenLib::Ztring::From_Number(float, unsigned char, ZenLib::ztring_t)@Base" 0.4.23
+ (c++)"ZenLib::Ztring::From_Number(int, unsigned char)@Base" 0.4.23
+ (c++)"ZenLib::Ztring::From_Number(long long, unsigned char)@Base" 0.4.23
+ (c++)"ZenLib::Ztring::From_Number(short, unsigned char)@Base" 0.4.23
+ (c++)"ZenLib::Ztring::From_Number(signed char, unsigned char)@Base" 0.4.23
+ (c++)"ZenLib::Ztring::From_Number(unsigned char, unsigned char)@Base" 0.4.23
+ (c++)"ZenLib::Ztring::From_Number(unsigned int, unsigned char)@Base" 0.4.23
+ (c++)"ZenLib::Ztring::From_Number(unsigned long long, unsigned char)@Base" 0.4.23
+ (c++)"ZenLib::Ztring::From_Number(unsigned short, unsigned char)@Base" 0.4.23
+ (c++)"ZenLib::Ztring::From_Number(ZenLib::uint128, unsigned char)@Base" 0.4.23
+ (c++)"ZenLib::Ztring::From_Unicode(wchar_t)@Base" 0.4.30
+ (c++)"ZenLib::Ztring::From_Unicode(wchar_t const*)@Base" 0.4.23
+ (c++)"ZenLib::Ztring::From_UTF16BE(char const*)@Base" 0.4.23
+ (c++)"ZenLib::Ztring::From_UTF16(char const*)@Base" 0.4.23
+ (c++)"ZenLib::Ztring::From_UTF16LE(char const*)@Base" 0.4.23
+ (c++)"ZenLib::Ztring::From_UTF8(char const*)@Base" 0.4.23
+ (c++)"ZenLib::Ztring::From_UUID(ZenLib::uint128)@Base" 0.4.23
+ (c++)"ZenLib::Ztring::IsNumber() const@Base" 0.4.23
+ (c++)"ZenLib::Ztring_ISO_8859_2@Base" 0.4.23
+ (c++)"ZenLib::ZtringListListF::Backup_Count_Set(unsigned char)@Base" 0.4.23
+ (c++)"ZenLib::ZtringListListF::Backup_Set(bool)@Base" 0.4.23
+ (c++)"ZenLib::ZtringListListF::Cancel()@Base" 0.4.23
+ (c++)"ZenLib::ZtringListListF::CFG_Charger()@Base" 0.4.23
+ (c++)"ZenLib::ZtringListListF::CFG_Sauvegarder()@Base" 0.4.23
+ (c++)"ZenLib::ZtringListListF::CSV_Charger()@Base" 0.4.23
+ (c++)"ZenLib::ZtringListListF::CSV_Sauvegarder()@Base" 0.4.23
+ (c++)"ZenLib::ZtringListListF::Load(ZenLib::Ztring const&)@Base" 0.4.23
+ (c++)"ZenLib::ZtringListListF::Local_Set(bool)@Base" 0.4.23
+ (c++)"ZenLib::ZtringListListF::NettoyerEspaces(ZenLib::Ztring&)@Base" 0.4.23
+ (c++)"ZenLib::ZtringListListF::Save(ZenLib::Ztring const&)@Base" 0.4.23
+ (c++)"ZenLib::ZtringListListF::ZtringListListF()@Base" 0.4.23
+ (c++)"ZenLib::ZtringListListF::ZtringListListF(char const*)@Base" 0.4.23
+ (c++)"ZenLib::ZtringListListF::ZtringListListF_Common()@Base" 0.4.23
+ (c++)"ZenLib::ZtringListListF::ZtringListListF(wchar_t const*)@Base" 0.4.23
+ (c++)"ZenLib::ZtringListListF::ZtringListListF(ZenLib::Ztring const&)@Base" 0.4.23
+ (c++)"ZenLib::ZtringListListF::ZtringListListF(ZenLib::ZtringListList const&)@Base" 0.4.23
+ (c++)"ZenLib::ZtringListList::operator=(ZenLib::ZtringListList const&)@Base" 0.4.23
+ (c++)"ZenLib::ZtringListList::operator+=(ZenLib::ZtringListList const&)@Base" 0.4.23
+ (c++)"ZenLib::ZtringListList::operator==(ZenLib::ZtringListList const&) const@Base" 0.4.23
+ (c++)"ZenLib::ZtringListList::operator!=(ZenLib::ZtringListList const&) const@Base" 0.4.23
+ (c++)"ZenLib::ZtringListList::push_back(ZenLib::Ztring const&)@Base" 0.4.23
+ (c++)"ZenLib::ZtringListList::push_back(ZenLib::ZtringList const&)@Base" 0.4.23
+ (c++)"ZenLib::ZtringListList::Quote_Set(ZenLib::Ztring const&)@Base" 0.4.23
+ (c++)"ZenLib::ZtringListList::Read() const@Base" 0.4.23
+ (c++)"ZenLib::ZtringListList::Write(ZenLib::Ztring const&)@Base" 0.4.23
+ (c++)"ZenLib::ZtringListList::~ZtringListList()@Base" 0.4.23
+ (c++)"ZenLib::ZtringListList::ZtringListList()@Base" 0.4.23
+ (c++)"ZenLib::ZtringListList::ZtringListList(char const*)@Base" 0.4.23
+ (c++)"ZenLib::ZtringListList::ZtringListList(wchar_t const*)@Base" 0.4.23
+ (c++)"ZenLib::ZtringListList::ZtringListList(ZenLib::Ztring const&)@Base" 0.4.23
+ (c++)"ZenLib::ZtringListList::ZtringListList(ZenLib::ZtringListList const&)@Base" 0.4.23
+ (c++)"ZenLib::ZtringList::MaxStringLength_Get()@Base" 0.4.23
+ (c++)"ZenLib::ZtringList::operator=(ZenLib::ZtringList const&)@Base" 0.4.23
+ (c++)"ZenLib::ZtringList::operator+=(ZenLib::ZtringList const&)@Base" 0.4.23
+ (c++)"ZenLib::ZtringList::operator==(ZenLib::ZtringList const&) const@Base" 0.4.23
+ (c++)"ZenLib::ZtringList::operator!=(ZenLib::ZtringList const&) const@Base" 0.4.23
+ (c++)"ZenLib::ZtringList::Quote_Set(ZenLib::Ztring const&)@Base" 0.4.23
+ (c++)"ZenLib::ZtringList::Read() const@Base" 0.4.23
+ (c++)"ZenLib::ZtringList::Sort(ZenLib::ztring_t)@Base" 0.4.23
+ (c++)"ZenLib::ZtringList::Write(ZenLib::Ztring const&)@Base" 0.4.23
+ (c++)"ZenLib::ZtringList::~ZtringList()@Base" 0.4.23
+ (c++)"ZenLib::ZtringList::ZtringList()@Base" 0.4.23
+ (c++)"ZenLib::ZtringList::ZtringList(char const*)@Base" 0.4.23
+ (c++)"ZenLib::ZtringList::ZtringList(wchar_t const*)@Base" 0.4.23
+ (c++)"ZenLib::ZtringList::ZtringList(ZenLib::Ztring const&)@Base" 0.4.23
+ (c++)"ZenLib::ZtringList::ZtringList(ZenLib::ZtringList const&)@Base" 0.4.23
+ (c++)"ZenLib::Ztring::MakeLowerCase()@Base" 0.4.23
+ (c++)"ZenLib::Ztring::MakeUpperCase()@Base" 0.4.23
+ (c++)"ZenLib::Ztring::Quote(wchar_t)@Base" 0.4.23
+ (c++)"ZenLib::Ztring::To_CC4() const@Base" 0.4.23
+ (c++)"ZenLib::Ztring::To_float32(ZenLib::ztring_t) const@Base" 0.4.23
+ (c++)"ZenLib::Ztring::To_float64(ZenLib::ztring_t) const@Base" 0.4.23
+ (c++)"ZenLib::Ztring::To_float80(ZenLib::ztring_t) const@Base" 0.4.23
+ (c++)"ZenLib::Ztring::To_int128u(unsigned char, ZenLib::ztring_t) const@Base" 0.4.23
+ (c++)"ZenLib::Ztring::To_int16s(unsigned char, ZenLib::ztring_t) const@Base" 0.4.23
+ (c++)"ZenLib::Ztring::To_int16u(unsigned char, ZenLib::ztring_t) const@Base" 0.4.23
+ (c++)"ZenLib::Ztring::To_int32s(unsigned char, ZenLib::ztring_t) const@Base" 0.4.23
+ (c++)"ZenLib::Ztring::To_int32u(unsigned char, ZenLib::ztring_t) const@Base" 0.4.23
+ (c++)"ZenLib::Ztring::To_int64s(unsigned char, ZenLib::ztring_t) const@Base" 0.4.23
+ (c++)"ZenLib::Ztring::To_int64u(unsigned char, ZenLib::ztring_t) const@Base" 0.4.23
+ (c++)"ZenLib::Ztring::To_int8s(unsigned char, ZenLib::ztring_t) const@Base" 0.4.23
+ (c++)"ZenLib::Ztring::To_int8u(unsigned char, ZenLib::ztring_t) const@Base" 0.4.23
+ (c++)"ZenLib::Ztring::To_Local[abi:cxx11]() const@Base" 0.4.31-2~
+ (c++)"ZenLib::Ztring::To_Unicode[abi:cxx11]() const@Base" 0.4.31-2~
+ (c++)"ZenLib::Ztring::To_UTF8[abi:cxx11]() const@Base" 0.4.31-2~
+ (c++)"ZenLib::Ztring::To_UUID() const@Base" 0.4.23
+ (c++)"ZenLib::Ztring::TrimLeft(wchar_t)@Base" 0.4.23
+ (c++)"ZenLib::Ztring::TrimRight(wchar_t)@Base" 0.4.23
+ (c++)"ZenLib::Ztring::Trim(wchar_t)@Base" 0.4.23
+ (c++)"ZenLib::Ztring::~Ztring()@Base" 0.4.23
+ (optional|c++|regex)"^__gnu_cxx::" 0.4.23
+ (optional|c++|regex)"^std::" 0.4.23
+ (optional|c++|regex)"^(void|ZenLib::ZtringList\*|ZenLib::Ztring\*|bool|wchar_t\*) std::" 0.4.23
+ (optional|c++|regex)"^ZenLib::Ztring::ToZtring" 0.4.23
+ (optional|c++)"ZenLib::Format::Http::Cookie::~Cookie()@Base" 0.4.23
+ (optional|c++)"ZenLib::Ztring::From_Number(unsigned long, unsigned char)@Base" 0.4.23

@@ -14,7 +14,7 @@ set(ZenLib_SOURCES_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../Source)
 
 set(ZenLib_MAJOR_VERSION "0")
 set(ZenLib_MINOR_VERSION "4")
-set(ZenLib_PATCH_VERSION "30")
+set(ZenLib_PATCH_VERSION "33")
 
 set(ZenLib_VERSION_STRING "${ZenLib_MAJOR_VERSION}.${ZenLib_MINOR_VERSION}.${ZenLib_PATCH_VERSION}")
 
@@ -25,10 +25,12 @@ elseif(APPLE)
   set(CMAKE_DEBUG_POSTFIX "_debug")
 endif()
 
+include(GNUInstallDirs)
+
 set(LIB_SUFFIX "" CACHE STRING "Define suffix of directory name (32/64)" )
-set(BIN_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/bin" CACHE STRING "Directory where binary will install")
-set(LIB_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}" CACHE STRING "Directory where library will install")
-set(INCLUDE_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/include" CACHE PATH "The directory the headers are installed in")
+set(BIN_INSTALL_DIR "${CMAKE_INSTALL_FULL_BINDIR}" CACHE STRING "Directory where binary will install")
+set(LIB_INSTALL_DIR "${CMAKE_INSTALL_FULL_LIBDIR}" CACHE STRING "Directory where library will install")
+set(INCLUDE_INSTALL_DIR "${CMAKE_INSTALL_FULL_INCLUDEDIR}" CACHE PATH "The directory the headers are installed in")
 
 if(NOT MSVC)
   set(ZenLib_CONFIG_INSTALL_DIR "${LIB_INSTALL_DIR}/cmake/zenlib")
@@ -96,8 +98,11 @@ set(ZenLib_SRCS
 
 add_library(zen ${ZenLib_SRCS} ${ZenLib_HDRS})
 if(ENABLE_UNICODE)
+  set(ZenLib_Unicode "yes")
   set(ZenLib_CXXFLAGS -DUNICODE)
   target_compile_definitions(zen PUBLIC UNICODE)
+else()
+  set(ZenLib_Unicode "no")
 endif()
 
 try_compile(SIZE_T_IS_NOT_LONG ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/size_t_is_long_check.cpp)

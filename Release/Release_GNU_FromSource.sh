@@ -11,8 +11,8 @@ mkdir ZenLib_GNU_FromSource
 #-----------------------------------------------------------------------
 # Preparing : Project
 cd ../Project/GNU/Library
-chmod u+x autogen
-./autogen
+chmod u+x autogen.sh
+./autogen.sh
 cd ../../../Release
 
 #-----------------------------------------------------------------------
@@ -52,7 +52,7 @@ cp -r ../Source/ZenLib/TinyXml/*.cpp ZenLib_GNU_FromSource/Source/ZenLib/TinyXml
 # Copying : Projects
 mkdir -p ZenLib_GNU_FromSource/Project/GNU/Library
 cp ../Project/GNU/Library/aclocal.m4 ZenLib_GNU_FromSource/Project/GNU/Library/
-cp ../Project/GNU/Library/autogen ZenLib_GNU_FromSource/Project/GNU/Library/
+cp ../Project/GNU/Library/autogen.sh ZenLib_GNU_FromSource/Project/GNU/Library/
 cp ../Project/GNU/Library/config.guess ZenLib_GNU_FromSource/Project/GNU/Library/
 cp ../Project/GNU/Library/config.sub ZenLib_GNU_FromSource/Project/GNU/Library/
 cp ../Project/GNU/Library/configure ZenLib_GNU_FromSource/Project/GNU/Library/

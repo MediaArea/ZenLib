@@ -9,7 +9,7 @@ release=`uname -r`
 
 #Creation of known directories and filenames
 name="libzen0"
-version="0.4.30"
+version="0.4.33"
 Home=`pwd`
 install_prefix=${Home}/mk_package
 packagecreation_prefix=${Home}/create_package
@@ -22,7 +22,7 @@ fi
 
 #Compile and install
 cd ../GNU/Library
-./autogen
+./autogen.sh
 ./configure --prefix=${install_prefix} --enable-shared --disable-static $*
 make
 if test -e .libs/libzen.so; then

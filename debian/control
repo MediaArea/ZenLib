@@ -1,24 +1,62 @@
 Source: libzen
 Priority: optional
 Maintainer: MediaArea.net SARL <info@mediaarea.net>
-Build-Depends: debhelper (>= 5), doxygen, tofrodos, automake, autoconf, libtool
-Standards-Version: 3.7.3
+Build-Depends: debhelper (>= 9),
+               dh-autoreconf,
+               doxygen,
+               tofrodos
+Standards-Version: 3.9.6
 Section: libs
 Homepage: http://mediainfo.sourceforge.net
-Vcs-Svn: https://zenlib.svn.sourceforge.net/svnroot/zenlib/ZenLib/
-Vcs-Browser: http://zenlib.svn.sourceforge.net/viewvc/zenlib/ZenLib/
+Vcs-Git: https://github.com/MediaArea/ZenLib.git
+Vcs-Browser: https://github.com/MediaArea/ZenLib
 
 Package: libzen-dev
 Section: libdevel
 Architecture: any
-Depends: libzen0 (>=0.4.30)
-Description: libmediainfo mandatory library (dev)
- This package includes the development support files
+Pre-Depends: ${misc:Pre-Depends}
+Depends: libzen0 (= ${binary:Version}), ${misc:Depends}
+Description: ZenLib C++ utility library -- development files
+ ZenLib is a C++ utility library. It includes classes for handling strings,
+ configuration, bit streams, threading, translation, and cross-platform
+ operating system functions.
+ .
+ This package contains the headers required for compiling applications/libraries
+ which use this library.
 
 Package: libzen0
-Section: libs
 Architecture: any
-Depends:
-Replaces: libzen0-dev
-Description: libmediainfo mandatory library
- This package includes the shared library
+Multi-Arch: same
+Pre-Depends: ${misc:Pre-Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: ZenLib C++ utility library -- runtime
+ ZenLib is a C++ utility library. It includes classes for handling strings,
+ configuration, bit streams, threading, translation, and cross-platform
+ operating system functions.
+ .
+ This package contains the shared library needed for running applications which
+ use this library.
+
+Package: libzen-doc
+Section: doc
+Architecture: all
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: ZenLib C++ utility library -- documentation
+ ZenLib is a C++ utility library. It includes classes for handling strings,
+ configuration, bit streams, threading, translation, and cross-platform
+ operating system functions.
+ .
+ This package contains the Doxygen generated API reference for developing
+ applications/libraries using this library.
+
+Package: libzen0-dbg
+Architecture: any
+Section: debug
+Priority: extra
+Depends: libzen0 (= ${binary:Version}), ${misc:Depends}
+Description: ZenLib C++ utility library -- debugging symbol
+ ZenLib is a C++ utility library. It includes classes for handling strings,
+ configuration, bit streams, threading, translation, and cross-platform
+ operating system functions.
+ .
+ This package contains the debugging symbols of this library.

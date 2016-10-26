@@ -1,12 +1,12 @@
-#!/bin/bash
+#!/bin/sh
 
 if test "$1" = "CXXFLAGS"; then
 echo @ZenLib_CXXFLAGS@
 fi
-if test "$1" = "LIBS"; then
+if test "$1" = "LIBS" -a -n "@ZenLib_LIBS@"; then
 echo @ZenLib_LIBS@
 fi
-if test "$1" = "LIBS_Static"; then
+if test "$1" = "LIBS_Static" -a -n "@ZenLib_LIBS_Static@"; then
 echo @ZenLib_LIBS_Static@
 fi
 if test "$1" = "Unicode"; then
