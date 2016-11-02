@@ -105,8 +105,10 @@ else()
   set(ZenLib_Unicode "no")
 endif()
 
-try_compile(SIZE_T_IS_NOT_LONG ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/size_t_is_long_check.cpp)
-if(NOT SIZE_T_IS_NOT_LONG)
+include(CheckTypeSize)
+check_type_size(size_t SIZE_T_SIZE)
+check_type_size(long LONG_SIZE)
+if(SIZE_T_SIZE EQUAL LONG_SIZE)
   target_compile_definitions(zen PUBLIC SIZE_T_IS_LONG)
 endif()
 
