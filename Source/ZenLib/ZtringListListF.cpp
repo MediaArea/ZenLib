@@ -147,7 +147,7 @@ bool ZtringListListF::CSV_Charger ()
     //Separators
     if (Separator[0]==__T("(Default)"))
             Separator[0]=EOL;
-    Ztring SeparatorT=Separator[1];
+    const Ztring SeparatorT=Separator[1];
     Separator[1]=__T(";");
 
     //Writing
@@ -183,7 +183,7 @@ bool ZtringListListF::CFG_Charger ()
     Z1.From_UTF8((char*)Buffer, 0, BytesCount);
     List.Write(Z1);
 
-    Ztring SeparatorT=Separator[1];
+    const Ztring SeparatorT=Separator[1];
     Separator[1]=__T(";");
 
     Ztring Propriete, Valeur, Commentaire;
