@@ -367,13 +367,13 @@ public :
 class ZSeparator
 {
    public:
-	    ZSeparator()
-	    {
-		      Max[0] = Max[1] = Error;
-	    }
+    ZSeparator()
+     {
+      Max[0] = Max[1] = Error;
+     }
    protected:
-	    Ztring Separator[2];
-    	Ztring Quote;
+     Ztring Separator[2];
+     Ztring Quote;
      size_t Max[2];
 };
 
