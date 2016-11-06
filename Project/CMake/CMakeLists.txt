@@ -108,7 +108,7 @@ endif()
 include(CheckTypeSize)
 check_type_size(size_t SIZE_T_SIZE)
 check_type_size(long LONG_SIZE)
-if(SIZE_T_SIZE EQUAL LONG_SIZE)
+if((LONG_SIZE GREATER 4) AND (SIZE_T_SIZE EQUAL LONG_SIZE))
   target_compile_definitions(zen PUBLIC SIZE_T_IS_LONG)
 endif()
 
