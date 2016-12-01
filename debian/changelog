@@ -1,6 +1,6 @@
-libzen (0.4.33-1) experimental; urgency=medium
+libzen (0.4.34-1) experimental; urgency=medium
 
-  * Upstream version 0.4.33
+  * Upstream version 0.4.34
     For details, see https://github.com/MediaArea/ZenLib/blob/master/History.txt
 
  -- MediaArea <info@mediaarea.net>  Mon, 02 Nov 2015 10:30:00 +0100
