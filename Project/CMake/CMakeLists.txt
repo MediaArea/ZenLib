@@ -3,7 +3,10 @@ project(ZenLib)
 cmake_minimum_required(VERSION 2.8.11)
 
 # Allow use of the LOCATION target property with CMake version >= 2.8.12
-cmake_policy(SET CMP0026 OLD)
+# Only use cmake policy if the policy is known
+if(POLICY CMP0026)
+  cmake_policy(SET CMP0026 OLD)
+endif()
 
 if(WIN32)
   option(BUILD_SHARED_LIBS "Build shared libs" OFF)
