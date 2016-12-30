@@ -789,6 +789,26 @@ Ztring File::Created_Get()
 }
 
 //---------------------------------------------------------------------------
+#if defined WINDOWS
+static Ztring Calc_Time(const FILETIME& TimeFT)
+{
+    int64u Time64 = 0x100000000ULL * TimeFT.dwHighDateTime + TimeFT.dwLowDateTime;
+    TIME_ZONE_INFORMATION Info;
+    DWORD Result = GetTimeZoneInformation(&Info);
+    if (Result != TIME_ZONE_ID_INVALID)
+    {
+        Time64 -= ((int64s)Info.Bias) * 60 * 1000 * 1000 * 10;
+        if (Result == TIME_ZONE_ID_DAYLIGHT)
+            Time64 -= ((int64s)Info.DaylightBias) * 60 * 1000 * 1000 * 10;
+        else
+            Time64 -= ((int64s)Info.StandardBias) * 60 * 1000 * 1000 * 10;
+    }
+    Ztring Time; Time.Date_From_Milliseconds_1601(Time64 / 10000);
+    Time.FindAndReplace(__T("UTC "), __T(""));
+    return Time;
+}
+#endif
+//---------------------------------------------------------------------------
 Ztring File::Created_Local_Get()
 {
     #ifdef ZENLIB_USEWX
@@ -811,20 +831,7 @@ Ztring File::Created_Local_Get()
             FILETIME TimeFT;
             if (GetFileTime(File_Handle, &TimeFT, NULL, NULL))
             {
-                int64u Time64=0x100000000ULL*TimeFT.dwHighDateTime+TimeFT.dwLowDateTime;
-                TIME_ZONE_INFORMATION Info;
-                DWORD Result=GetTimeZoneInformation(&Info);
-                if (Result!=TIME_ZONE_ID_INVALID)
-                {
-                    Time64-=((int64s)Info.Bias)*60*1000*1000*10;
-                    if (Result==TIME_ZONE_ID_DAYLIGHT)
-                        Time64-=((int64s)Info.DaylightBias)*60*1000*1000*10;
-                    else
-                        Time64-=((int64s)Info.StandardBias)*60*1000*1000*10;
-                }
-                Ztring Time; Time.Date_From_Milliseconds_1601(Time64/10000);
-                Time.FindAndReplace(__T("UTC "), __T(""));
-                return Time;
+                return Calc_Time(TimeFT);
             }
             else
                 return __T(""); //There was a problem
@@ -898,20 +905,7 @@ Ztring File::Modified_Local_Get()
             FILETIME TimeFT;
             if (GetFileTime(File_Handle, NULL, NULL, &TimeFT))
             {
-                int64u Time64=0x100000000ULL*TimeFT.dwHighDateTime+TimeFT.dwLowDateTime; //100-ns
-                TIME_ZONE_INFORMATION Info;
-                DWORD Result=GetTimeZoneInformation(&Info);
-                if (Result!=TIME_ZONE_ID_INVALID)
-                {
-                    Time64-=((int64s)Info.Bias)*60*1000*1000*10;
-                    if (Result==TIME_ZONE_ID_DAYLIGHT)
-                        Time64-=((int64s)Info.DaylightBias)*60*1000*1000*10;
-                    else
-                        Time64-=((int64s)Info.StandardBias)*60*1000*1000*10;
-                }
-                Ztring Time; Time.Date_From_Milliseconds_1601(Time64/10000);
-                Time.FindAndReplace(__T("UTC "), __T(""));
-                return Time;
+                return Calc_Time(TimeFT);
             }
             else
                 return __T(""); //There was a problem
