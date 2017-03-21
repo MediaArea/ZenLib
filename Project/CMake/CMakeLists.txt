@@ -15,6 +15,7 @@ else()
 endif()
 
 option(ENABLE_UNICODE "Enable unicode support" ON)
+option(LARGE_FILES "Enable large files support" ON)
 
 set(ZenLib_SOURCES_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../Source)
 
@@ -109,6 +110,10 @@ if(ENABLE_UNICODE)
   target_compile_definitions(zen PUBLIC UNICODE)
 else()
   set(ZenLib_Unicode "no")
+endif()
+
+if(LARGE_FILES)
+  target_compile_definitions(zen PUBLIC _LARGE_FILES _FILE_OFFSET_BITS=64)
 endif()
 
 include(CheckTypeSize)
