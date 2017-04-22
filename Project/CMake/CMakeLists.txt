@@ -43,7 +43,7 @@ set(INCLUDE_INSTALL_DIR "${CMAKE_INSTALL_FULL_INCLUDEDIR}" CACHE PATH "The direc
 if(NOT MSVC)
   set(ZenLib_CONFIG_INSTALL_DIR "${LIB_INSTALL_DIR}/cmake/zenlib")
 else()
-  set(ZenLib_CONFIG_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/cmake/")
+  set(ZenLib_CONFIG_INSTALL_DIR "cmake")
 endif()
 
 set(ZenLib_HDRS
