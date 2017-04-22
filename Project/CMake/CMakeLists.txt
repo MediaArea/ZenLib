@@ -1,6 +1,6 @@
-cmake_minimum_required(VERSION 2.8.11)
+cmake_minimum_required(VERSION 3.0)
 
-project(ZenLib)
+project(ZenLib VERSION 0.4.35)
 
 if(WIN32)
   option(BUILD_SHARED_LIBS "Build shared libs" OFF)
@@ -13,12 +13,6 @@ option(LARGE_FILES "Enable large files support" ON)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/Modules/")
 set(ZenLib_SOURCES_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../Source)
-
-set(ZenLib_MAJOR_VERSION "0")
-set(ZenLib_MINOR_VERSION "4")
-set(ZenLib_PATCH_VERSION "35")
-
-set(ZenLib_VERSION_STRING "${ZenLib_MAJOR_VERSION}.${ZenLib_MINOR_VERSION}.${ZenLib_PATCH_VERSION}")
 
 # On Windows debug library should have 'd' postfix.
 if(WIN32)
@@ -124,8 +118,8 @@ target_include_directories(zen INTERFACE ${INCLUDE_INSTALL_DIR})
 target_include_directories(zen PRIVATE ${ZenLib_SOURCES_PATH})
 
 set_target_properties(zen PROPERTIES
-  VERSION ${ZenLib_MAJOR_VERSION}.${ZenLib_MINOR_VERSION}.${ZenLib_PATCH_VERSION}
-  SOVERSION ${ZenLib_MAJOR_VERSION}
+  VERSION ${ZenLib_VERSION}}
+  SOVERSION ${ZenLib_VERSION_MAJOR}
   )
 
 if(MSVC)
@@ -161,7 +155,7 @@ configure_package_config_file(
   INSTALL_DESTINATION ${ZenLib_CONFIG_INSTALL_DIR}
   PATH_VARS INCLUDE_INSTALL_DIR)
 
-write_basic_config_version_file(ZenLibConfigVersion.cmake VERSION ${ZenLib_VERSION_STRING} COMPATIBILITY AnyNewerVersion)
+write_basic_config_version_file(ZenLibConfigVersion.cmake COMPATIBILITY AnyNewerVersion)
 
 install(FILES
   ${CMAKE_CURRENT_BINARY_DIR}/ZenLibConfig.cmake
