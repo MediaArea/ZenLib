@@ -4,4 +4,12 @@ if(NOT TARGET zen)
   include(${CMAKE_CURRENT_LIST_DIR}/ZenLibTargets.cmake)
 endif()
 
+set_and_check(ZenLib_INCLUDE_DIR "@PACKAGE_INCLUDE_INSTALL_DIR@")
 set(ZenLib_LIBRARY zen)
+
+include(FindPackageHandleStandardArgs)
+find_package_handle_standard_args(ZenLib DEFAULT_MSG ZenLib_INCLUDE_DIR ZenLib_LIBRARY)
+mark_as_advanced(ZenLib_INCLUDE_DIR ZenLib_LIBRARY)
+
+set(ZenLib_INCLUDE_DIRS ${ZenLib_INCLUDE_DIR})
+set(ZenLib_LIBRARIES ${ZenLib_LIBRARY})

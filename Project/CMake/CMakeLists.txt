@@ -2,12 +2,6 @@ project(ZenLib)
 
 cmake_minimum_required(VERSION 2.8.11)
 
-# Allow use of the LOCATION target property with CMake version >= 2.8.12
-# Only use cmake policy if the policy is known
-if(POLICY CMP0026)
-  cmake_policy(SET CMP0026 OLD)
-endif()
-
 if(WIN32)
   option(BUILD_SHARED_LIBS "Build shared libs" OFF)
 else()
@@ -143,13 +137,7 @@ install(TARGETS zen EXPORT zen-export
   ARCHIVE DESTINATION ${LIB_INSTALL_DIR}
   LIBRARY DESTINATION ${LIB_INSTALL_DIR})
 
-install(EXPORT zen-export DESTINATION ${ZenLib_CONFIG_INSTALL_DIR} FILE ZenLibTargets.cmake)
-
-foreach(HEADER ${ZenLib_HDRS})
-  string(REPLACE ${ZenLib_SOURCES_PATH} "" DIR ${HEADER})
-  string(REGEX REPLACE "/[^/]*$" "" DIR ${DIR})
-  install(FILES ${HEADER} DESTINATION include/${DIR})
-endforeach()
+install(EXPORT zen-export NAMESPACE ZenLib:: DESTINATION ${ZenLib_CONFIG_INSTALL_DIR} FILE ZenLibTargets.cmake)
 
 configure_file(
   "${CMAKE_CURRENT_SOURCE_DIR}/cmake_uninstall.cmake.in"
@@ -171,9 +159,7 @@ configure_package_config_file(
   ZenLibConfig.cmake.in
   "${CMAKE_CURRENT_BINARY_DIR}/ZenLibConfig.cmake"
   INSTALL_DESTINATION ${ZenLib_CONFIG_INSTALL_DIR}
-  PATH_VARS BIN_INSTALL_DIR
-            LIB_INSTALL_DIR
-            INCLUDE_INSTALL_DIR)
+  PATH_VARS INCLUDE_INSTALL_DIR)
 
 write_basic_config_version_file(ZenLibConfigVersion.cmake VERSION ${ZenLib_VERSION_STRING} COMPATIBILITY AnyNewerVersion)
 
