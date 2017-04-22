@@ -135,13 +135,7 @@ set_target_properties(zen PROPERTIES
   )
 
 if(MSVC)
-  get_target_property(LOCATION zen LOCATION_DEBUG)
-  string(REGEX REPLACE "\\.[^.]*$" ".pdb" LOCATION "${LOCATION}")
-  install(FILES ${LOCATION} DESTINATION ${BIN_INSTALL_DIR} CONFIGURATIONS Debug)
-
-  get_target_property(LOCATION zen LOCATION_RELWITHDEBINFO)
-  string(REGEX REPLACE "\\.[^.]*$" ".pdb" LOCATION "${LOCATION}")
-  install(FILES ${LOCATION} DESTINATION ${BIN_INSTALL_DIR} CONFIGURATIONS RelWithDebInfo)
+  install(FILES $<TARGET_PDB_FILE:zen> DESTINATION ${BIN_INSTALL_DIR} CONFIGURATIONS "Debug;RelWithDebInfo" OPTIONAL)
 endif()
 
 install(TARGETS zen EXPORT zen-export
