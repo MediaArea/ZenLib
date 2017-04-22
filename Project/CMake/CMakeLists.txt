@@ -114,8 +114,9 @@ if((LONG_SIZE GREATER 4) AND (SIZE_T_SIZE EQUAL LONG_SIZE))
   target_compile_definitions(zen PUBLIC SIZE_T_IS_LONG)
 endif()
 
-target_include_directories(zen INTERFACE ${INCLUDE_INSTALL_DIR})
-target_include_directories(zen PRIVATE ${ZenLib_SOURCES_PATH})
+target_include_directories(zen PUBLIC
+  $<BUILD_INTERFACE:${ZenLib_SOURCES_PATH}>
+  $<INSTALL_INTERFACE:${INCLUDE_INSTALL_DIR}>)
 
 set_target_properties(zen PROPERTIES
   VERSION ${ZenLib_VERSION}}
