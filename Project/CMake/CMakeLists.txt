@@ -17,6 +17,7 @@ endif()
 option(ENABLE_UNICODE "Enable unicode support" ON)
 option(LARGE_FILES "Enable large files support" ON)
 
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/Modules/")
 set(ZenLib_SOURCES_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../Source)
 
 set(ZenLib_MAJOR_VERSION "0")
@@ -113,7 +114,10 @@ else()
 endif()
 
 if(LARGE_FILES)
-  target_compile_definitions(zen PUBLIC _LARGE_FILES _FILE_OFFSET_BITS=64)
+  include(TestLargeFiles)
+
+  test_large_files(_LARGEFILES)
+  target_compile_definitions(zen PUBLIC ${LARGE_FILES_DEFINITIONS})
 endif()
 
 include(CheckTypeSize)
