@@ -1,6 +1,6 @@
 %define libzen_version            0.4.35
 
-%if 0%{?fedora} || 0%{?centos_version} >= 600 || 0%{?rhel_version} >= 600
+%if 0%{?fedora_version} || 0%{?centos_version} >= 600 || 0%{?rhel_version} >= 600
 %define package_with_0_ending 0
 %define libzen_name libzen
 %else
@@ -99,7 +99,11 @@ popd
 cp Source/Doc/*.html ./
 
 pushd Project/GNU/Library
-    %configure --disable-static --enable-shared
+    %if 0%{?mageia} > 5
+        %configure --disable-static --enable-shared --disable-dependency-tracking
+    %else
+        %configure --disable-static --enable-shared
+    %endif
 
     make clean
     make %{?_smp_mflags}
@@ -127,7 +131,7 @@ done
 %files
 %defattr(-,root,root,-)
 %doc History.txt ReadMe.txt
-%if 0%{?fedora} || 0%{?centos_version} >= 700 || 0%{?rhel_version} >= 700
+%if 0%{?fedora_version} || 0%{?centos_version} >= 700 || 0%{?rhel_version} >= 700
 %license License.txt
 %else
 %doc License.txt
