@@ -306,6 +306,11 @@ bool File::Open (const tstring &File_Name_, access_t Access)
             ZENLIB_DEBUG2(      "File Open",
                                 Debug+=", returns 1";)
 
+            if (Access==Access_Write_Append)
+                Size_Get();
+            else
+                Position=0;
+
             return true;
         #endif
     #endif //ZENLIB_USEWX
