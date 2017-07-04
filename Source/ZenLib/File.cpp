@@ -45,7 +45,6 @@
 #endif //ZENLIB_USEWX
 #include "ZenLib/File.h"
 #include "ZenLib/OS_Utils.h"
-#include <map>
 //---------------------------------------------------------------------------
 
 namespace ZenLib
