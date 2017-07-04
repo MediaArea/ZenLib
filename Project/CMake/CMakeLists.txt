@@ -1,12 +1,6 @@
-project(ZenLib)
+cmake_minimum_required(VERSION 3.0)
 
-cmake_minimum_required(VERSION 2.8.11)
-
-# Allow use of the LOCATION target property with CMake version >= 2.8.12
-# Only use cmake policy if the policy is known
-if(POLICY CMP0026)
-  cmake_policy(SET CMP0026 OLD)
-endif()
+project(ZenLib VERSION 0.4.35)
 
 if(WIN32)
   option(BUILD_SHARED_LIBS "Build shared libs" OFF)
@@ -17,13 +11,8 @@ endif()
 option(ENABLE_UNICODE "Enable unicode support" ON)
 option(LARGE_FILES "Enable large files support" ON)
 
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/Modules/")
 set(ZenLib_SOURCES_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../Source)
-
-set(ZenLib_MAJOR_VERSION "0")
-set(ZenLib_MINOR_VERSION "4")
-set(ZenLib_PATCH_VERSION "35")
-
-set(ZenLib_VERSION_STRING "${ZenLib_MAJOR_VERSION}.${ZenLib_MINOR_VERSION}.${ZenLib_PATCH_VERSION}")
 
 # On Windows debug library should have 'd' postfix.
 if(WIN32)
@@ -42,7 +31,7 @@ set(INCLUDE_INSTALL_DIR "${CMAKE_INSTALL_FULL_INCLUDEDIR}" CACHE PATH "The direc
 if(NOT MSVC)
   set(ZenLib_CONFIG_INSTALL_DIR "${LIB_INSTALL_DIR}/cmake/zenlib")
 else()
-  set(ZenLib_CONFIG_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/cmake/")
+  set(ZenLib_CONFIG_INSTALL_DIR "cmake")
 endif()
 
 set(ZenLib_HDRS
@@ -106,14 +95,16 @@ set(ZenLib_SRCS
 add_library(zen ${ZenLib_SRCS} ${ZenLib_HDRS})
 if(ENABLE_UNICODE)
   set(ZenLib_Unicode "yes")
-  set(ZenLib_CXXFLAGS -DUNICODE)
-  target_compile_definitions(zen PUBLIC UNICODE)
+  target_compile_definitions(zen PUBLIC UNICODE _UNICODE)
 else()
   set(ZenLib_Unicode "no")
 endif()
 
 if(LARGE_FILES)
-  target_compile_definitions(zen PUBLIC _LARGE_FILES _FILE_OFFSET_BITS=64)
+  include(TestLargeFiles)
+
+  test_large_files(_LARGEFILES)
+  target_compile_definitions(zen PUBLIC ${LARGE_FILES_DEFINITIONS})
 endif()
 
 include(CheckTypeSize)
@@ -123,22 +114,17 @@ if((LONG_SIZE GREATER 4) AND (SIZE_T_SIZE EQUAL LONG_SIZE))
   target_compile_definitions(zen PUBLIC SIZE_T_IS_LONG)
 endif()
 
-target_include_directories(zen INTERFACE ${INCLUDE_INSTALL_DIR})
-target_include_directories(zen PRIVATE ${ZenLib_SOURCES_PATH})
+target_include_directories(zen PUBLIC
+  $<BUILD_INTERFACE:${ZenLib_SOURCES_PATH}>
+  $<INSTALL_INTERFACE:${INCLUDE_INSTALL_DIR}>)
 
 set_target_properties(zen PROPERTIES
-  VERSION ${ZenLib_MAJOR_VERSION}.${ZenLib_MINOR_VERSION}.${ZenLib_PATCH_VERSION}
-  SOVERSION ${ZenLib_MAJOR_VERSION}
+  VERSION ${ZenLib_VERSION}}
+  SOVERSION ${ZenLib_VERSION_MAJOR}
   )
 
 if(MSVC)
-  get_target_property(LOCATION zen LOCATION_DEBUG)
-  string(REGEX REPLACE "\\.[^.]*$" ".pdb" LOCATION "${LOCATION}")
-  install(FILES ${LOCATION} DESTINATION ${BIN_INSTALL_DIR} CONFIGURATIONS Debug)
-
-  get_target_property(LOCATION zen LOCATION_RELWITHDEBINFO)
-  string(REGEX REPLACE "\\.[^.]*$" ".pdb" LOCATION "${LOCATION}")
-  install(FILES ${LOCATION} DESTINATION ${BIN_INSTALL_DIR} CONFIGURATIONS RelWithDebInfo)
+  install(FILES $<TARGET_PDB_FILE:zen> DESTINATION ${BIN_INSTALL_DIR} CONFIGURATIONS "Debug;RelWithDebInfo" OPTIONAL)
 endif()
 
 install(TARGETS zen EXPORT zen-export
@@ -146,13 +132,7 @@ install(TARGETS zen EXPORT zen-export
   ARCHIVE DESTINATION ${LIB_INSTALL_DIR}
   LIBRARY DESTINATION ${LIB_INSTALL_DIR})
 
-install(EXPORT zen-export DESTINATION ${ZenLib_CONFIG_INSTALL_DIR} FILE ZenLibTargets.cmake)
-
-foreach(HEADER ${ZenLib_HDRS})
-  string(REPLACE ${ZenLib_SOURCES_PATH} "" DIR ${HEADER})
-  string(REGEX REPLACE "/[^/]*$" "" DIR ${DIR})
-  install(FILES ${HEADER} DESTINATION include/${DIR})
-endforeach()
+install(EXPORT zen-export NAMESPACE ZenLib:: DESTINATION ${ZenLib_CONFIG_INSTALL_DIR} FILE ZenLibTargets.cmake)
 
 configure_file(
   "${CMAKE_CURRENT_SOURCE_DIR}/cmake_uninstall.cmake.in"
@@ -174,11 +154,9 @@ configure_package_config_file(
   ZenLibConfig.cmake.in
   "${CMAKE_CURRENT_BINARY_DIR}/ZenLibConfig.cmake"
   INSTALL_DESTINATION ${ZenLib_CONFIG_INSTALL_DIR}
-  PATH_VARS BIN_INSTALL_DIR
-            LIB_INSTALL_DIR
-            INCLUDE_INSTALL_DIR)
+  PATH_VARS INCLUDE_INSTALL_DIR)
 
-write_basic_config_version_file(ZenLibConfigVersion.cmake VERSION ${ZenLib_VERSION_STRING} COMPATIBILITY AnyNewerVersion)
+write_basic_config_version_file(ZenLibConfigVersion.cmake COMPATIBILITY AnyNewerVersion)
 
 install(FILES
   ${CMAKE_CURRENT_BINARY_DIR}/ZenLibConfig.cmake
