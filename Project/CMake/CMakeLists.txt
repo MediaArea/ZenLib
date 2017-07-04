@@ -44,12 +44,6 @@ set(ZenLib_HDRS
   ${ZenLib_SOURCES_PATH}/ZenLib/Dir.h
   ${ZenLib_SOURCES_PATH}/ZenLib/File.h
   ${ZenLib_SOURCES_PATH}/ZenLib/FileName.h
-  ${ZenLib_SOURCES_PATH}/ZenLib/Format/Html/Html_Handler.h
-  ${ZenLib_SOURCES_PATH}/ZenLib/Format/Html/Html_Request.h
-  ${ZenLib_SOURCES_PATH}/ZenLib/Format/Http/Http_Cookies.h
-  ${ZenLib_SOURCES_PATH}/ZenLib/Format/Http/Http_Handler.h
-  ${ZenLib_SOURCES_PATH}/ZenLib/Format/Http/Http_Request.h
-  ${ZenLib_SOURCES_PATH}/ZenLib/Format/Http/Http_Utils.h
   ${ZenLib_SOURCES_PATH}/ZenLib/InfoMap.h
   ${ZenLib_SOURCES_PATH}/ZenLib/MemoryDebug.h
   ${ZenLib_SOURCES_PATH}/ZenLib/OS_Utils.h
@@ -64,6 +58,18 @@ set(ZenLib_HDRS
   ${ZenLib_SOURCES_PATH}/ZenLib/ZtringListListF.h
   ${ZenLib_SOURCES_PATH}/ZenLib/int128s.h
   ${ZenLib_SOURCES_PATH}/ZenLib/int128u.h
+  )
+
+set(ZenLib_format_html_HDRS
+  ${ZenLib_SOURCES_PATH}/ZenLib/Format/Html/Html_Handler.h
+  ${ZenLib_SOURCES_PATH}/ZenLib/Format/Html/Html_Request.h
+  )
+
+set(ZenLib_format_http_HDRS
+  ${ZenLib_SOURCES_PATH}/ZenLib/Format/Http/Http_Cookies.h
+  ${ZenLib_SOURCES_PATH}/ZenLib/Format/Http/Http_Handler.h
+  ${ZenLib_SOURCES_PATH}/ZenLib/Format/Http/Http_Request.h
+  ${ZenLib_SOURCES_PATH}/ZenLib/Format/Http/Http_Utils.h
   )
 
 set(ZenLib_SRCS
@@ -92,7 +98,7 @@ set(ZenLib_SRCS
   ${ZenLib_SOURCES_PATH}/ZenLib/Format/Http/Http_Utils.cpp
   )
 
-add_library(zen ${ZenLib_SRCS} ${ZenLib_HDRS})
+add_library(zen ${ZenLib_SRCS} ${ZenLib_HDRS} ${ZenLib_format_html_HDRS} ${ZenLib_format_http_HDRS})
 if(ENABLE_UNICODE)
   set(ZenLib_Unicode "yes")
   target_compile_definitions(zen PUBLIC UNICODE _UNICODE)
@@ -133,6 +139,9 @@ install(TARGETS zen EXPORT zen-export
   RUNTIME DESTINATION ${BIN_INSTALL_DIR}
   ARCHIVE DESTINATION ${LIB_INSTALL_DIR}
   LIBRARY DESTINATION ${LIB_INSTALL_DIR})
+
+install(FILES ${ZenLib_format_html_HDRS} DESTINATION ${INCLUDE_INSTALL_DIR}/ZenLib/Format/Html)
+install(FILES ${ZenLib_format_http_HDRS} DESTINATION ${INCLUDE_INSTALL_DIR}/ZenLib/Format/Http)
 
 install(EXPORT zen-export NAMESPACE ZenLib:: DESTINATION ${ZenLib_CONFIG_INSTALL_DIR} FILE ZenLibTargets.cmake)
 
