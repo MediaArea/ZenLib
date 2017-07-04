@@ -140,7 +140,8 @@ configure_file(
   IMMEDIATE @ONLY)
 
 # pkg-config
-if(NOT WIN32)
+find_package(PkgConfig)
+if(PKG_CONFIG_FOUND)
   configure_file(${CMAKE_CURRENT_SOURCE_DIR}/libzen.pc.in
                  ${CMAKE_CURRENT_BINARY_DIR}/libzen.pc
                  @ONLY)
