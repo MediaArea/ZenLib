@@ -5,7 +5,8 @@ Build-Depends: debhelper (>= 9),
                cmake,
                dh-exec,
                doxygen,
-               tofrodos
+               tofrodos,
+               pkg-config
 Standards-Version: 3.9.6
 Section: libs
 Homepage: http://zenlib.sf.net
