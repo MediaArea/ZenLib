@@ -95,6 +95,7 @@ set(ZenLib_SRCS
 add_library(zen ${ZenLib_SRCS} ${ZenLib_HDRS})
 if(ENABLE_UNICODE)
   set(ZenLib_Unicode "yes")
+  set(ZenLib_CXXFLAGS -DUNICODE) # For pkg-config template
   target_compile_definitions(zen PUBLIC UNICODE _UNICODE)
 else()
   set(ZenLib_Unicode "no")
@@ -119,7 +120,7 @@ target_include_directories(zen PUBLIC
   $<INSTALL_INTERFACE:${INCLUDE_INSTALL_DIR}>)
 
 set_target_properties(zen PROPERTIES
-  VERSION ${ZenLib_VERSION}}
+  VERSION ${ZenLib_VERSION}
   SOVERSION ${ZenLib_VERSION_MAJOR}
   PUBLIC_HEADER "${ZenLib_HDRS}"
   )
