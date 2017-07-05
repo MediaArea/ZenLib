@@ -8,7 +8,7 @@ Homepage: http://mediainfo.sourceforge.net
 Standards-Version: 3.9.6
 Vcs-Browser: https://github.com/MediaArea/ZenLib
 Vcs-Git: https://github.com/MediaArea/ZenLib.git
-Build-Depends: debhelper (>= 9), cmake, dh-exec, doxygen, tofrodos
+Build-Depends: debhelper (>= 9), cmake, dh-exec, doxygen, tofrodos, pkg-config
 Package-List:
  libzen-dev deb libdevel optional arch=any
  libzen-doc deb doc optional arch=all
