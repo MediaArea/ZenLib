@@ -3,7 +3,7 @@
 # Contributor: hydro <hydro@freenet.de>
 
 pkgname=libzen
-pkgver=0.4.35
+pkgver=0.4.36
 pkgrel=1
 pkgdesc="shared library for libmediainfo and mediainfo"
 arch=('i686' 'x86_64')
