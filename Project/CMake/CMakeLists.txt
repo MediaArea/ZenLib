@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.0)
 
-project(ZenLib VERSION 0.4.35)
+project(ZenLib VERSION 0.4.36)
 
 if(WIN32)
   option(BUILD_SHARED_LIBS "Build shared libs" OFF)
