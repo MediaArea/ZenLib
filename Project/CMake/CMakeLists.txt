@@ -1,6 +1,11 @@
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 2.8.11)
 
-project(ZenLib VERSION 0.4.36)
+project(ZenLib)
+
+set(ZenLib_MAJOR_VERSION 0)
+set(ZenLib_MINOR_VERSION 4)
+set(ZenLib_PATCH_VERSION 36)
+set(ZenLib_VERSION ${ZenLib_MAJOR_VERSION}.${ZenLib_MINOR_VERSION}.${ZenLib_PATCH_VERSION})
 
 if(WIN32)
   option(BUILD_SHARED_LIBS "Build shared libs" OFF)
@@ -127,7 +132,7 @@ target_include_directories(zen PUBLIC
 
 set_target_properties(zen PROPERTIES
   VERSION ${ZenLib_VERSION}
-  SOVERSION ${ZenLib_VERSION_MAJOR}
+  SOVERSION ${ZenLib_MAJOR_VERSION}
   PUBLIC_HEADER "${ZenLib_HDRS}"
   )
 
@@ -169,7 +174,7 @@ configure_package_config_file(
   INSTALL_DESTINATION ${ZenLib_CONFIG_INSTALL_DIR}
   PATH_VARS INCLUDE_INSTALL_DIR)
 
-write_basic_config_version_file(ZenLibConfigVersion.cmake COMPATIBILITY AnyNewerVersion)
+write_basic_config_version_file(ZenLibConfigVersion.cmake VERSION ${ZenLib_VERSION} COMPATIBILITY AnyNewerVersion)
 
 install(FILES
   ${CMAKE_CURRENT_BINARY_DIR}/ZenLibConfig.cmake
