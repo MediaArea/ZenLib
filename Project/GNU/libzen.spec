@@ -1,4 +1,4 @@
-%define libzen_version            0.4.36
+%define libzen_version            0.4.37
 
 %if 0%{?fedora_version} || 0%{?centos_version} >= 600 || 0%{?rhel_version} >= 600
 %define package_with_0_ending 0
@@ -156,7 +156,7 @@ done
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
-* Thu Jan 01 2009 MediaArea.net SARL <info@mediaarea.net> - 0.4.36-0
+* Thu Jan 01 2009 MediaArea.net SARL <info@mediaarea.net> - 0.4.37-0
 - See History.txt for more info and real dates
 - Previous packages made by Toni Graffy <toni@links2linux.de>
 - Fedora style made by Vasiliy N. Glazov <vascom2@gmail.com>
