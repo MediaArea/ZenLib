@@ -131,6 +131,8 @@ ZtringListList &ZtringListList::operator+= (const ZtringListList &Source)
 // Operator =
 ZtringListList &ZtringListList::operator= (const ZtringListList &Source)
 {
+    if (this == &Source)
+        return *this;
     clear();
 
     reserve(Source.size());
