@@ -1,19 +1,19 @@
-%define libzen_version            0.4.37
-%define libzen_version_major      0
-%define libzen_version_minor      4
-%define libzen_version_release    37
+%global libzen_version            0.4.37
+%global libzen_version_major      0
+%global libzen_version_minor      4
+%global libzen_version_release    37
 
 %if 0%{?fedora_version} || 0%{?centos_version} >= 600 || 0%{?rhel_version} >= 600
-%define package_with_0_ending 0
-%define libzen_name libzen
+%global package_with_0_ending 0
+%global libzen_name libzen
 %else
-%define package_with_0_ending 1
-%define libzen_name libzen0
+%global package_with_0_ending 1
+%global libzen_name libzen0
 %endif
 
-%define name_without_0_ending libzen
+%global name_without_0_ending libzen
 
-%define libzen_suffix %{libzen_version_major}%{libzen_version_minor}%{libzen_version_release}
+%global libzen_suffix %{libzen_version_major}%{libzen_version_minor}%{libzen_version_release}
 
 Name:           %{libzen_name}
 Version:        %{libzen_version}
@@ -46,7 +46,7 @@ BuildRequires:  autoconf
 Summary:        C++ utility library -- slot version
 %endif
 
-%define libzen_description ZenLib is a C++ utility library. It includes classes for handling strings,\
+%global libzen_description ZenLib is a C++ utility library. It includes classes for handling strings,\
 configuration, bit streams, threading, translation, and cross-platform\
 operating system functions.\
 \
@@ -77,7 +77,7 @@ Requires:       %{libzen_name}%{libzen_suffix} = %{version}
 BuildArch:      noarch
 %endif
 
-%define doc_description ZenLib is a C++ utility library. It includes classes for handling strings, \
+%global doc_description ZenLib is a C++ utility library. It includes classes for handling strings, \
 configuration, bit streams, threading, translation, and cross-platform \
 operating system functions. \
 \
@@ -105,7 +105,7 @@ Requires:       %{libzen_name}%{libzen_suffix}%{?_isa} = %{version}
 Requires:       glibc-devel
 %endif
 
-%define devel_description ZenLib is a C++ utility library. It includes classes for handling strings,\
+%global devel_description ZenLib is a C++ utility library. It includes classes for handling strings,\
 configuration, bit streams, threading, translation, and cross-platform\
 operating system functions.\
 \
@@ -176,7 +176,7 @@ done
 
 %postun -p /sbin/ldconfig
 
-%define libzen_files %defattr(-,root,root,-)\
+%global libzen_files %defattr(-,root,root,-)\
 %doc History.txt ReadMe.txt\
 %if 0%{?fedora_version} || 0%{?centos_version} >= 700 || 0%{?rhel_version} >= 700\
 %license License.txt\
@@ -198,7 +198,7 @@ done
 %{libzen_files}
 %endif
 
-%define doc_files %defattr(-,root,root,-)\
+%global doc_files %defattr(-,root,root,-)\
 %doc Documentation.html\
 %doc Doc
 
@@ -210,7 +210,7 @@ done
 %{doc_files}
 %endif
 
-%define devel_files %defattr(-,root,root,-)\
+%global devel_files %defattr(-,root,root,-)\
 %{_includedir}/ZenLib\
 %{_libdir}/%{name_without_0_ending}.so\
 %{_libdir}/%{name_without_0_ending}.la\
