@@ -1,14 +1,19 @@
-%define libzen_version            0.4.37
+%global libzen_version            0.4.37
+%global libzen_version_major      0
+%global libzen_version_minor      4
+%global libzen_version_release    37
 
 %if 0%{?fedora_version} || 0%{?centos_version} >= 600 || 0%{?rhel_version} >= 600
-%define package_with_0_ending 0
-%define libzen_name libzen
+%global package_with_0_ending 0
+%global libzen_name libzen
 %else
-%define package_with_0_ending 1
-%define libzen_name libzen0
+%global package_with_0_ending 1
+%global libzen_name libzen0
 %endif
 
-%define name_without_0_ending libzen
+%global name_without_0_ending libzen
+
+%global libzen_suffix %{libzen_version_major}%{libzen_version_minor}%{libzen_version_release}
 
 Name:           %{libzen_name}
 Version:        %{libzen_version}
@@ -36,13 +41,25 @@ BuildRequires:  libtool
 BuildRequires:  automake
 BuildRequires:  autoconf
 
-%description
-ZenLib is a C++ utility library. It includes classes for handling strings,
-configuration, bit streams, threading, translation, and cross-platform
-operating system functions.
+%if 0%{?rhel}
+%package        -n %{libzen_name}%{libzen_suffix}
+Summary:        C++ utility library -- slot version
+%endif
 
-This package contains the headers required for compiling applications/libraries
+%global libzen_description ZenLib is a C++ utility library. It includes classes for handling strings,\
+configuration, bit streams, threading, translation, and cross-platform\
+operating system functions.\
+\
+This package contains the headers required for compiling applications/libraries\
 which use this library.
+
+%description
+%{libzen_description}
+
+%if 0%{?rhel}
+%description -n %{libzen_name}%{libzen_suffix}
+%{libzen_description}
+%endif
 
 %package        -n %{name_without_0_ending}-doc
 Summary:        C++ utility library -- documentation
@@ -52,12 +69,27 @@ Requires:       %{name} = %{version}
 BuildArch:      noarch
 %endif
 
-%description    -n %{name_without_0_ending}-doc
-ZenLib is a C++ utility library. It includes classes for handling strings,
-configuration, bit streams, threading, translation, and cross-platform
-operating system functions.
+%if 0%{?rhel}
+%package        -n %{name_without_0_ending}%{libzen_suffix}-doc
+Summary:        C++ utility library -- documentation
+Group:          Development/Libraries
+Requires:       %{libzen_name}%{libzen_suffix} = %{version}
+BuildArch:      noarch
+%endif
 
+%global doc_description ZenLib is a C++ utility library. It includes classes for handling strings, \
+configuration, bit streams, threading, translation, and cross-platform \
+operating system functions. \
+\
 This package contains the documentation
+
+%description    -n %{name_without_0_ending}-doc
+%{doc_description}
+
+%if 0%{?rhel}
+%description    -n %{name_without_0_ending}%{libzen_suffix}-doc
+%{doc_description}
+%endif
 
 %package        -n %{name_without_0_ending}-devel
 Summary:        C++ utility library -- development
@@ -65,13 +97,28 @@ Group:          Development/Libraries
 Requires:       %{name}%{?_isa} = %{version}
 Requires:       glibc-devel
 
-%description    -n %{name_without_0_ending}-devel
-ZenLib is a C++ utility library. It includes classes for handling strings,
-configuration, bit streams, threading, translation, and cross-platform
-operating system functions.
+%if 0%{?rhel}
+%package        -n %{name_without_0_ending}%{libzen_suffix}-devel
+Summary:        C++ utility library -- development
+Group:          Development/Libraries
+Requires:       %{libzen_name}%{libzen_suffix}%{?_isa} = %{version}
+Requires:       glibc-devel
+%endif
 
-This package contains the include files and mandatory libraries
+%global devel_description ZenLib is a C++ utility library. It includes classes for handling strings,\
+configuration, bit streams, threading, translation, and cross-platform\
+operating system functions.\
+\
+This package contains the include files and mandatory libraries\
 for development.
+
+%description    -n %{name_without_0_ending}-devel
+%{devel_description}
+
+%if 0%{?rhel}
+%description    -n %{name_without_0_ending}%{libzen_suffix}-devel
+%{devel_description}
+%endif
 
 %prep
 %setup -q -n ZenLib
@@ -129,32 +176,53 @@ done
 
 %postun -p /sbin/ldconfig
 
-%files
-%defattr(-,root,root,-)
-%doc History.txt ReadMe.txt
-%if 0%{?fedora_version} || 0%{?centos_version} >= 700 || 0%{?rhel_version} >= 700
-%license License.txt
-%else
-%doc License.txt
-%endif
+%global libzen_files %defattr(-,root,root,-)\
+%doc History.txt ReadMe.txt\
+%if 0%{?fedora_version} || 0%{?centos_version} >= 700 || 0%{?rhel_version} >= 700\
+%license License.txt\
+%else\
+%doc License.txt\
+%endif\
 %{_libdir}/%{name_without_0_ending}.so.*
+
+%files
+%{libzen_files}
 
 %if 0%{?rhel} == 5
 %exclude %{_usr}/lib/debug
 %exclude %{_usr}/src/debug
 %endif
 
-%files -n %{name_without_0_ending}-doc
-%defattr(-,root,root,-)
-%doc Documentation.html
+%%if 0%{?rhel}
+%files -n %{libzen_name}%{libzen_suffix}
+%{libzen_files}
+%endif
+
+%global doc_files %defattr(-,root,root,-)\
+%doc Documentation.html\
 %doc Doc
 
-%files -n %{name_without_0_ending}-devel
-%defattr(-,root,root,-)
-%{_includedir}/ZenLib
-%{_libdir}/%{name_without_0_ending}.so
-%{_libdir}/%{name_without_0_ending}.la
+%files -n %{name_without_0_ending}-doc
+%{doc_files}
+
+%if 0%{?rhel}
+%files -n %{name_without_0_ending}%{libzen_suffix}-doc
+%{doc_files}
+%endif
+
+%global devel_files %defattr(-,root,root,-)\
+%{_includedir}/ZenLib\
+%{_libdir}/%{name_without_0_ending}.so\
+%{_libdir}/%{name_without_0_ending}.la\
 %{_libdir}/pkgconfig/*.pc
+
+%files -n %{name_without_0_ending}-devel
+%{devel_files}
+
+%if 0%{?rhel}
+%files -n %{name_without_0_ending}%{libzen_suffix}-devel
+%{devel_files}
+%endif
 
 %changelog
 * Thu Jan 01 2009 MediaArea.net SARL <info@mediaarea.net> - 0.4.37-0
