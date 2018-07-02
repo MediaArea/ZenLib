@@ -176,7 +176,7 @@ done
 
 %postun -p /sbin/ldconfig
 
-%global libzen_files %defattr(-,root,root,-)\
+%define libzen_files %defattr(-,root,root,-)\
 %doc History.txt ReadMe.txt\
 %if 0%{?fedora_version} || 0%{?centos_version} >= 700 || 0%{?rhel_version} >= 700\
 %license License.txt\
@@ -198,7 +198,7 @@ done
 %{libzen_files}
 %endif
 
-%global doc_files %defattr(-,root,root,-)\
+%define doc_files %defattr(-,root,root,-)\
 %doc Documentation.html\
 %doc Doc
 
@@ -210,7 +210,7 @@ done
 %{doc_files}
 %endif
 
-%global devel_files %defattr(-,root,root,-)\
+%define devel_files %defattr(-,root,root,-)\
 %{_includedir}/ZenLib\
 %{_libdir}/%{name_without_0_ending}.so\
 %{_libdir}/%{name_without_0_ending}.la\
