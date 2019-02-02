@@ -269,7 +269,7 @@ bool File::Open (const tstring &File_Name_, access_t Access)
                                            else
                                                 mode=ios_base::binary|ios_base::out|ios_base::app;
                                            break;
-                default                  : ;
+                default                  : mode = ios_base::binary | ios_base::in; break;
             }
             #ifdef UNICODE
                 File_Handle=new fstream(File_Name.To_Local().c_str(), mode);
