@@ -4,12 +4,12 @@ Upstream-Contact: MediaArea.net SARL <Info@MediaArea.net>
 Source: http://zenlib.sf.net
 
 Files: *
-Copyright: 2002-2011, MediaArea.net SARL <Info@MediaArea.net>
+Copyright: 2002-2019, MediaArea.net SARL <Info@MediaArea.net>
 License: Zlib
 
 Files: Source/ZenLib/int128*
 Copyright: 2005, Jan Ringos
-           2007-2011, MediaArea.net SARL <Info@MediaArea.net>
+           2007-2019, MediaArea.net SARL <Info@MediaArea.net>
 License: Zlib
 
 Files: Source/ZenLib/Base64/base64.h
@@ -27,7 +27,7 @@ Comment: Bundled copy of TinyXML
 
 Files: Source/ZenLib/PreComp.cpp
        Source/ZenLib/PreComp.h
-Copyright: 2006-2011, MediaArea.net SARL <Info@MediaArea.net>
+Copyright: 2006-2019, MediaArea.net SARL <Info@MediaArea.net>
 License: LGPL-3+
 
 Files: Source/MD5/*
@@ -46,7 +46,7 @@ License: Zlib and rfc
 Comment: Some functions in these files have been lifted from RFC2617
 
 Files: debian/*
-Copyright: 2008-2015, MediaArea.net SARL <info@mediaarea.net>
+Copyright: 2008-2019, MediaArea.net SARL <info@mediaarea.net>
            2012-2015, Chow Loong Jin <hyperair@debian.org>
 License: GPL-3+
  This program is free software: you can redistribute it and/or modify
