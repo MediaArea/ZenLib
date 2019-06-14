@@ -8,7 +8,7 @@ set(ZenLib_PATCH_VERSION 37)
 set(ZenLib_VERSION ${ZenLib_MAJOR_VERSION}.${ZenLib_MINOR_VERSION}.${ZenLib_PATCH_VERSION})
 
 if(WIN32)
-  option(BUILD_SHARED_LIBS "Build shared libs" OFF)
+  set(BUILD_SHARED_LIBS OFF)
 else()
   option(BUILD_SHARED_LIBS "Build shared libs" ON)
 endif()
@@ -135,10 +135,6 @@ set_target_properties(zen PROPERTIES
   SOVERSION ${ZenLib_MAJOR_VERSION}
   PUBLIC_HEADER "${ZenLib_HDRS}"
   )
-
-if(MSVC)
-  install(FILES $<TARGET_PDB_FILE:zen> DESTINATION ${BIN_INSTALL_DIR} CONFIGURATIONS "Debug;RelWithDebInfo" OPTIONAL)
-endif()
 
 install(TARGETS zen EXPORT zen-export
   PUBLIC_HEADER DESTINATION ${INCLUDE_INSTALL_DIR}/ZenLib
