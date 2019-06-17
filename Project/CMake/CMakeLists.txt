@@ -8,7 +8,7 @@ set(ZenLib_PATCH_VERSION 37)
 set(ZenLib_VERSION ${ZenLib_MAJOR_VERSION}.${ZenLib_MINOR_VERSION}.${ZenLib_PATCH_VERSION})
 
 if(WIN32)
-  option(BUILD_SHARED_LIBS "Build shared libs" OFF)
+  set(BUILD_SHARED_LIBS OFF)
 else()
   option(BUILD_SHARED_LIBS "Build shared libs" ON)
 endif()
@@ -33,10 +33,12 @@ set(BIN_INSTALL_DIR "${CMAKE_INSTALL_FULL_BINDIR}" CACHE STRING "Directory where
 set(LIB_INSTALL_DIR "${CMAKE_INSTALL_FULL_LIBDIR}" CACHE STRING "Directory where library will install")
 set(INCLUDE_INSTALL_DIR "${CMAKE_INSTALL_FULL_INCLUDEDIR}" CACHE PATH "The directory the headers are installed in")
 
-if(NOT MSVC)
-  set(ZenLib_CONFIG_INSTALL_DIR "${LIB_INSTALL_DIR}/cmake/zenlib")
+if(VCPKG_TARGET_TRIPLET)
+    set(ZenLib_CONFIG_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/share/zenlib")
+elseif(MSVC)
+    set(ZenLib_CONFIG_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/cmake")
 else()
-  set(ZenLib_CONFIG_INSTALL_DIR "cmake")
+    set(ZenLib_CONFIG_INSTALL_DIR "${LIB_INSTALL_DIR}/cmake/zenlib")
 endif()
 
 set(ZenLib_HDRS
@@ -135,10 +137,6 @@ set_target_properties(zen PROPERTIES
   SOVERSION ${ZenLib_MAJOR_VERSION}
   PUBLIC_HEADER "${ZenLib_HDRS}"
   )
-
-if(MSVC)
-  install(FILES $<TARGET_PDB_FILE:zen> DESTINATION ${BIN_INSTALL_DIR} CONFIGURATIONS "Debug;RelWithDebInfo" OPTIONAL)
-endif()
 
 install(TARGETS zen EXPORT zen-export
   PUBLIC_HEADER DESTINATION ${INCLUDE_INSTALL_DIR}/ZenLib
