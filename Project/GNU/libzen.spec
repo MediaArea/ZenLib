@@ -135,8 +135,8 @@ pushd Project/GNU/Library
 popd
 
 %build
-export CFLAGS="%{optflags}"
-export CPPFLAGS="%{optflags}"
+export CFLAGS="-g %{optflags}"
+export CPPFLAGS="-g %{optflags}"
 export CXXFLAGS="%{optflags}"
 
 #Make documentation
