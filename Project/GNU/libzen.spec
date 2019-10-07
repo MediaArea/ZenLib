@@ -34,6 +34,9 @@ BuildRequires:  doxygen
 BuildRequires:  libtool
 BuildRequires:  automake
 BuildRequires:  autoconf
+%if 0%{?rhel_version} >= 800 || 0%{?centos_version} >= 800
+BuildRequires:  gdb
+%endif
 
 %description
 ZenLib is a C++ utility library. It includes classes for handling strings,
