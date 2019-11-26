@@ -114,6 +114,11 @@ else()
   set(ZenLib_Unicode "no")
 endif()
 
+FIND_PACKAGE(Threads)
+if(CMAKE_THREAD_LIBS_INIT)
+  target_link_libraries(zen PUBLIC ${CMAKE_THREAD_LIBS_INIT})
+endif()
+
 if(LARGE_FILES)
   include(TestLargeFiles)
 
