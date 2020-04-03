@@ -1,4 +1,4 @@
-%global libzen_version            0.4.37
+%global libzen_version            0.4.38
 %global libzen_version_major      0
 %global libzen_version_minor      4
 %global libzen_version_release    37
@@ -228,7 +228,7 @@ done
 %endif
 
 %changelog
-* Thu Jan 01 2009 MediaArea.net SARL <info@mediaarea.net> - 0.4.37-0
+* Thu Jan 01 2009 MediaArea.net SARL <info@mediaarea.net> - 0.4.38-0
 - See History.txt for more info and real dates
 - Previous packages made by Toni Graffy <toni@links2linux.de>
 - Fedora style made by Vasiliy N. Glazov <vascom2@gmail.com>
