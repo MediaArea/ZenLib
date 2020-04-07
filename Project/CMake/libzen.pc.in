@@ -6,7 +6,7 @@ Unicode=@ZenLib_Unicode@
 Libs_Static=@LIB_INSTALL_DIR@/libzen.a -lpthread -lstdc++
 
 Name: libzen
-Version: @ZenLib_VERSION_STRING@
+Version: @ZenLib_VERSION@
 Description: ZenLib
 Libs: -L${libdir} -lzen -lpthread -lstdc++
 Cflags: -I${includedir} @ZenLib_CXXFLAGS@
