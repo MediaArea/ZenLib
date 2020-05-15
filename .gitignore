@@ -23,6 +23,7 @@
 *.zip
 __history
 bin
+Build/
 Debug
 Debug_Ansi
 Debug_Build
