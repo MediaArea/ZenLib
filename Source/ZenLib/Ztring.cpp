@@ -1855,7 +1855,7 @@ int8s Ztring::To_int8s (int8u Radix, ztring_t Options) const
     {
         float80 F=To_float80();
         F-=I;
-        if (F>=0.5)
+        if (F>=0.5f)
             return (int8s)I+1;
     }
 
@@ -1893,7 +1893,7 @@ int8u Ztring::To_int8u (int8u Radix, ztring_t Options) const
     {
         float32 F=To_float32();
         F-=I;
-        if (F>=0.5)
+        if (F>=0.5f)
             return (int8u)I+1;
     }
 
@@ -1931,7 +1931,7 @@ int16s Ztring::To_int16s (int8u Radix, ztring_t Options) const
     {
         float80 F=To_float80();
         F-=I;
-        if (F>=0.5)
+        if (F>=0.5f)
             return (int16s)I+1;
     }
 
@@ -1969,7 +1969,7 @@ int16u Ztring::To_int16u (int8u Radix, ztring_t Options) const
     {
         float32 F=To_float32();
         F-=I;
-        if (F>=0.5)
+        if (F>=0.5f)
             return (int16u)I+1;
     }
 
@@ -2007,7 +2007,7 @@ int32s Ztring::To_int32s (int8u Radix, ztring_t Options) const
     {
         float80 F=To_float80();
         F-=I;
-        if (F>=0.5)
+        if (F>=0.5f)
             return I+1;
     }
 
@@ -2045,7 +2045,7 @@ int32u Ztring::To_int32u (int8u Radix, ztring_t Options) const
     {
         float32 F=To_float32();
         F-=I;
-        if (F>=0.5)
+        if (F>=0.5f)
             return I+1;
     }
 
@@ -2083,7 +2083,7 @@ int64s Ztring::To_int64s (int8u Radix, ztring_t Options) const
     {
         float32 F=To_float32();
         F-=I;
-        if (F>0.5)
+        if (F>0.5f)
             return I+1;
     }
 
@@ -2121,7 +2121,7 @@ int64u Ztring::To_int64u (int8u Radix, ztring_t Options) const
     {
         float32 F=To_float32();
         F-=I;
-        if (F>=0.5)
+        if (F>=0.5f)
             return I+1;
     }
 
