@@ -1,0 +1,40 @@
+name: Checks
+
+on: [push, pull_request]
+
+jobs:
+  Unix:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+      fail-fast: false
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 1
+      - name: Dependencies
+        run: |
+          if [ "$RUNNER_OS" == "macOS" ]; then
+            brew install automake
+          fi
+      - name: Configure
+        run: |
+          cd Project/GNU/Library
+          autoreconf -if
+          ./configure
+      - name: Build
+        run: |
+          cd Project/GNU/Library
+          make
+      - name: Check
+        run: |
+          cd Project/GNU/Library
+          make check
+      - name: CMake Build
+        run: |
+          mkdir Project/CMake/Build
+          cd Project/CMake/Build
+          cmake -DBUILD_ZENLIB=1 ..
+          make
