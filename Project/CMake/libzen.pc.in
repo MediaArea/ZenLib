@@ -3,10 +3,10 @@ exec_prefix=${prefix}
 libdir=@LIB_INSTALL_DIR@
 includedir=@INCLUDE_INSTALL_DIR@
 Unicode=@ZenLib_Unicode@
-Libs_Static=@LIB_INSTALL_DIR@/libzen.a -lpthread -lstdc++
+Libs_Static=@LIB_INSTALL_DIR@/libzen.a -lpthread
 
 Name: libzen
 Version: @ZenLib_VERSION@
 Description: ZenLib
-Libs: -L${libdir} -lzen -lpthread -lstdc++
+Libs: -L${libdir} -lzen -lpthread
 Cflags: -I${includedir} @ZenLib_CXXFLAGS@
