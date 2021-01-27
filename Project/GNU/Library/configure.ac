@@ -254,6 +254,11 @@ dnl External libs
 dnl
 LDFLAGS="$LDFLAGS -lpthread"
 
+dnl -------------------------------------------------------------------------
+dnl Check if thread safe variants of time functions are available
+dnl
+AC_CHECK_FUNCS(gmtime_r localtime_r)
+
 dnl #########################################################################
 dnl ### Output
 dnl #########################################################################
