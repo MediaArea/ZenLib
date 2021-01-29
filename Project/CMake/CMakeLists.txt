@@ -133,6 +133,16 @@ if((LONG_SIZE GREATER 4) AND (SIZE_T_SIZE EQUAL LONG_SIZE))
   target_compile_definitions(zen PUBLIC SIZE_T_IS_LONG)
 endif()
 
+include(CheckSymbolExists)
+check_symbol_exists(gmtime_r time.h HAVE_GMTIME_R)
+if(HAVE_GMTIME_R)
+  target_compile_definitions(zen PUBLIC HAVE_GMTIME_R)
+endif()
+check_symbol_exists(localtime_r time.h HAVE_LOCALTIME_R)
+if(HAVE_LOCALTIME_R)
+  target_compile_definitions(zen PUBLIC HAVE_LOCALTIME_R)
+endif()
+
 target_include_directories(zen PUBLIC
   $<BUILD_INTERFACE:${ZenLib_SOURCES_PATH}>
   $<INSTALL_INTERFACE:${INCLUDE_INSTALL_DIR}>)
