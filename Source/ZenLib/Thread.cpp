@@ -524,6 +524,7 @@ Thread::returnvalue Thread::RequestTerminate()
 Thread::returnvalue Thread::ForceTerminate()
 {
     //Terminating (not clean)
+    pthread_cancel((pthread_t)ThreadPointer);
 
     //Configuring
     State=State_Terminated;
@@ -563,8 +564,9 @@ bool Thread::IsExited()
 // Communicating
 //***************************************************************************
 
-void Thread::Sleep(size_t)
+void Thread::Sleep(size_t Millisecond)
 {
+    usleep(Millisecond*1000);
 }
 
 void Thread::Yield()
