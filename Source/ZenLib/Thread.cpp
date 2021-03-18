@@ -320,25 +320,19 @@ Thread::returnvalue Thread::ForceTerminate()
 
 bool Thread::IsRunning()
 {
-    CriticalSectionLocker CSL(C);
-    const bool ToReturn=State==State_Running || State==State_Terminating;
-    return ToReturn;
+    return State==State_Running;
 }
 
 //---------------------------------------------------------------------------
 bool Thread::IsTerminating()
 {
-    CriticalSectionLocker CSL(C);
-    const bool ToReturn=State==State_Terminating;
-    return ToReturn;
+    return State==State_Terminating;
 }
 
 //---------------------------------------------------------------------------
 bool Thread::IsExited()
 {
-    CriticalSectionLocker CSL(C);
-    const bool ToReturn=State==State_New || State==State_Terminated;
-    return ToReturn;
+    return State==State_Terminated;
 }
 
 //***************************************************************************
@@ -539,25 +533,19 @@ Thread::returnvalue Thread::ForceTerminate()
 //---------------------------------------------------------------------------
 bool Thread::IsRunning()
 {
-    CriticalSectionLocker CSL(C);
-    const bool ToReturn=State==State_Running;
-    return ToReturn;
+    return State==State_Running;
 }
 
 //---------------------------------------------------------------------------
 bool Thread::IsTerminating()
 {
-    CriticalSectionLocker CSL(C);
-    const bool ToReturn=State==State_Terminating;
-    return ToReturn;
+    return State==State_Terminating;
 }
 
 //---------------------------------------------------------------------------
 bool Thread::IsExited()
 {
-    CriticalSectionLocker CSL(C);
-    const bool ToReturn=State==State_New || State==State_Terminating;
-    return ToReturn;
+    return State==State_Terminated;
 }
 
 //***************************************************************************
