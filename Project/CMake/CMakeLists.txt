@@ -4,7 +4,7 @@ project(ZenLib)
 
 set(ZenLib_MAJOR_VERSION 0)
 set(ZenLib_MINOR_VERSION 4)
-set(ZenLib_PATCH_VERSION 38)
+set(ZenLib_PATCH_VERSION 39)
 set(ZenLib_VERSION ${ZenLib_MAJOR_VERSION}.${ZenLib_MINOR_VERSION}.${ZenLib_PATCH_VERSION})
 
 if(WIN32)
