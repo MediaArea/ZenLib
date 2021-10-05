@@ -201,7 +201,14 @@ AC_COMPILE_IFELSE([AC_LANG_SOURCE([
 	void foo(unsigned int) {}
 	int main () {foo(size_t(0)); return 0;}])], [size_t_is_long="no"], [size_t_is_long="yes"])
 
-if test "$size_t_is_long" = "yes"; then
+AC_LANG([C++])
+AC_COMPILE_IFELSE([AC_LANG_SOURCE([
+	#include <cstdlib>
+	void foo(size_t) {}
+	void foo(unsigned long long) {}
+	int main () {foo(size_t(0)); return 0;}])], [size_t_is_long_long="no"], [size_t_is_long_long="yes"])
+
+if test "$size_t_is_long" = "yes" -a "$size_t_is_long_long" = "no"; then
 	CXXFLAGS="$CXXFLAGS -DSIZE_T_IS_LONG"
 	ZenLib_CXXFLAGS="$ZenLib_CXXFLAGS -DSIZE_T_IS_LONG"
 fi
