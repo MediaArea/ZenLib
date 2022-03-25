@@ -2,10 +2,9 @@
 # in order to build with qmake just copy this file to the sources
 # then open with QtCreator and build
 TEMPLATE = lib
-CONFIG += staticlib
+CONFIG += staticlib c++11
 TARGET = zen
 INCLUDEPATH += . .. HTTP_Client
-
 QMAKE_CXXFLAGS += -D_UNICODE
 
 # surpressing way too many warnings here, with a heavy sigh

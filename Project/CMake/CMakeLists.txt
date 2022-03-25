@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.11)
+cmake_minimum_required(VERSION 3.1.0)
 
 project(ZenLib)
 
@@ -151,6 +151,9 @@ set_target_properties(zen PROPERTIES
   VERSION ${ZenLib_VERSION}
   SOVERSION ${ZenLib_MAJOR_VERSION}
   PUBLIC_HEADER "${ZenLib_HDRS}"
+  CXX_STANDARD 11
+  CXX_EXTENSIONS NO
+  CXX_STANDARD_REQUIRED YES
   )
 
 install(TARGETS zen EXPORT zen-export
