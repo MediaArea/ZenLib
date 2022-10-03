@@ -1,7 +1,7 @@
 %global libzen_version            0.4.39
 %global libzen_version_major      0
 %global libzen_version_minor      4
-%global libzen_version_release    37
+%global libzen_version_release    39
 
 %if 0%{?fedora_version} || 0%{?centos_version} >= 600 || 0%{?rhel_version} >= 600
 %global package_with_0_ending 0
