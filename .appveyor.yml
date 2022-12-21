@@ -1,27 +1,43 @@
+image: Visual Studio 2019
 configuration:
   - Release
+
+environment:
+  matrix:
+    - generator: Unix Makefiles
+    - generator: Visual Studio 16 2019
 
 platform:
   - Win32
   - x64
 
-before_build:
-  - cmd: git -C .. clone -q https://github.com/MediaArea/zlib.git
-  - ps: >-
-      $Env:PATH += ";C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/bin";
-      $Env:PATH += ";C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/bin/x86_amd64";
-      If ($Env:PLATFORM -Eq "Win32") {
-        Push-Location ..\zlib\contrib\masmx86
-        ml /nologo /coff /safeseh /Zi /c /Flmatch686.lst match686.asm
-        ml /nologo /coff /safeseh /Zi /c /Flinffas32.lst inffas32.asm
-        Pop-Location
-      } Else {
-        Push-Location ..\zlib\contrib\masmx64
-        ml64 /nologo /Zi /c /Flinffasx64 inffasx64.asm
-        ml64 /nologo /Zi /c /Flgvmat64 gvmat64.asm
-        Pop-Location
+install:
+  - set "PATH=C:\msys64\usr\bin;%PATH%"
+  - ps: |
+      if ($env:generator -eq "Unix Makefiles") {
+        $env:PATH, $env:PKG_CONFIG_PATH = if ($env:Platform -eq "x64") {
+          "C:\msys64\mingw64\bin;$env:PATH", "C:/msys64/mingw64/lib/pkgconfig"
+        } else {
+          "C:\msys64\mingw32\bin;$env:PATH", "C:/msys64/mingw32/lib/pkgconfig"
+        }
       }
+  - if "%generator%"=="Unix Makefiles" pacman -Sy --ask=20 --noconfirm --noprogressbar --needed make
 
+before_build:
+  - ps: |
+      $env:cmake_e = if ($env:generator -match "Visual") {
+        if ($env:Platform -eq "x64") { "-A x64" } else { "-A Win32" }
+      } else {
+        "-DCMAKE_BUILD_TYPE=$env:configuration"
+      }
+  - cmake -S Project/CMake -B build -G "%generator%" %cmake_e%
+
+for:
+  - matrix:
+      only:
+        - generator: Unix Makefiles
+    build_script:
+      - make -C build -j
 build:
-  project: Project\MSVC2015\ZenLib_MSVC.sln
+  project: build/ZenLib.sln
   verbosity: quiet
