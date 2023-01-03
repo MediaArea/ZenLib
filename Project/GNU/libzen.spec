@@ -216,7 +216,9 @@ done
 %define devel_files %defattr(-,root,root,-)\
 %{_includedir}/ZenLib\
 %{_libdir}/%{name_without_0_ending}.so\
+%if 0%{?fedora} < 37 \
 %{_libdir}/%{name_without_0_ending}.la\
+%endif \
 %{_libdir}/pkgconfig/*.pc
 
 %files -n %{name_without_0_ending}-devel
