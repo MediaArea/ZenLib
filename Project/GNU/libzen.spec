@@ -1,7 +1,7 @@
-%global libzen_version            0.4.40
+%global libzen_version            0.4.41
 %global libzen_version_major      0
 %global libzen_version_minor      4
-%global libzen_version_release    40
+%global libzen_version_release    41
 
 %if 0%{?fedora} || 0%{?rhel}
 %global package_with_0_ending 0
@@ -219,7 +219,7 @@ done
 %endif
 
 %changelog
-* Wed Dec 21 2022 MediaArea.net SARL <info@mediaarea.net> - 0.4.40-0
+* Wed Dec 21 2022 MediaArea.net SARL <info@mediaarea.net> - 0.4.41-0
 - See History.txt for more info and real dates
 - Previous packages made by Toni Graffy <toni@links2linux.de>
 - Fedora style made by Vasiliy N. Glazov <vascom2@gmail.com>
