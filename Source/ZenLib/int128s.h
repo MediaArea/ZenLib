@@ -25,14 +25,6 @@
   Version: 1.1
 */
 
-#include <exception>
-#include <cstdlib>
-#include <cstdio>
-#ifdef __cplusplus
-    #include <new> //for size_t
-#else /* __cplusplus */
-    #include <stddef.h> //for size_t
-#endif /* __cplusplus */
 #include "ZenLib/Conf.h"
 
 namespace ZenLib

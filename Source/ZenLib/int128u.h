@@ -25,10 +25,6 @@
   Version: 1.1
 */
 
-
-#include <exception>
-#include <cstdlib>
-#include <cstdio>
 #include "ZenLib/Conf.h"
 
 // CLASS
