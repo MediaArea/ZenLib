@@ -40,6 +40,7 @@
             using namespace ABI::Windows::Security::Cryptography::Core;
         #else
             #include <shlobj.h>
+            #include <shellapi.h>
         #endif
     #endif
 #endif //ZENLIB_USEWX
