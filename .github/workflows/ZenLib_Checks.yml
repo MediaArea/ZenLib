@@ -17,7 +17,7 @@ jobs:
       - name: Dependencies
         run: |
           if [ "$RUNNER_OS" == "macOS" ]; then
-            brew install automake
+            brew install automake libtool
           fi
       - name: Configure
         run: |
