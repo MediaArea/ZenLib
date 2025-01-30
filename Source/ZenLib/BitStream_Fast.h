@@ -30,12 +30,16 @@ namespace ZenLib
 class BitStream_Fast
 {
 public:
-    BitStream_Fast ()                                                           {Buffer=NULL;
-                                                                                 Buffer_Size=Buffer_Size_Init=0;
-                                                                                 BufferUnderRun=false;}
-    BitStream_Fast (const int8u* Buffer_, size_t Size_)                         {Buffer=Buffer_;
-                                                                                 Buffer_Size=Buffer_Size_Init=Size_*8; //Size is in bits
-                                                                                 BufferUnderRun=false;}
+    BitStream_Fast ()                                                           { Buffer = NULL;
+                                                                                  Buffer_Size = 0;
+                                                                                  Buffer_Size_Init = 0;
+                                                                                  LastByte = 0;
+                                                                                  BufferUnderRun = false; }
+    BitStream_Fast (const int8u* Buffer_, size_t Size_)                         { Buffer = Buffer_;
+                                                                                  Buffer_Size = Size_ * 8; //Size is in bits
+                                                                                  Buffer_Size_Init = Size_ * 8; //Size is in bits
+                                                                                  LastByte = 0;
+                                                                                  BufferUnderRun = false; }
     ~BitStream_Fast ()                                                          {}
 
     void Attach(const int8u* Buffer_, size_t Size_)
