@@ -98,14 +98,17 @@ public:
                             ToReturn |= ((size_t)*Buffer) << NewBits;
                             Buffer++;
                             Buffer_Size-=8;
+                            [[fallthrough]];
                 case 2 :    NewBits-=8;
                             ToReturn |= ((size_t)*Buffer) << NewBits;
                             Buffer++;
                             Buffer_Size-=8;
+                            [[fallthrough]];
                 case 1 :    NewBits-=8;
                             ToReturn |= ((size_t)*Buffer) << NewBits;
                             Buffer++;
                             Buffer_Size-=8;
+                            [[fallthrough]];
                 case 0 :
                             LastByte=*Buffer;
                             Buffer++;
@@ -191,12 +194,15 @@ public:
                 case 3 :    NewBits-=8;
                             Buffer++;
                             Buffer_Size-=8;
+                            [[fallthrough]];
                 case 2 :    NewBits-=8;
                             Buffer++;
                             Buffer_Size-=8;
+                            [[fallthrough]];
                 case 1 :    NewBits-=8;
                             Buffer++;
                             Buffer_Size-=8;
+                            [[fallthrough]];
                 case 0 :
                             LastByte=*Buffer;
                             Buffer++;

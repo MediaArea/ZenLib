@@ -1654,23 +1654,23 @@ std::string Ztring::To_UTF8 () const
             case 6:
                 utf8chars[5] = 0x80 | (wc & 0x3f);
                 wc = (wc >> 6) | 0x4000000;
-                /* fallthrough */
+                [[fallthrough]];
             case 5:
                 utf8chars[4] = 0x80 | (wc & 0x3f);
                 wc = (wc >> 6) | 0x200000;
-                /* fallthrough */
+                [[fallthrough]];
             case 4:
                 utf8chars[3] = 0x80 | (wc & 0x3f);
                 wc = (wc >> 6) | 0x10000;
-                /* fallthrough */
+                [[fallthrough]];
             case 3:
                 utf8chars[2] = 0x80 | (wc & 0x3f);
                 wc = (wc >> 6) | 0x800;
-                /* fallthrough */
+                [[fallthrough]];
             case 2:
                 utf8chars[1] = 0x80 | (wc & 0x3f);
                 wc = (wc >> 6) | 0xc0;
-                /* fallthrough */
+                [[fallthrough]];
             case 1:
                 utf8chars[0] = (char) wc;
             }

@@ -182,11 +182,12 @@ public:
         {
             case 3 :    NewBits-=8;
                         ToReturn|=*(Buffer++)<<NewBits;
+                        [[fallthrough]];
             case 2 :    NewBits-=8;
                         ToReturn|=*(Buffer++)<<NewBits;
+                        [[fallthrough]];
             case 1 :    NewBits-=8;
                         ToReturn|=*(Buffer++)<<NewBits;
-            default:    ;
         }
         LastByte=*(Buffer++);
         Buffer_Size-=HowMany;
@@ -358,13 +359,14 @@ public:
             case 3 :    NewBits-=8;
                         ToReturn|=*Buffer<<NewBits;
                         Buffer++;
+                        [[fallthrough]];
             case 2 :    NewBits-=8;
                         ToReturn|=*Buffer<<NewBits;
                         Buffer++;
+                        [[fallthrough]];
             case 1 :    NewBits-=8;
                         ToReturn|=*Buffer<<NewBits;
                         Buffer++;
-            default:    ;
         }
         ToReturn|=((*Buffer)>>((Buffer_Size-HowMany)%8))&Mask[NewBits];
 
