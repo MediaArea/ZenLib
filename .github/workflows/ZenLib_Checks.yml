@@ -54,3 +54,34 @@ jobs:
       uses: microsoft/setup-msbuild@v2
     - name: Build
       run: msbuild /p:Configuration=Release /p:Platform=${{ matrix.architecture }} ${{ github.workspace }}\ZenLib\Project\MSVC2022\ZenLib_MSVC.sln /verbosity:quiet /warnaserror
+
+  MinGW:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        include:
+          - platform: Win32
+            msystem: MINGW32
+          - platform: x64
+            msystem: MINGW64
+      fail-fast: false
+    env:
+      GENERATOR: "Unix Makefiles"
+      CONFIGURATION: "Release"
+    steps:
+      - name: Checkout ZenLib
+        uses: actions/checkout@v4
+      - name: Setup MSYS2 environment
+        uses: msys2/setup-msys2@v2
+        with:
+          release: false
+          msystem: ${{ matrix.msystem }}
+          install: make
+      - name: Configure CMake project
+        shell: bash
+        run: |
+          # Set the build configuration flag for CMake
+          cmake -S Project/CMake -B build -G "$GENERATOR" -DCMAKE_BUILD_TYPE=$CONFIGURATION
+      - name: Build project using make
+        shell: bash
+        run: make -C build -j
