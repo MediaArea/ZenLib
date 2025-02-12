@@ -38,3 +38,19 @@ jobs:
           cd Project/CMake/Build
           cmake -DBUILD_ZENLIB=1 ..
           make
+
+  Windows:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        architecture: [ Win32, x64, ARM64 ]
+      fail-fast: false
+    steps:
+    - name: Checkout ZenLib
+      uses: actions/checkout@v4
+      with:
+        path: ZenLib
+    - name: Add msbuild to PATH
+      uses: microsoft/setup-msbuild@v2
+    - name: Build
+      run: msbuild /p:Configuration=Release /p:Platform=${{ matrix.architecture }} ${{ github.workspace }}\ZenLib\Project\MSVC2022\ZenLib_MSVC.sln /verbosity:quiet /warnaserror
