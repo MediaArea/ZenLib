@@ -9,7 +9,7 @@ set(ZenLib_VERSION ${ZenLib_MAJOR_VERSION}.${ZenLib_MINOR_VERSION}.${ZenLib_PATC
 
 if(WIN32)
   set(BUILD_SHARED_LIBS OFF)
-else()
+elseif(NOT DEFINED BUILD_SHARED_LIBS)
   option(BUILD_SHARED_LIBS "Build shared libs" ON)
 endif()
 
