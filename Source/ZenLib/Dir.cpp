@@ -306,7 +306,13 @@ ZtringList Dir::GetAllFileNames(const Ztring &Dir_Name_, dirlist_t Options)
                             if (Options&Parse_SubDirs)
                                 ToReturn+=GetAllFileNames(File_Name_Complete, Options); //A SubDir
                         }
-                        else if ((Options&Include_Files) && ((Options&Include_Hidden) || (!File_Name.empty() && File_Name[0]!=__T('.'))))
+                        else if ((Options&Include_Files) && ((Options&Include_Hidden) || ((!File_Name.empty() && File_Name[0]!=__T('.')) &&
+                                #ifdef UNICODE
+                                    (FindFileDataW.dwFileAttributes&FILE_ATTRIBUTE_HIDDEN)==0
+                                #else
+                                    (FindFileData.dwFileAttributes&FILE_ATTRIBUTE_HIDDEN)==0
+                                #endif //UNICODE
+                        )))
                             ToReturn.push_back(File_Name_Complete); //A file
                     }
                     #ifdef UNICODE
