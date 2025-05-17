@@ -111,7 +111,7 @@ set(ZenLib_SRCS
   ${ZenLib_SOURCES_PATH}/ZenLib/Format/Http/Http_Utils.cpp
   )
 
-if(WIN32)
+if(MINGW)
   set_source_files_properties(${ZenLib_SRCS} ${ZenLib_HDRS} ${ZenLib_format_html_HDRS} ${ZenLib_format_http_HDRS}
     PROPERTIES GENERATED true)
 endif()
