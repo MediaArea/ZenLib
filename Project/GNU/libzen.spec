@@ -205,7 +205,7 @@ done
 %define devel_files %defattr(-,root,root,-)\
 %{_includedir}/ZenLib\
 %{_libdir}/%{name_without_0_ending}.so\
-%if 0%{?fedora} < 37 && 0%{?mageia} < 9 \
+%if 0%{?fedora} < 37 && 0%{?mageia} < 9 && 0%{?rhel} < 10 \
 %{_libdir}/%{name_without_0_ending}.la\
 %endif \
 %{_libdir}/pkgconfig/*.pc
