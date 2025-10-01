@@ -11,7 +11,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Dependencies
         run: |
           if [ "$RUNNER_OS" == "macOS" ]; then
@@ -45,7 +45,7 @@ jobs:
       fail-fast: false
     steps:
       - name: Checkout ZenLib
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           path: ZenLib
       - name: Add msbuild to PATH
@@ -70,7 +70,7 @@ jobs:
       CONFIGURATION: "Release"
     steps:
       - name: Checkout ZenLib
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Setup MSYS2 environment
         uses: msys2/setup-msys2@v2
         with:
