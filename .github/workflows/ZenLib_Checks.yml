@@ -63,7 +63,7 @@ jobs:
           - platform: Win32
             msystem: MINGW32
           - platform: x64
-            msystem: MINGW64
+            msystem: UCRT64
       fail-fast: false
     env:
       GENERATOR: "Unix Makefiles"
