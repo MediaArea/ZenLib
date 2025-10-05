@@ -68,6 +68,7 @@ jobs:
     env:
       GENERATOR: "Unix Makefiles"
       CONFIGURATION: "Release"
+      CXXFLAGS: -Werror
     steps:
       - name: Checkout ZenLib
         uses: actions/checkout@v5
