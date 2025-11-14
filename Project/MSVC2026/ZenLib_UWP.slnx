@@ -1,0 +1,8 @@
+<Solution>
+  <Configurations>
+    <Platform Name="ARM" />
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="Library/ZenLib_UWP.vcxproj" Id="6c3e4874-4d35-4178-84b2-d8c4f85b32ef" />
+</Solution>
