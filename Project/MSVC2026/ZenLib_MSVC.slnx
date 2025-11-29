@@ -1,0 +1,10 @@
+<Solution>
+  <Configurations>
+    <Platform Name="ARM" />
+    <Platform Name="ARM64" />
+    <Platform Name="ARM64EC" />
+    <Platform Name="Win32" />
+    <Platform Name="x64" />
+  </Configurations>
+  <Project Path="Library/ZenLib.vcxproj" Id="0da1da7d-f393-4e7c-a7ce-cb5c6a67bc94" />
+</Solution>
