@@ -9,6 +9,8 @@ jobs:
         os: [ubuntu-latest, macos-latest]
       fail-fast: false
     runs-on: ${{ matrix.os }}
+    env:
+      CXXFLAGS: -Werror
     steps:
       - name: Checkout
         uses: actions/checkout@v5
