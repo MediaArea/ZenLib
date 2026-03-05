@@ -57,6 +57,29 @@ jobs:
       - name: Build
         run: msbuild -p:Configuration=Release -p:Platform=${{ matrix.architecture }} ${{ github.workspace }}\ZenLib\Project\MSVC2022\ZenLib_MSVC.sln -verbosity:quiet -warnaserror
 
+  CMake:
+    strategy:
+      matrix:
+        include:
+          - runner: windows-latest
+            CXXFLAGS: "/std:c++20 /WX /MP"
+          - runner: ubuntu-latest
+            CXXFLAGS: "-Werror"
+          - runner: macos-latest
+            CXXFLAGS: "-Werror"
+      fail-fast: false
+    name: CMake (${{ matrix.runner }})
+    runs-on: ${{ matrix.runner }}
+    env:
+      CXXFLAGS: ${{ matrix.CXXFLAGS }}
+    steps:
+      - name: Checkout ZenLib
+        uses: actions/checkout@v5
+      - name: Configure CMake project
+        run: cmake -S Project/CMake -B build -DCMAKE_BUILD_TYPE=Release
+      - name: Build CMake project
+        run: cmake --build build ${{ runner.os == 'Windows' && '--config Release' || '-j4' }}
+
   MinGW:
     runs-on: windows-latest
     strategy:
