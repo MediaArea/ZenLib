@@ -13,7 +13,7 @@ jobs:
       CXXFLAGS: -Werror
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Dependencies
         run: |
           if [ "$RUNNER_OS" == "macOS" ]; then
@@ -47,7 +47,7 @@ jobs:
       fail-fast: false
     steps:
       - name: Checkout ZenLib
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           path: ZenLib
       - name: Add msbuild to PATH
@@ -74,7 +74,7 @@ jobs:
       CXXFLAGS: ${{ matrix.CXXFLAGS }}
     steps:
       - name: Checkout ZenLib
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Configure CMake project
         run: cmake -S Project/CMake -B build -DCMAKE_BUILD_TYPE=Release
       - name: Build CMake project
@@ -96,7 +96,7 @@ jobs:
       CXXFLAGS: -Werror
     steps:
       - name: Checkout ZenLib
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Setup MSYS2 environment
         uses: msys2/setup-msys2@v2
         with:
