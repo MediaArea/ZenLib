@@ -125,6 +125,10 @@ else()
   set(ZenLib_Unicode "no")
 endif()
 
+if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.16")
+    target_precompile_headers(zen PRIVATE "${ZenLib_SOURCES_PATH}/ZenLib/PreComp.h")
+endif()
+
 FIND_PACKAGE(Threads)
 if(CMAKE_THREAD_LIBS_INIT)
   target_link_libraries(zen PUBLIC ${CMAKE_THREAD_LIBS_INIT})
