@@ -166,11 +166,10 @@ set_target_properties(zen PROPERTIES
   VERSION ${ZenLib_VERSION}
   SOVERSION ${ZenLib_MAJOR_VERSION}
   PUBLIC_HEADER "${ZenLib_HDRS}"
-  CXX_STANDARD 20
-  CXX_EXTENSIONS NO
-  CXX_STANDARD_REQUIRED NO
   )
-target_compile_features(zen PRIVATE cxx_std_11)
+
+include(EnableLatestCXX)
+enable_latest_cxx(zen)
 
 install(TARGETS zen EXPORT zen-export
   PUBLIC_HEADER DESTINATION ${INCLUDE_INSTALL_DIR}/ZenLib
