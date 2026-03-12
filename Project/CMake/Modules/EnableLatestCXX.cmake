@@ -1,5 +1,6 @@
 function(enable_latest_cxx target)
 
+if(NOT "${CMAKE_VERSION}" VERSION_LESS "3.8")
     set_target_properties(${target} PROPERTIES 
         CXX_STANDARD_REQUIRED ON
         CXX_EXTENSIONS OFF
@@ -23,4 +24,6 @@ function(enable_latest_cxx target)
 
     # Unsupported C++ version
     message(FATAL_ERROR "Compiler ${CMAKE_CXX_COMPILER_ID} does not support C++11 or newer.")
+endif()
+
 endfunction()
