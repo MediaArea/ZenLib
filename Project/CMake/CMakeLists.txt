@@ -17,13 +17,7 @@ option(ENABLE_UNICODE "Enable unicode support" ON)
 option(LARGE_FILES "Enable large files support" ON)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/Modules/")
-if(MINGW)
-  # Work around for cmake generating extra long paths
-  file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../../Source DESTINATION .)
-  set(ZenLib_SOURCES_PATH ${CMAKE_CURRENT_BINARY_DIR}/Source)
-else()
-  set(ZenLib_SOURCES_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../Source)
-endif()
+set(ZenLib_SOURCES_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../Source)
 
 # On Windows debug library should have 'd' postfix.
 if(WIN32)
@@ -131,11 +125,6 @@ set(ZenLib_SRCS
   ${ZenLib_SOURCES_PATH}/ZenLib/Format/Http/Http_Request.cpp
   ${ZenLib_SOURCES_PATH}/ZenLib/Format/Http/Http_Utils.cpp
   )
-
-if(MINGW)
-  set_source_files_properties(${ZenLib_SRCS} ${ZenLib_HDRS} ${ZenLib_format_html_HDRS} ${ZenLib_format_http_HDRS}
-    PROPERTIES GENERATED true)
-endif()
 
 add_library(zen ${ZenLib_SRCS} ${ZenLib_HDRS} ${ZenLib_format_html_HDRS} ${ZenLib_format_http_HDRS})
 if(ENABLE_UNICODE)
