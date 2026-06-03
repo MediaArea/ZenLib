@@ -65,6 +65,10 @@ public:
           0x01ffffff, 0x03ffffff, 0x07ffffff, 0x0fffffff,
           0x1fffffff, 0x3fffffff, 0x7fffffff, 0xffffffff,
         };
+
+        if (HowMany==0 || HowMany>32)
+            return 0;
+
         unsigned long m=Mask[HowMany];
 
         HowMany+=endbit;
@@ -103,6 +107,18 @@ public:
 
     void Skip(size_t bits)
     {
+        if (bits==0)
+            return;
+        if (bits>32) //Get is only for <=32 bits
+        {
+            do {
+                Get(32);
+                bits-=32;
+            } while (bits>32);
+            if (bits)
+                Get(bits);
+            return;
+        }
         Get(bits);
     }
 
