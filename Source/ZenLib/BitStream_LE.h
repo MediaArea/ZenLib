@@ -130,7 +130,7 @@ public:
     void Byte_Align()
     {
         if (endbit)
-            Get(endbit);
+            Get(8-endbit);
     };
 
     size_t Offset_Get()
