@@ -3,10 +3,11 @@ exec_prefix=${prefix}
 libdir=@LIB_INSTALL_DIR@
 includedir=@INCLUDE_INSTALL_DIR@
 Unicode=@ZenLib_Unicode@
-Libs_Static=@LIB_INSTALL_DIR@/libzen.a -lpthread
+Libs_Static=@LIB_INSTALL_DIR@/@CMAKE_STATIC_LIBRARY_PREFIX@@ZenLib_PKGCONFIG_LIBRARY@@CMAKE_STATIC_LIBRARY_SUFFIX@@ZenLib_PKGCONFIG_THREAD_LIBS@
 
 Name: libzen
 Version: @ZenLib_VERSION@
 Description: ZenLib
-Libs: -L${libdir} -lzen -lpthread
+Libs: -L${libdir} -l@ZenLib_PKGCONFIG_LIBRARY@
+Libs.private:@ZenLib_PKGCONFIG_THREAD_LIBS@
 Cflags: -I${includedir} @ZenLib_CXXFLAGS@

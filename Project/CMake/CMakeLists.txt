@@ -200,11 +200,43 @@ configure_file(
 # pkg-config
 find_package(PkgConfig)
 if(PKG_CONFIG_FOUND)
+  set(ZenLib_PKGCONFIG_LIBRARY "zen")
+  set(ZenLib_PKGCONFIG_THREAD_LIBS "")
+  if(CMAKE_THREAD_LIBS_INIT)
+    set(ZenLib_PKGCONFIG_THREAD_LIBS " ${CMAKE_THREAD_LIBS_INIT}")
+  endif()
   configure_file(${CMAKE_CURRENT_SOURCE_DIR}/libzen.pc.in
                  ${CMAKE_CURRENT_BINARY_DIR}/libzen.pc
                  @ONLY)
-  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/libzen.pc
-          DESTINATION ${LIB_INSTALL_DIR}/pkgconfig)
+
+  if(CMAKE_DEBUG_POSTFIX)
+    set(ZenLib_PKGCONFIG_LIBRARY "zen${CMAKE_DEBUG_POSTFIX}")
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/libzen.pc.in
+                   ${CMAKE_CURRENT_BINARY_DIR}/libzen-debug.pc
+                   @ONLY)
+  endif()
+
+  if(CMAKE_CONFIGURATION_TYPES)
+    if(CMAKE_DEBUG_POSTFIX)
+      install(FILES ${CMAKE_CURRENT_BINARY_DIR}/libzen.pc
+              DESTINATION ${LIB_INSTALL_DIR}/pkgconfig
+              CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
+      install(FILES ${CMAKE_CURRENT_BINARY_DIR}/libzen-debug.pc
+              DESTINATION ${LIB_INSTALL_DIR}/pkgconfig
+              RENAME libzen.pc
+              CONFIGURATIONS Debug)
+    else()
+      install(FILES ${CMAKE_CURRENT_BINARY_DIR}/libzen.pc
+              DESTINATION ${LIB_INSTALL_DIR}/pkgconfig)
+    endif()
+  elseif(CMAKE_BUILD_TYPE STREQUAL "Debug" AND CMAKE_DEBUG_POSTFIX)
+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/libzen-debug.pc
+            DESTINATION ${LIB_INSTALL_DIR}/pkgconfig
+            RENAME libzen.pc)
+  else()
+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/libzen.pc
+            DESTINATION ${LIB_INSTALL_DIR}/pkgconfig)
+  endif()
 endif()
 
 # cmake-modules
