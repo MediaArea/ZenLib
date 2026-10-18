@@ -200,6 +200,10 @@ configure_file(
 # pkg-config
 find_package(PkgConfig)
 if(PKG_CONFIG_FOUND)
+  set(ZenLib_PKGCONFIG_THREAD_LIBS "")
+  if(CMAKE_THREAD_LIBS_INIT)
+    set(ZenLib_PKGCONFIG_THREAD_LIBS " ${CMAKE_THREAD_LIBS_INIT}")
+  endif()
   configure_file(${CMAKE_CURRENT_SOURCE_DIR}/libzen.pc.in
                  ${CMAKE_CURRENT_BINARY_DIR}/libzen.pc
                  @ONLY)
