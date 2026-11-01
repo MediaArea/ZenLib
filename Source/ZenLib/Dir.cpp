@@ -349,7 +349,7 @@ ZtringList Dir::GetAllFileNames(const Ztring &Dir_Name_, dirlist_t Options)
 
             //open
             #ifdef UNICODE
-                DIR* Dir=opendir(Dir_Name.To_Local().c_str());
+                DIR* Dir=opendir(FileName_To_Native(Dir_Name).c_str());
             #else
                 DIR* Dir=opendir(Dir_Name.c_str());
             #endif //UNICODE
@@ -367,7 +367,7 @@ ZtringList Dir::GetAllFileNames(const Ztring &Dir_Name_, dirlist_t Options)
                 while((DirEnt=readdir(Dir))!=NULL)
                 {
                     //A file
-                    Ztring File_Name(DirEnt->d_name);
+                    Ztring File_Name=FileName_From_Native(DirEnt->d_name);
                     if (File_Name.empty())
                         continue; //Can't be decoded
                     if (!(Options&Include_Hidden) && File_Name[0]==__T('.'))
@@ -395,10 +395,10 @@ ZtringList Dir::GetAllFileNames(const Ztring &Dir_Name_, dirlist_t Options)
             else
             {
                 glob_t globbuf;
-                if (glob(Dir_Name.To_Local().c_str(), GLOB_NOSORT, NULL, &globbuf)==0)
+                if (glob(FileName_To_Native(Dir_Name).c_str(), GLOB_NOSORT, NULL, &globbuf)==0)
                 {
                     for (size_t Pos=0; Pos<globbuf.gl_pathc; Pos++)
-                        ToReturn.push_back(Ztring().From_Local(globbuf.gl_pathv[Pos]));
+                        ToReturn.push_back(FileName_From_Native(globbuf.gl_pathv[Pos]));
                 }
             }
             #endif
@@ -476,7 +476,7 @@ bool Dir::Exists(const Ztring &File_Name)
             struct stat buffer;
             int         status;
             #ifdef UNICODE
-                status=stat(File_Name.To_Local().c_str(), &buffer);
+                status=stat(FileName_To_Native(File_Name).c_str(), &buffer);
             #else
                 status=stat(File_Name.c_str(), &buffer);
             #endif //UNICODE
@@ -535,7 +535,7 @@ bool Dir::Create(const Ztring &File_Name)
                 #endif //UNICODE
             #endif
         #else //WINDOWS
-            return mkdir(File_Name.To_Local().c_str(), 0700)==0;
+            return mkdir(FileName_To_Native(File_Name).c_str(), 0700)==0;
         #endif //WINDOWS
     #endif //ZENLIB_USEWX
 }

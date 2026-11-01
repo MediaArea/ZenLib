@@ -265,7 +265,7 @@ bool File::Open (const tstring &File_Name_, access_t Access)
                 default                  : access=0                          ;
             }
             #ifdef UNICODE
-                File_Handle=open(File_Name.To_Local().c_str(), access);
+                File_Handle=open(FileName_To_Native(File_Name).c_str(), access);
             #else
                 File_Handle=open(File_Name.c_str(), access);
             #endif //UNICODE
@@ -284,7 +284,7 @@ bool File::Open (const tstring &File_Name_, access_t Access)
                 default                  : mode = ios_base::binary | ios_base::in;
             }
             #ifdef UNICODE
-                File_Handle=new fstream(File_Name.To_Local().c_str(), mode);
+                File_Handle=new fstream(FileName_To_Native(File_Name).c_str(), mode);
             #else
                 File_Handle=new fstream(File_Name.c_str(), mode);
             #endif //UNICODE
@@ -461,7 +461,7 @@ bool File::Create (const Ztring &File_Name_, bool OverWrite)
                 default           : access=O_BINARY|O_CREAT|O_WRONLY|O_TRUNC; break;
             }
             #ifdef UNICODE
-                File_Handle=open(File_Name.To_Local().c_str(), access);
+                File_Handle=open(FileName_To_Native(File_Name).c_str(), access);
             #else
                 File_Handle=open(File_Name.c_str(), access);
             #endif //UNICODE
@@ -482,7 +482,7 @@ bool File::Create (const Ztring &File_Name_, bool OverWrite)
             access=ios_base::binary|ios_base::in|ios_base::out|ios_base::trunc;
 
             #ifdef UNICODE
-                File_Handle=new fstream(File_Name.To_Local().c_str(), access);
+                File_Handle=new fstream(FileName_To_Native(File_Name).c_str(), access);
             #else
                 File_Handle=new fstream(File_Name.c_str(), access);
             #endif //UNICODE
@@ -820,7 +820,7 @@ bool File::Truncate (int64u Offset)
                     Offset=Position_Get();
                 Ztring File_Name_Sav=File_Name;
                 Close();
-                if (truncate(File_Name_Sav.To_Local().c_str(), Offset))
+                if (truncate(FileName_To_Native(File_Name_Sav).c_str(), Offset))
                     return false;
                 if (!Open(File_Name_Sav, Access_Read_Write))
                     return false;
@@ -1096,14 +1096,14 @@ Ztring File::Created_Get()
         #ifdef ZENLIB_STANDARD
             #if defined(LINUX) && defined(LINUX_STATX)
                 struct statx Stat;
-                int Result=statx(AT_FDCWD, File_Name.To_Local().c_str(), AT_STATX_SYNC_AS_STAT, STATX_BTIME, &Stat);
+                int Result=statx(AT_FDCWD, FileName_To_Native(File_Name).c_str(), AT_STATX_SYNC_AS_STAT, STATX_BTIME, &Stat);
                 if (Result<0)
                     return __T(""); //Error
                 Ztring Time; Time.Date_From_Seconds_1970((int64s)Stat.stx_btime.tv_sec);
                 return Time;
             #elif defined MACOS || defined MACOSX
                 struct stat Stat;
-                int Result=stat(File_Name.To_Local().c_str(), &Stat);
+                int Result=stat(FileName_To_Native(File_Name).c_str(), &Stat);
                 if (Result<0)
                     return __T(""); //Error
                 Ztring Time; Time.Date_From_Seconds_1970((int64s)Stat.st_birthtime);
@@ -1181,14 +1181,14 @@ Ztring File::Created_Local_Get()
         #ifdef ZENLIB_STANDARD
             #if defined(LINUX) && defined(LINUX_STATX)
                 struct statx Stat;
-                int Result=statx(AT_FDCWD, File_Name.To_Local().c_str(), AT_STATX_SYNC_AS_STAT, STATX_BTIME, &Stat);
+                int Result=statx(AT_FDCWD, FileName_To_Native(File_Name).c_str(), AT_STATX_SYNC_AS_STAT, STATX_BTIME, &Stat);
                 if (Result<0)
                     return __T(""); //Error
                 Ztring Time; Time.Date_From_Seconds_1970_Local(Stat.stx_btime.tv_sec);
                 return Time;
             #elif defined MACOS || defined MACOSX
                 struct stat Stat;
-                int Result=stat(File_Name.To_Local().c_str(), &Stat);
+                int Result=stat(FileName_To_Native(File_Name).c_str(), &Stat);
                 if (Result<0)
                     return __T(""); //Error
                 Ztring Time; Time.Date_From_Seconds_1970_Local((int64s)Stat.st_birthtime);
@@ -1249,7 +1249,7 @@ Ztring File::Modified_Get()
     #else //ZENLIB_USEWX
         #ifdef ZENLIB_STANDARD
             struct stat Stat;
-            int Result=stat(File_Name.To_Local().c_str(), &Stat);
+            int Result=stat(FileName_To_Native(File_Name).c_str(), &Stat);
             if (Result<0)
                 return __T(""); //Error
             Ztring Time; Time.Date_From_Seconds_1970((int64s)Stat.st_mtime);
@@ -1311,7 +1311,7 @@ Ztring File::Modified_Local_Get()
     #else //ZENLIB_USEWX
         #ifdef ZENLIB_STANDARD
             struct stat Stat;
-            int Result=stat(File_Name.To_Local().c_str(), &Stat);
+            int Result=stat(FileName_To_Native(File_Name).c_str(), &Stat);
             if (Result<0)
                 return __T(""); //Error
             Ztring Time; Time.Date_From_Seconds_1970_Local(Stat.st_mtime);
@@ -1416,7 +1416,7 @@ bool File::Exists(const Ztring &File_Name)
             struct stat buffer;
             int         status;
             #ifdef UNICODE
-                status=stat(File_Name.To_Local().c_str(), &buffer);
+                status=stat(FileName_To_Native(File_Name).c_str(), &buffer);
             #else
                 status=stat(File_Name.c_str(), &buffer);
             #endif //UNICODE
@@ -1541,7 +1541,7 @@ bool File::Move(const Ztring &Source, const Ztring &Destination, bool OverWrite)
         return wxRenameFile(Source.c_str(), Destination.c_str());
     #else //ZENLIB_USEWX
         #ifdef ZENLIB_STANDARD
-            return !std::rename(Source.To_Local().c_str(), Destination.To_Local().c_str());
+            return !std::rename(FileName_To_Native(Source).c_str(), FileName_To_Native(Destination).c_str());
         #elif defined WINDOWS
             #ifdef WINDOWS_UWP
                 NameCollisionOption Collision_Option=NameCollisionOption_FailIfExists;
@@ -1596,7 +1596,7 @@ bool File::Delete(const Ztring &File_Name)
     #else //ZENLIB_USEWX
         #ifdef ZENLIB_STANDARD
             #ifdef UNICODE
-                return unlink(File_Name.To_Local().c_str())==0;
+                return unlink(FileName_To_Native(File_Name).c_str())==0;
             #else
                 return unlink(File_Name.c_str())==0;
             #endif //UNICODE

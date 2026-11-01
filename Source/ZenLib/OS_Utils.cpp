@@ -42,6 +42,11 @@
             #include <shlobj.h>
             #include <shellapi.h>
         #endif
+    #else
+        #include <cstring>
+        #if !defined(__APPLE__) && !defined(__ANDROID__)
+            #include <langinfo.h>
+        #endif
     #endif
 #endif //ZENLIB_USEWX
 #include "ZenLib/OS_Utils.h"
@@ -241,6 +246,38 @@ void Shell_Execute(const Ztring &ToExecute)
             //Not supported
         #endif
     #endif //ZENLIB_USEWX
+}
+
+//***************************************************************************
+// File names
+//***************************************************************************
+
+//---------------------------------------------------------------------------
+//File names are UTF-8 on macOS and Android, whatever the locale. On other
+//Unix-like systems, they use the locale encoding, but an ASCII locale such as
+//"C" can't encode most of them, so use UTF-8 then, as Python does.
+static bool FileName_IsUTF8()
+{
+    #if defined(ZENLIB_USEWX) || defined(WINDOWS)
+        return false;
+    #elif defined(__APPLE__) || defined(__ANDROID__)
+        return true;
+    #else
+        const char* CodeSet=nl_langinfo(CODESET);
+        return !strcmp(CodeSet, "ANSI_X3.4-1968") || !strcmp(CodeSet, "ASCII") || !strcmp(CodeSet, "US-ASCII") || !strcmp(CodeSet, "646");
+    #endif
+}
+
+//---------------------------------------------------------------------------
+std::string FileName_To_Native(const Ztring &File_Name)
+{
+    return FileName_IsUTF8()?File_Name.To_UTF8():File_Name.To_Local();
+}
+
+//---------------------------------------------------------------------------
+Ztring FileName_From_Native(const char* File_Name)
+{
+    return FileName_IsUTF8()?Ztring().From_UTF8(File_Name):Ztring().From_Local(File_Name);
 }
 
 //***************************************************************************
