@@ -368,7 +368,9 @@ ZtringList Dir::GetAllFileNames(const Ztring &Dir_Name_, dirlist_t Options)
                 {
                     //A file
                     Ztring File_Name(DirEnt->d_name);
-                    if (!(Options&Include_Hidden) && (!File_Name.empty() && File_Name[0]==__T('.')))
+                    if (File_Name.empty())
+                        continue; //Can't be decoded
+                    if (!(Options&Include_Hidden) && File_Name[0]==__T('.'))
                         continue;
 
                     if (File_Name!=__T(".") && File_Name!=__T("..")) //Avoid . an ..
