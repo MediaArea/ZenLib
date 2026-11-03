@@ -2342,6 +2342,32 @@ Ztring::size_type Ztring::FindAndReplace (const ZenLib::tstring &ToFind, const Z
 
     size_type Count=0;
     size_type Middle=Pos;
+    if ((Options&Ztring_Recursive) && ToFind.length()!=ReplaceBy.length())
+    {
+        //Building a new string in one pass, replacing in place would move the end of the string for each occurrence
+        size_type Begin=Pos;
+        tstring Result;
+        while ((Middle=find(ToFind, Middle))!=npos)
+        {
+            if (!Count)
+            {
+                Result.reserve(size());
+                Result.append(*this, 0, Begin);
+            }
+            Result.append(*this, Begin, Middle-Begin);
+            Result.append(ReplaceBy);
+            Middle+=ToFind.length();
+            Begin=Middle;
+            Count++;
+        }
+        if (Count)
+        {
+            Result.append(*this, Begin, npos);
+            assign(Result);
+        }
+        return Count;
+    }
+
     while (!(Count==1 && !(Options&Ztring_Recursive)) && (Middle=find(ToFind, Middle))!=npos)
     {
         replace(Middle, ToFind.length(), ReplaceBy);
