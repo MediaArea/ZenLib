@@ -368,8 +368,8 @@ ZtringList Dir::GetAllFileNames(const Ztring &Dir_Name_, dirlist_t Options)
                 {
                     //A file
                     Ztring File_Name=FileName_From_Native(DirEnt->d_name);
-                    if (File_Name.empty())
-                        continue; //Can't be decoded
+                    if (File_Name.empty() || FileName_To_Native(File_Name)!=DirEnt->d_name)
+                        continue; //Can't be decoded to a name which can be opened (e.g. an overlong UTF-8 sequence decoded to "/")
                     if (!(Options&Include_Hidden) && File_Name[0]==__T('.'))
                         continue;
 
@@ -398,7 +398,12 @@ ZtringList Dir::GetAllFileNames(const Ztring &Dir_Name_, dirlist_t Options)
                 if (glob(FileName_To_Native(Dir_Name).c_str(), GLOB_NOSORT, NULL, &globbuf)==0)
                 {
                     for (size_t Pos=0; Pos<globbuf.gl_pathc; Pos++)
-                        ToReturn.push_back(FileName_From_Native(globbuf.gl_pathv[Pos]));
+                    {
+                        Ztring File_Name=FileName_From_Native(globbuf.gl_pathv[Pos]);
+                        if (!File_Name.empty() && FileName_To_Native(File_Name)==globbuf.gl_pathv[Pos])
+                            ToReturn.push_back(File_Name);
+                    }
+                    globfree(&globbuf);
                 }
             }
             #endif
