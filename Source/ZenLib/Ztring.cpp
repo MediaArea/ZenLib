@@ -1840,7 +1840,7 @@ std::string Ztring::To_Local () const
                     if (Size!=0 && Size!=(size_t)-1)
                     {
                         AnsiString[Size]='\0';
-                        std::string ToReturn(AnsiString);
+                        std::string ToReturn(AnsiString, Size); //All bytes, there can be a 0 in a character: FreeBSD accepts the end of a string as second byte of an EUC character
                         delete[] AnsiString; //AnsiString=NULL;
                         return ToReturn;
                     }
