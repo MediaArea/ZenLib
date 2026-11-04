@@ -237,6 +237,19 @@ bool Ztring::Assign_FromFile (const Ztring &FileName)
 // Conversions
 //***************************************************************************
 
+#if !defined(ZENLIB_USEWX) && (!defined(WINDOWS) || !defined(_UNICODE))
+static size_t UTF8_Char_Size(const int8u* Z);
+
+//A surrogate pair of UTF-16 is one character where wchar_t is 32-bit
+static void UTF16_Append(std::wstring& Wide, int16u Value)
+{
+    if (sizeof(wchar_t)==4 && (Value&0xFC00)==0xDC00 && !Wide.empty() && (Wide[Wide.size()-1]&0xFC00)==0xD800)
+        Wide[Wide.size()-1]=(wchar_t)(0x10000+((Wide[Wide.size()-1]&0x3FF)<<10)+(Value&0x3FF));
+    else
+        Wide+=(wchar_t)Value;
+}
+#endif
+
 Ztring& Ztring::From_Unicode (const wchar_t S)
 {
     #ifdef _UNICODE
@@ -273,17 +286,32 @@ Ztring& Ztring::From_Unicode (const wchar_t* S)
                 else
                     clear();
             #else //WINDOWS
-                size_t Size=wcstombs(NULL, S, 0);
-                if (Size!=0 && Size!=(size_t)-1)
+                //UTF-8, as From_UTF8() and on Windows, whatever the locale
+                clear();
+                for (; *S; S++)
                 {
-                    char* AnsiString=new char[Size+1];
-                    Size=wcstombs(AnsiString, S, Size+1);
-                    AnsiString[Size]='\0';
-                    assign (AnsiString);
-                    delete[] AnsiString;
+                    int32u Value=(int32u)*S;
+                    if (Value<0x80)
+                        append(1, (char)Value);
+                    else if (Value<0x800)
+                    {
+                        append(1, (char)(0xC0|(Value>>6)));
+                        append(1, (char)(0x80|(Value&0x3F)));
+                    }
+                    else if (Value<0x10000)
+                    {
+                        append(1, (char)(0xE0|(Value>>12)));
+                        append(1, (char)(0x80|((Value>>6)&0x3F)));
+                        append(1, (char)(0x80|(Value&0x3F)));
+                    }
+                    else
+                    {
+                        append(1, (char)(0xF0|(Value>>18)));
+                        append(1, (char)(0x80|((Value>>12)&0x3F)));
+                        append(1, (char)(0x80|((Value>>6)&0x3F)));
+                        append(1, (char)(0x80|(Value&0x3F)));
+                    }
                 }
-                else
-                    clear();
             #endif
         #endif //ZENLIB_USEWX
     #endif
@@ -395,7 +423,18 @@ Ztring& Ztring::From_UTF8 (const char* S)
                 }
             }
         #else
-            assign(S); //Not implemented
+            //Text is UTF-8 without Unicode, it must be valid as it is the way to detect another encoding
+            for (const int8u* Z=(const int8u*)S; *Z; )
+            {
+                size_t Size=UTF8_Char_Size(Z);
+                if (!Size)
+                {
+                    clear();
+                    return *this; //Bad character
+                }
+                Z+=Size;
+            }
+            assign(S);
         #endif
     #endif //ZENLIB_USEWX
     return *this;
@@ -472,7 +511,7 @@ Ztring& Ztring::From_UTF16BE (const char* S)
                 assign(wxConvCurrent->cWC2MB(wxConvUTF16BE.cMB2WC(S)));
             #endif
     #else //ZENLIB_USEWX
-        #ifdef WINDOWS
+        #if defined(WINDOWS) && defined(_UNICODE)
             clear();
             const wchar_t* SW=(const wchar_t*)S;
             size_t Pos=0;
@@ -482,13 +521,14 @@ Ztring& Ztring::From_UTF16BE (const char* S)
                 append(1, Temp);
                 Pos++;
             }
-        #else //WINDOWS
-            clear();
+        #else //defined(WINDOWS) && defined(_UNICODE)
+            std::wstring Wide;
             while (S[0]!=0 || S[1]!=0)
             {
-                append(1, (Char)BigEndian2int16u(S));
+                UTF16_Append(Wide, BigEndian2int16u(S));
                 S+=2;
             }
+            From_Unicode(Wide.c_str());
         #endif
     #endif //ZENLIB_USEWX
     return *this;
@@ -534,20 +574,17 @@ Ztring& Ztring::From_UTF16LE (const char* S)
                 assign(wxConvCurrent->cWC2MB(wxConvUTF16LE.cMB2WC(S)));
             #endif
     #else //ZENLIB_USEWX
-        #ifdef WINDOWS
-            #ifdef UNICODE
-                const wchar_t* SW=(const wchar_t*)S;
-                assign(SW);
-            #else
-                clear(); //Not implemented
-            #endif
-        #else //WINDOWS
-            clear();
+        #if defined(WINDOWS) && defined(_UNICODE)
+            const wchar_t* SW=(const wchar_t*)S;
+            assign(SW);
+        #else //defined(WINDOWS) && defined(_UNICODE)
+            std::wstring Wide;
             while (S[0]!=0 || S[1]!=0)
             {
-                append(1, (Char)LittleEndian2int16u(S));
+                UTF16_Append(Wide, LittleEndian2int16u(S));
                 S+=2;
             }
+            From_Unicode(Wide.c_str());
         #endif
     #endif //ZENLIB_USEWX
     return *this;
@@ -593,7 +630,9 @@ static bool Local_IsASCII()
         return false;
     #endif
 }
+#endif
 
+#if !defined(ZENLIB_USEWX) && (!defined(WINDOWS) || !defined(_UNICODE))
 //Count of bytes of the valid UTF-8 character at Z, 0 if there is none
 static size_t UTF8_Char_Size(const int8u* Z)
 {
@@ -630,7 +669,9 @@ static size_t UTF8_Char_Size(const int8u* Z)
             return 0;
     return Size;
 }
+#endif
 
+#if defined(_UNICODE) && !defined(ZENLIB_USEWX) && !defined(WINDOWS)
 static Ztring& From_UTF8_KeepBytes(Ztring& ToReturn, const char* S)
 {
     ToReturn.clear();
@@ -854,7 +895,7 @@ Ztring& Ztring::From_CC4 (const int32u S)
             append(Ztring().From_CC1((int8u)((S&0x000000FF)    )));
             return *this;
         }
-        append(1, (Char)(Value));
+        append(Ztring().From_Unicode((wchar_t)Value)); //Not 1 byte without Unicode
     }
     return *this;
 }
@@ -878,7 +919,7 @@ Ztring& Ztring::From_CC3 (const int32u S)
             append(Ztring().From_CC1((int8u)((S&0x000000FF)    )));
             return *this;
         }
-        append(1, (Char)(Value));
+        append(Ztring().From_Unicode((wchar_t)Value)); //Not 1 byte without Unicode
     }
     return *this;
 }
@@ -1799,7 +1840,23 @@ std::string Ztring::To_UTF8 () const
         #ifdef ZENLIB_USEWX
             return wxConvUTF8.cWC2MB(wxConvCurrent->cMB2WC(c_str())).data();
         #else //ZENLIB_USEWX
-            return c_str(); //Not implemented
+            //Text is UTF-8 without Unicode, but not the bytes of a file name: replaced, the result may be in a document decoded with From_UTF8()
+            std::string ToReturn;
+            for (const int8u* Z=(const int8u*)c_str(); *Z; )
+            {
+                size_t Size=UTF8_Char_Size(Z);
+                if (Size)
+                {
+                    ToReturn.append((const char*)Z, Size);
+                    Z+=Size;
+                }
+                else
+                {
+                    ToReturn+="\xEF\xBF\xBD";
+                    Z++;
+                }
+            }
+            return ToReturn;
         #endif //ZENLIB_USEWX
     #endif
 }
