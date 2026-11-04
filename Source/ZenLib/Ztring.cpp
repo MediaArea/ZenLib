@@ -35,6 +35,8 @@
         #ifndef WINDOWS_GAMES
             #include <tchar.h>
         #endif
+    #elif !defined(__ANDROID_API__) || __ANDROID_API__ >= 26
+        #include <langinfo.h>
     #endif
 #endif //ZENLIB_USEWX
 #ifdef __MINGW32__
@@ -574,6 +576,23 @@ Ztring& Ztring::From_UTF16LE (const char* S, size_type Start, size_type Length)
     return *this;
 }
 
+//---------------------------------------------------------------------------
+//An ASCII locale such as "C", which programs get when they don't call
+//setlocale() or when the environment sets no locale, can't encode non-ASCII
+//characters, or converts them byte per byte, so use UTF-8 instead, as Python
+//does in its UTF-8 Mode
+#if defined(_UNICODE) && !defined(ZENLIB_USEWX) && !defined(WINDOWS)
+static bool Local_IsASCII()
+{
+    #if !defined(__ANDROID_API__) || __ANDROID_API__ >= 26
+        const char* CodeSet=nl_langinfo(CODESET);
+        return CodeSet && (!strcmp(CodeSet, "ANSI_X3.4-1968") || !strcmp(CodeSet, "ASCII") || !strcmp(CodeSet, "US-ASCII") || !strcmp(CodeSet, "646"));
+    #else
+        return false;
+    #endif
+}
+#endif
+
 Ztring& Ztring::From_Local (const char* S)
 {
     if (S==NULL)
@@ -598,6 +617,9 @@ Ztring& Ztring::From_Local (const char* S)
                 else
                     clear();
             #else //WINDOWS
+                if (Local_IsASCII())
+                    return From_UTF8(S);
+
                 size_t Size=mbsrtowcs(NULL, &S, 0, NULL);
                 if (Size!=0 && Size!=(size_t)-1)
                 {
@@ -1733,6 +1755,8 @@ std::string Ztring::To_Local () const
             #else //WINDOWS
                 if (empty())
                     return std::string();
+                if (Local_IsASCII())
+                    return To_UTF8();
 
                 size_t Size=wcstombs(NULL, c_str(), 0);
                 if (Size!=0 && Size!=(size_t)-1)

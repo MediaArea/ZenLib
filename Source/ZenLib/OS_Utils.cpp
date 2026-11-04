@@ -244,6 +244,42 @@ void Shell_Execute(const Ztring &ToExecute)
 }
 
 //***************************************************************************
+// File names
+//***************************************************************************
+
+//---------------------------------------------------------------------------
+//File names are UTF-8 on macOS and Android, whatever the locale. On other
+//Unix-like systems, they use the locale encoding, which is UTF-8 when the
+//locale is ASCII (see Ztring::To_Local()).
+#if !defined(ZENLIB_USEWX) && !defined(WINDOWS) && (defined(__APPLE__) || defined(__ANDROID__))
+    #define ZENLIB_FILENAME_UTF8
+#endif
+
+//---------------------------------------------------------------------------
+std::string FileName_To_Native(const Ztring &File_Name)
+{
+    #ifdef ZENLIB_FILENAME_UTF8
+        return File_Name.To_UTF8();
+    #else
+        return File_Name.To_Local();
+    #endif
+}
+
+//---------------------------------------------------------------------------
+Ztring FileName_From_Native(const char* File_Name)
+{
+    #ifdef ZENLIB_FILENAME_UTF8
+        Ztring ToReturn;
+        ToReturn.From_UTF8(File_Name);
+        if (ToReturn.empty())
+            ToReturn.From_Local(File_Name); //Not UTF-8, e.g. typed in a terminal using the locale encoding
+        return ToReturn;
+    #else
+        return Ztring().From_Local(File_Name);
+    #endif
+}
+
+//***************************************************************************
 // Directories
 //***************************************************************************
 
