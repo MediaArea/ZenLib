@@ -113,6 +113,8 @@ public:
         {
             do {
                 Get(32);
+                if (!buffer)
+                    return;
                 bits-=32;
             } while (bits>32);
             if (bits)
