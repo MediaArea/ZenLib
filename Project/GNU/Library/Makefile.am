@@ -78,5 +78,14 @@ zen_format_http_HEADERS = \
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = libzen.pc
 
+AM_TESTS_FD_REDIRECT = 9>&2
+
+TESTS = test/filename.sh
+
+check_PROGRAMS = test/zen_filename
+test_zen_filename_SOURCES = test/Source/filename.cpp
+test_zen_filename_CXXFLAGS = $(AM_CXXFLAGS) -Wall -Wextra
+test_zen_filename_LDADD = libzen.la
+
 AM_CXXFLAGS = -std=c++11
 AM_CPPFLAGS = -I../../../Source
