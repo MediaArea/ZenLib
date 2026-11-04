@@ -239,6 +239,7 @@ void Shell_Execute(const Ztring &ToExecute)
             ShellExecute(NULL, __T("open"), ToExecute.c_str(), NULL, NULL, 0);
         #else
             //Not supported
+            (void)ToExecute;
         #endif
     #endif //ZENLIB_USEWX
 }
@@ -251,7 +252,7 @@ void Shell_Execute(const Ztring &ToExecute)
 //File names are UTF-8 on macOS and Android, whatever the locale. On other
 //Unix-like systems, they use the locale encoding, which is UTF-8 when the
 //locale is ASCII (see Ztring::To_Local()).
-#if !defined(ZENLIB_USEWX) && !defined(WINDOWS) && (defined(__APPLE__) || defined(__ANDROID__))
+#if defined(UNICODE) && !defined(ZENLIB_USEWX) && !defined(WINDOWS) && (defined(__APPLE__) || defined(__ANDROID__))
     #define ZENLIB_FILENAME_UTF8
 #endif
 
@@ -259,6 +260,9 @@ void Shell_Execute(const Ztring &ToExecute)
 std::string FileName_To_Native(const Ztring &File_Name)
 {
     #ifdef ZENLIB_FILENAME_UTF8
+        for (size_t Pos=0; Pos<File_Name.size(); Pos++)
+            if (File_Name[Pos]>=0xDC80 && File_Name[Pos]<=0xDCFF)
+                return File_Name.To_Local(); //Bytes of a name which is not valid UTF-8 (see Ztring::To_Local())
         return File_Name.To_UTF8();
     #else
         return File_Name.To_Local();
@@ -271,7 +275,7 @@ Ztring FileName_From_Native(const char* File_Name)
     #ifdef ZENLIB_FILENAME_UTF8
         Ztring ToReturn;
         ToReturn.From_UTF8(File_Name);
-        if (ToReturn.empty())
+        if (ToReturn.empty() || FileName_To_Native(ToReturn)!=File_Name)
             ToReturn.From_Local(File_Name); //Not UTF-8, e.g. typed in a terminal using the locale encoding
         return ToReturn;
     #else

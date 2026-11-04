@@ -98,7 +98,7 @@ std::string URL_Encoded_Encode (const std::string& URL)
     string::size_type Pos;
     for (Pos=0; Pos<URL.size(); Pos++)
     {
-        if ((URL[Pos]>='\x00' && URL[Pos]<='\x20')
+        if ((unsigned char)URL[Pos]<=0x20
          || URL[Pos]=='\x7F'
          || URL[Pos]=='<'
          || URL[Pos]=='>'
@@ -210,14 +210,21 @@ std::wstring URL_Encoded_Decode (const std::wstring& URL)
             if (Char>=0xC2 && Char<=0xF4)
             {
                 //Handle as UTF-8
-                auto AdditionalBytes_Real=0;
                 auto AdditionalBytes_Theory=Char>=0xF0?3:(Char>=0xE0?2:1);
-                Char&=AdditionalBytes_Theory>0xF0?0x1F:0x0F;
                 if (Pos+(AdditionalBytes_Theory+1)*3<=URL.size())
                 {
-                    for (auto i=0; i<AdditionalBytes_Theory; i++)
-                        if (URL[Pos+3*i]!=L'%' )
+                    for (auto i=1; i<=AdditionalBytes_Theory; i++)
+                        if (URL[Pos+3*i]!=L'%' || (Char2Hex(URL[Pos+3*i+1])&0xC)!=0x8)
                             AdditionalBytes_Theory=0;
+                    if (AdditionalBytes_Theory>=2)
+                    {
+                        //No overlong sequence, UTF-16 surrogate or value after U+10FFFF
+                        int32u Second=(Char2Hex(URL[Pos+4])<<4)|Char2Hex(URL[Pos+5]);
+                        if ((Char==0xE0 && Second<0xA0) || (Char==0xED && Second>0x9F) || (Char==0xF0 && Second<0x90) || (Char==0xF4 && Second>0x8F))
+                            AdditionalBytes_Theory=0;
+                    }
+                    if (AdditionalBytes_Theory)
+                        Char&=0x3F>>AdditionalBytes_Theory;
                     for (auto i=0; i<AdditionalBytes_Theory; i++)
                     {
                         auto Base=Pos+(i+1)*3+1;
@@ -228,7 +235,7 @@ std::wstring URL_Encoded_Decode (const std::wstring& URL)
                     Pos+=3*AdditionalBytes_Theory; //3 additional chars per extra are used
                 }
             }
-            if (sizeof(wchar_t)==4 || Char<=0xD800)
+            if (sizeof(wchar_t)==4 || Char<0x10000)
                 Result+=(wchar_t)Char;
             else
             {

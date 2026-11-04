@@ -66,6 +66,10 @@ cp ../Project/GNU/Library/missing ZenLib_GNU_FromSource/Project/GNU/Library/
 cp ../Project/GNU/Library/wxwin.m4 ZenLib_GNU_FromSource/Project/GNU/Library/
 cp ../Project/GNU/Library/libzen.pc.in ZenLib_GNU_FromSource/Project/GNU/Library/
 cp ../Project/GNU/Library/libzen-config.in ZenLib_GNU_FromSource/Project/GNU/Library/
+cp ../Project/GNU/Library/test-driver ZenLib_GNU_FromSource/Project/GNU/Library/
+mkdir -p ZenLib_GNU_FromSource/Project/GNU/Library/test/Source
+cp ../Project/GNU/Library/test/*.sh ZenLib_GNU_FromSource/Project/GNU/Library/test/
+cp ../Project/GNU/Library/test/Source/*.cpp ZenLib_GNU_FromSource/Project/GNU/Library/test/Source/
 
 
 #-----------------------------------------------------------------------
