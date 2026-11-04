@@ -1,0 +1,176 @@
+name: FileName Checks
+
+on: [push, pull_request]
+
+jobs:
+
+  Unix:
+    strategy:
+      matrix:
+        include:
+          - name: Linux
+            os: ubuntu-latest
+          - name: macOS (arm64)
+            os: macos-latest
+          - name: macOS (x64)
+            os: macos-15-intel
+          - name: Sanitizers
+            os: ubuntu-latest
+            CXXFLAGS: -O1 -g -fsanitize=address,undefined -fno-sanitize-recover=undefined -fno-omit-frame-pointer
+            LDFLAGS: -fsanitize=address,undefined
+          - name: Without Unicode
+            os: ubuntu-latest
+            configure: --disable-unicode
+          - name: macOS without Unicode
+            os: macos-15-intel
+            configure: --disable-unicode
+      fail-fast: false
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    env:
+      CXXFLAGS: ${{ matrix.CXXFLAGS || '-O0 -Wall -Wextra -Werror' }}
+      LDFLAGS: ${{ matrix.LDFLAGS }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+      - name: OS packets
+        if: runner.os == 'macOS'
+        env:
+          HOMEBREW_NO_REQUIRE_TAP_TRUST: 1 # Prevent Homebrew third-party trust warnings due to GitHub's pre-installed taps
+        run: brew install automake libtool
+      - name: Configure
+        run: |
+          cd Project/GNU/Library
+          autoreconf -if
+          ./configure --enable-silent-rules ${{ matrix.configure }}
+      - name: Compile
+        run: |
+          cd Project/GNU/Library
+          make -j4
+      - name: Check
+        run: |
+          cd Project/GNU/Library
+          make check
+
+  Alpine:
+    runs-on: ubuntu-latest
+    container: alpine:latest
+    env:
+      CXXFLAGS: -O0
+    steps:
+      - name: OS packets
+        run: apk add --no-cache autoconf automake bash build-base git libtool
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+      - name: Configure
+        run: |
+          cd Project/GNU/Library
+          autoreconf -if
+          ./configure --enable-silent-rules
+      - name: Compile
+        run: |
+          cd Project/GNU/Library
+          make -j4
+      - name: Check
+        run: |
+          cd Project/GNU/Library
+          make check
+
+  FreeBSD:
+    strategy:
+      matrix:
+        include:
+          - name: FreeBSD
+          - name: FreeBSD without Unicode
+            configure: --disable-unicode
+      fail-fast: false
+    name: ${{ matrix.name }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+      - name: Check
+        uses: vmactions/freebsd-vm@v1
+        with:
+          usesh: true
+          prepare: pkg install -y autoconf automake bash gmake libtool
+          run: |
+            set -e
+            cd Project/GNU/Library
+            autoreconf -if
+            ./configure --enable-silent-rules ${{ matrix.configure }} CXXFLAGS=-O0
+            gmake -j4
+            gmake check
+
+  Android:
+    strategy:
+      matrix:
+        api: [24, 26, 28, 34]
+      fail-fast: false
+    name: Android (API ${{ matrix.api }})
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+      - name: Compile
+        run: |
+          # nl_langinfo() from API level 26, glob() from API level 28
+          Compiler="${ANDROID_NDK_LATEST_HOME}/toolchains/llvm/prebuilt/linux-x86_64/bin/x86_64-linux-android${{ matrix.api }}-clang++"
+          "${Compiler}" -std=c++11 -O1 -DUNICODE -DHAVE_GMTIME_R -ISource -static-libstdc++ -o zen_filename Project/GNU/Library/test/Source/filename.cpp $(ls Source/ZenLib/*.cpp | grep -v HTTP_Client)
+      - name: KVM for the emulator
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - name: Check
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: ${{ matrix.api }}
+          arch: x86_64
+          script: sh Project/GNU/Library/test/filename_android.sh zen_filename
+
+  Windows:
+    strategy:
+      matrix:
+        include:
+          - architecture: x64
+            unicode: /DUNICODE /D_UNICODE
+          - architecture: x86
+            unicode: /DUNICODE /D_UNICODE
+          - architecture: x64
+            name: ', without Unicode'
+          - architecture: x86
+            name: ', without Unicode'
+      fail-fast: false
+    name: Windows (${{ matrix.architecture }}${{ matrix.name }})
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Line endings
+        run: git config --global core.autocrlf false # Test scripts with LF line endings
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+      - name: Compile
+        shell: cmd
+        run: |
+          for /f "usebackq delims=" %%i in (`"%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath`) do call "%%i\VC\Auxiliary\Build\vcvarsall.bat" ${{ matrix.architecture }}
+          mkdir build
+          cl /nologo /c /MP /EHsc /O1 ${{ matrix.unicode }} /ISource /Fobuild\ Source\ZenLib\*.cpp || exit /b 1
+          del build\HTTP_Client.obj
+          cl /nologo /EHsc /O1 ${{ matrix.unicode }} /ISource /Fozen_filename.obj /FeProject\GNU\Library\test\zen_filename.exe Project\GNU\Library\test\Source\filename.cpp build\*.obj shell32.lib user32.lib advapi32.lib || exit /b 1
+      - name: Check
+        run: |
+          cd Project/GNU/Library
+          bash test/filename.sh 9>&1 # Test of make check (no make in Git Bash)
