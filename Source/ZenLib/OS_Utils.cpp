@@ -239,6 +239,7 @@ void Shell_Execute(const Ztring &ToExecute)
             ShellExecute(NULL, __T("open"), ToExecute.c_str(), NULL, NULL, 0);
         #else
             //Not supported
+            (void)ToExecute;
         #endif
     #endif //ZENLIB_USEWX
 }

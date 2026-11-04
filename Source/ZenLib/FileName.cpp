@@ -73,6 +73,7 @@ Ztring& FileName::Path_Set(const Ztring &Path)
             replace(0, Pos_Path, Path, 0, Ztring::npos);
         #else
             //Not supported
+            (void)Path;
         #endif
     #endif //ZENLIB_USEWX
     return *this;
@@ -122,6 +123,7 @@ Ztring& FileName::Name_Set(const Ztring &Name)
             replace(Pos_Path+1, Pos_Ext-Pos_Path-1, Name, 0, Ztring::npos);
         #else
             //Not supported
+            (void)Name;
         #endif
     #endif //ZENLIB_USEWX
     return *this;
@@ -170,6 +172,7 @@ Ztring& FileName::Extension_Set(const Ztring &Extension)
             replace(Pos_Ext+1, size()-Pos_Ext-1, Extension, 0, Ztring::npos);
         #else
             //Not supported
+            (void)Extension;
         #endif
     #endif //ZENLIB_USEWX
     return *this;
@@ -200,6 +203,7 @@ Ztring FileName::TempFileName_Create(const Ztring &Prefix)
                 return __T("D:\\xxx.txt");
             #endif // #ifdef WINDOWS_GAMES
         #else
+            (void)Prefix;
             return __T("C:\\xxx.txt");
         #endif
     #endif //ZENLIB_USEWX

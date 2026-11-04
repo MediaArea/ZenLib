@@ -49,6 +49,7 @@ class uint128 {
         // Constructors
         inline uint128 () noexcept : lo(0), hi(0) {};
         inline uint128 (const uint128 & a) noexcept : lo (a.lo), hi (a.hi) {};
+        uint128 & operator = (const uint128 &) noexcept = default;
 
         inline uint128 (const int & a) noexcept : lo (a), hi (0ull) {};
         inline uint128 (const unsigned int & a) noexcept : lo (a), hi (0ull) {};

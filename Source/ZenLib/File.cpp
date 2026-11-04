@@ -1481,6 +1481,9 @@ bool File::Copy(const Ztring &Source, const Ztring &Destination, bool OverWrite)
         return wxCopyFile(Source.c_str(), Destination.c_str(), OverWrite);
     #else //ZENLIB_USEWX
         #ifdef ZENLIB_STANDARD
+            (void)Source;
+            (void)Destination;
+            (void)OverWrite;
             return false;
         #elif defined WINDOWS
             #ifdef WINDOWS_UWP
