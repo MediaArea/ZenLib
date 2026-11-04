@@ -580,7 +580,9 @@ Ztring& Ztring::From_UTF16LE (const char* S, size_type Start, size_type Length)
 //An ASCII locale such as "C", which programs get when they don't call
 //setlocale() or when the environment sets no locale, can't encode non-ASCII
 //characters, or converts them byte per byte, so use UTF-8 instead, as Python
-//does in its UTF-8 Mode
+//does in its UTF-8 Mode. Bytes which are not valid UTF-8, e.g. of a Latin-1
+//file name, are kept as U+DC80 to U+DCFF, which are not characters, so a name
+//gives the same bytes back, as Python does with "surrogateescape"
 #if defined(_UNICODE) && !defined(ZENLIB_USEWX) && !defined(WINDOWS)
 static bool Local_IsASCII()
 {
@@ -590,6 +592,78 @@ static bool Local_IsASCII()
     #else
         return false;
     #endif
+}
+
+//Count of bytes of the valid UTF-8 character at Z, 0 if there is none
+static size_t UTF8_Char_Size(const int8u* Z)
+{
+    if (*Z<0x80)
+        return 1;
+
+    size_t Size;
+    int8u Second_Min=0x80, Second_Max=0xBF;
+    if (*Z>=0xC2 && *Z<=0xDF)
+        Size=2;
+    else if (*Z>=0xE0 && *Z<=0xEF)
+    {
+        Size=3;
+        if (*Z==0xE0)
+            Second_Min=0xA0; //Overlong
+        else if (*Z==0xED)
+            Second_Max=0x9F; //UTF-16 surrogate
+    }
+    else if (*Z>=0xF0 && *Z<=0xF4)
+    {
+        Size=4;
+        if (*Z==0xF0)
+            Second_Min=0x90; //Overlong
+        else if (*Z==0xF4)
+            Second_Max=0x8F; //After U+10FFFF
+    }
+    else
+        return 0;
+
+    if (Z[1]<Second_Min || Z[1]>Second_Max)
+        return 0;
+    for (size_t Pos=2; Pos<Size; Pos++)
+        if ((Z[Pos]&0xC0)!=0x80)
+            return 0;
+    return Size;
+}
+
+static Ztring& From_UTF8_KeepBytes(Ztring& ToReturn, const char* S)
+{
+    ToReturn.clear();
+    const char* Valid=S;
+    while (*S)
+    {
+        size_t Size=UTF8_Char_Size((const int8u*)S);
+        if (Size)
+        {
+            S+=Size;
+            continue;
+        }
+        ToReturn+=Ztring().From_UTF8(Valid, 0, S-Valid);
+        ToReturn+=(wchar_t)(0xDC00+*(const int8u*)S);
+        Valid=++S;
+    }
+    ToReturn+=Ztring().From_UTF8(Valid);
+    return ToReturn;
+}
+
+static std::string To_UTF8_KeepBytes(const Ztring& S)
+{
+    std::string ToReturn;
+    size_t Valid=0;
+    for (size_t Pos=0; Pos<S.size(); Pos++)
+        if (S[Pos]>=0xDC80 && S[Pos]<=0xDCFF && (!Pos || (S[Pos-1]&0xFC00)!=0xD800)) //Not in a UTF-16 surrogate pair
+        {
+            ToReturn+=Ztring(S, Valid, Pos-Valid).To_UTF8();
+            ToReturn+=(char)(S[Pos]-0xDC00);
+            Valid=Pos+1;
+        }
+    ToReturn+=Ztring(S, Valid).To_UTF8();
+    return ToReturn;
 }
 #endif
 
@@ -618,7 +692,7 @@ Ztring& Ztring::From_Local (const char* S)
                     clear();
             #else //WINDOWS
                 if (Local_IsASCII())
-                    return From_UTF8(S);
+                    return From_UTF8_KeepBytes(*this, S);
 
                 size_t Size=mbsrtowcs(NULL, &S, 0, NULL);
                 if (Size!=0 && Size!=(size_t)-1)
@@ -1756,7 +1830,7 @@ std::string Ztring::To_Local () const
                 if (empty())
                     return std::string();
                 if (Local_IsASCII())
-                    return To_UTF8();
+                    return To_UTF8_KeepBytes(*this);
 
                 size_t Size=wcstombs(NULL, c_str(), 0);
                 if (Size!=0 && Size!=(size_t)-1)
