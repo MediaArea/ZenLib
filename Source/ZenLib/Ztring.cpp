@@ -694,7 +694,8 @@ Ztring& Ztring::From_Local (const char* S)
                 if (Local_IsASCII())
                     return From_UTF8_KeepBytes(*this, S);
 
-                size_t Size=mbsrtowcs(NULL, &S, 0, NULL);
+                const char* S_Size=S; //Android 7 sets it to NULL at the end of the string, also when there is no destination
+                size_t Size=mbsrtowcs(NULL, &S_Size, 0, NULL);
                 if (Size!=0 && Size!=(size_t)-1)
                 {
                     wchar_t* WideString=new wchar_t[Size+1];
