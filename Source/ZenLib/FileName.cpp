@@ -35,6 +35,32 @@ namespace ZenLib
 {
 
 //***************************************************************************
+// Helpers
+//***************************************************************************
+
+//---------------------------------------------------------------------------
+// Position of the last path separator: "/", also "\" on Windows
+// Without Unicode on Windows, the second byte of a character of a multibyte code page (e.g. "\" in cp932) is not a separator
+static size_t PathSeparator_RFind(const Ztring &Name)
+{
+    #if defined(WINDOWS) && !defined(UNICODE)
+        size_t ToReturn=Ztring::npos;
+        for (size_t Pos=0; Pos<Name.size(); Pos++)
+        {
+            if (Name[Pos]=='\\' || Name[Pos]=='/')
+                ToReturn=Pos;
+            else if (IsDBCSLeadByte((BYTE)Name[Pos]))
+                Pos++; //Second byte
+        }
+        return ToReturn;
+    #elif defined(WINDOWS)
+        return Name.find_last_of(__T("\\/"));
+    #else
+        return Name.rfind(__T('/'));
+    #endif
+}
+
+//***************************************************************************
 // Read/Write
 //***************************************************************************
 
@@ -46,7 +72,7 @@ Ztring FileName::Path_Get() const
         return FN.GetPath().c_str();
     #else //ZENLIB_USEWX
         //Path limit
-        size_t Pos_Path=rfind(FileName_PathSeparator);
+        size_t Pos_Path=PathSeparator_RFind(*this);
         if (Pos_Path==Ztring::npos)
             return Ztring(); //Not found
         else
@@ -64,7 +90,7 @@ Ztring& FileName::Path_Set(const Ztring &Path)
     #else //ZENLIB_USEWX
         #ifdef WINDOWS
             //Path limit
-            size_t Pos_Path=rfind(__T('\\'));
+            size_t Pos_Path=PathSeparator_RFind(*this);
             if (Pos_Path==Ztring::npos)
             {
                 insert(0, 1, __T('\\')); //Not found
@@ -88,11 +114,11 @@ Ztring FileName::Name_Get() const
             return Ztring();
         return FN.GetName().c_str();
     #else //ZENLIB_USEWX
-        size_t Pos_Path=rfind(FileName_PathSeparator); //Path limit
+        size_t Pos_Path=PathSeparator_RFind(*this); //Path limit
         if (Pos_Path==Ztring::npos)
             Pos_Path=0; //Not found
         else
-            Pos_Path+=Ztring(FileName_PathSeparator).size(); //Path separator size
+            Pos_Path++; //Path separator size
         //Extension limit
         size_t Pos_Ext=rfind(__T('.'));
         if (Pos_Ext==Ztring::npos || Pos_Ext<Pos_Path)
@@ -113,7 +139,7 @@ Ztring& FileName::Name_Set(const Ztring &Name)
     #else //ZENLIB_USEWX
         #ifdef WINDOWS
             //Path limit
-            size_t Pos_Path=rfind(__T('\\'));
+            size_t Pos_Path=PathSeparator_RFind(*this);
             if (Pos_Path==Ztring::npos)
                 Pos_Path=0; //Not found
             //Extension limit
@@ -137,7 +163,7 @@ Ztring FileName::Extension_Get() const
         return FN.GetExt().c_str();
     #else //ZENLIB_USEWX
         //Path limit
-        size_t Pos_Path=rfind(FileName_PathSeparator);
+        size_t Pos_Path=PathSeparator_RFind(*this);
         if (Pos_Path==Ztring::npos)
             Pos_Path=0; //Not found
         //Extension limit
@@ -159,7 +185,7 @@ Ztring& FileName::Extension_Set(const Ztring &Extension)
     #else //ZENLIB_USEWX
         #ifdef WINDOWS
             //Path limit
-            size_t Pos_Path=rfind(__T('\\'));
+            size_t Pos_Path=PathSeparator_RFind(*this);
             if (Pos_Path==Ztring::npos)
                 Pos_Path=0; //Not found
             //Extension limit

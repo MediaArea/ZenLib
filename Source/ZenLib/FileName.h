@@ -52,7 +52,7 @@ public :
     static ZenLib::Ztring TempFileName_Create   (const Ztring &Prefix);
 };
 
-//Platform differences
+//Platform differences (no more used by ZenLib, which accepts "/" and also "\" on Windows)
 extern const Char* FileName_PathSeparator;
 
 } //NameSpace

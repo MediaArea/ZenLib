@@ -57,6 +57,25 @@ namespace ZenLib
 {
 
 //---------------------------------------------------------------------------
+// Pattern of the content of a directory, "\" and "/" are path separators on Windows
+// Without Unicode, the second byte of a character of a multibyte code page (e.g. "\" in cp932) is not a separator
+#if defined(WINDOWS) && !defined(WINDOWS_UWP)
+static Ztring Dir_Pattern(const Ztring &Dir_Name)
+{
+    bool EndsWithSeparator=false;
+    for (size_t Pos=0; Pos<Dir_Name.size(); Pos++)
+    {
+        EndsWithSeparator=Dir_Name[Pos]==__T('\\') || Dir_Name[Pos]==__T('/');
+        #if !defined(UNICODE)
+            if (IsDBCSLeadByte((BYTE)Dir_Name[Pos]))
+                Pos++; //Second byte
+        #endif
+    }
+    return Dir_Name+(EndsWithSeparator?__T("*"):__T("\\*"));
+}
+#endif
+
+//---------------------------------------------------------------------------
 // Debug
 #ifdef ZENLIB_DEBUG
     #include <stdio.h>
@@ -259,7 +278,7 @@ ZtringList Dir::GetAllFileNames(const Ztring &Dir_Name_, dirlist_t Options)
             #else
                 //Is a dir?
                 if (Exists(Dir_Name))
-                    Dir_Name+=__T("\\*");
+                    Dir_Name=Dir_Pattern(Dir_Name);
 
                 //Path
                 Ztring Path=FileName::Path_Get(Dir_Name);
@@ -357,11 +376,8 @@ ZtringList Dir::GetAllFileNames(const Ztring &Dir_Name_, dirlist_t Options)
             {
                 //This is a dir
                 //Normalizing dir (the / at the end)
-                size_t Dir_Pos=Dir_Name.rfind(FileName_PathSeparator);
-                if (Dir_Pos==std::string::npos)
-                    Dir_Name+=FileName_PathSeparator;
-                else if (Dir_Pos+Ztring(FileName_PathSeparator).size()!=Dir_Name.size())
-                    Dir_Name+=FileName_PathSeparator;
+                if (Dir_Name.empty() || Dir_Name[Dir_Name.size()-1]!=__T('/'))
+                    Dir_Name+=__T('/');
 
                 struct dirent *DirEnt;
                 while((DirEnt=readdir(Dir))!=NULL)
@@ -594,7 +610,7 @@ void GetAllFileNames::Start  (const Ztring &Dir_Name_, Dir::dirlist_t Options_)
     #ifdef WINDOWS
         //Is a dir?
         if (Dir::Exists(p->Dir_Name))
-            p->Dir_Name+=__T("\\*");
+            p->Dir_Name=Dir_Pattern(p->Dir_Name);
 
         //Path
         p->Path=FileName::Path_Get(p->Dir_Name);
