@@ -55,8 +55,9 @@ jobs:
             echo "::endgroup::"
             if [ -z "${{ matrix.no_cmake }}" ] ; then
               echo "::group::CMake, Unicode ${Unicode}"
-              cmake -S Project/CMake -B build_${Unicode} -DCMAKE_BUILD_TYPE=Release -DENABLE_UNICODE=$([ "${Unicode}" == "yes" ] && echo ON || echo OFF)
+              cmake -S Project/CMake -B build_${Unicode} -DCMAKE_BUILD_TYPE=Release -DBUILD_ZENLIB_TESTS=ON -DENABLE_UNICODE=$([ "${Unicode}" == "yes" ] && echo ON || echo OFF)
               cmake --build build_${Unicode} -j4
+              ctest --test-dir build_${Unicode} --output-on-failure
               echo "::endgroup::"
             fi
           done
@@ -213,9 +214,11 @@ jobs:
         run: |
           foreach ($Unicode in 'ON', 'OFF') {
             Write-Host "::group::Unicode $Unicode"
-            cmake -S Project/CMake -B build_$Unicode -DCMAKE_BUILD_TYPE=Release -DENABLE_UNICODE=$Unicode
+            cmake -S Project/CMake -B build_$Unicode -DCMAKE_BUILD_TYPE=Release -DBUILD_ZENLIB_TESTS=ON -DENABLE_UNICODE=$Unicode
             if ($LASTEXITCODE) { exit 1 }
             cmake --build build_$Unicode --config Release
+            if ($LASTEXITCODE) { exit 1 }
+            ctest --test-dir build_$Unicode -C Release --output-on-failure
             if ($LASTEXITCODE) { exit 1 }
             Write-Host "::endgroup::"
           }

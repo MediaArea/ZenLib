@@ -15,6 +15,7 @@ endif()
 
 option(ENABLE_UNICODE "Enable unicode support" ON)
 option(LARGE_FILES "Enable large files support" ON)
+option(BUILD_ZENLIB_TESTS "Build ZenLib tests" OFF)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/Modules/")
 set(ZenLib_SOURCES_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../Source)
@@ -185,6 +186,15 @@ set_target_properties(zen PROPERTIES
 
 include(EnableLatestCXX)
 enable_latest_cxx(zen)
+
+if(BUILD_ZENLIB_TESTS)
+  enable_testing()
+  add_executable(zen_bitstream_tests
+    ${CMAKE_CURRENT_SOURCE_DIR}/../GNU/Library/Tests/BitStream.cpp)
+  target_link_libraries(zen_bitstream_tests PRIVATE zen)
+  enable_latest_cxx(zen_bitstream_tests)
+  add_test(NAME ZenLib.BitStream COMMAND zen_bitstream_tests)
+endif()
 
 install(TARGETS zen EXPORT zen-export
   PUBLIC_HEADER DESTINATION ${INCLUDE_INSTALL_DIR}/ZenLib
