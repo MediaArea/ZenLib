@@ -80,6 +80,9 @@ public:
             0x1f, 0x3f, 0x7f, 0xff,
         };
 
+        if (HowMany==0 || HowMany>8)
+            return 0;
+
         if (HowMany<=(Buffer_Size%8))
         {
             Buffer_Size-=HowMany;
@@ -116,6 +119,9 @@ public:
             0x01ff, 0x03ff, 0x07ff, 0x0fff,
             0x1fff, 0x3fff, 0x7fff, 0xffff,
         };
+
+        if (HowMany==0 || HowMany>16)
+            return 0;
 
         if (HowMany<=(Buffer_Size%8))
         {
@@ -163,6 +169,9 @@ public:
             0x01ffffff, 0x03ffffff, 0x07ffffff, 0x0fffffff,
             0x1fffffff, 0x3fffffff, 0x7fffffff, 0xffffffff,
         };
+
+        if (HowMany==0 || HowMany>32)
+            return 0;
 
         if (HowMany<=(Buffer_Size%8))
         {
@@ -263,6 +272,9 @@ public:
             0x1f, 0x3f, 0x7f, 0xff,
         };
 
+        if (HowMany==0 || HowMany>8)
+            return 0;
+
         if (HowMany<=(Buffer_Size%8))
             return (LastByte>>((Buffer_Size-HowMany)%8))&Mask[HowMany];
 
@@ -294,6 +306,9 @@ public:
             0x01ff, 0x03ff, 0x07ff, 0x0fff,
             0x1fff, 0x3fff, 0x7fff, 0xffff,
         };
+
+        if (HowMany==0 || HowMany>16)
+            return 0;
 
         if (HowMany<=(Buffer_Size%8))
             return (LastByte>>((Buffer_Size-HowMany)%8))&Mask[HowMany];
@@ -340,6 +355,9 @@ public:
             0x01ffffff, 0x03ffffff, 0x07ffffff, 0x0fffffff,
             0x1fffffff, 0x3fffffff, 0x7fffffff, 0xffffffff,
         };
+
+        if (HowMany==0 || HowMany>32)
+            return 0;
 
         if (HowMany<=(Buffer_Size%8))
             return (LastByte>>((Buffer_Size-HowMany)%8))&Mask[HowMany];

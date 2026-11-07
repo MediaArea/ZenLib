@@ -183,6 +183,8 @@ public:
             do
             {
                 Skip(32);
+                if (BufferUnderRun)
+                    return;
                 HowMany-=32;
             }
             while(HowMany>32);
