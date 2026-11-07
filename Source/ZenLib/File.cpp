@@ -264,11 +264,7 @@ bool File::Open (const tstring &File_Name_, access_t Access)
                 case Access_Write_Append : access=O_BINARY|O_WRONLY|O_CREAT|O_APPEND ; break;
                 default                  : access=0                          ;
             }
-            #ifdef UNICODE
-                File_Handle=open(FileName_To_Native(File_Name).c_str(), access);
-            #else
-                File_Handle=open(File_Name.c_str(), access);
-            #endif //UNICODE
+            File_Handle=open(FileName_To_Native(File_Name).c_str(), access);
             return File_Handle!=-1;
             */
             ios_base::openmode mode;
@@ -283,11 +279,7 @@ bool File::Open (const tstring &File_Name_, access_t Access)
                                            break;
                 default                  : mode = ios_base::binary | ios_base::in;
             }
-            #ifdef UNICODE
-                File_Handle=new fstream(FileName_To_Native(File_Name).c_str(), mode);
-            #else
-                File_Handle=new fstream(File_Name.c_str(), mode);
-            #endif //UNICODE
+            File_Handle=new fstream(FileName_To_Native(File_Name).c_str(), mode);
             if (!((fstream*)File_Handle)->is_open())
             {
                 delete (fstream*)File_Handle; File_Handle=NULL;
@@ -460,11 +452,7 @@ bool File::Create (const Ztring &File_Name_, bool OverWrite)
                 case false        : access=O_BINARY|O_CREAT|O_WRONLY|O_EXCL ; break;
                 default           : access=O_BINARY|O_CREAT|O_WRONLY|O_TRUNC; break;
             }
-            #ifdef UNICODE
-                File_Handle=open(FileName_To_Native(File_Name).c_str(), access);
-            #else
-                File_Handle=open(File_Name.c_str(), access);
-            #endif //UNICODE
+            File_Handle=open(FileName_To_Native(File_Name).c_str(), access);
             return  File_Handle!=-1;
             */
             /*ios_base::openmode mode;
@@ -481,11 +469,7 @@ bool File::Create (const Ztring &File_Name_, bool OverWrite)
 
             access=ios_base::binary|ios_base::in|ios_base::out|ios_base::trunc;
 
-            #ifdef UNICODE
-                File_Handle=new fstream(FileName_To_Native(File_Name).c_str(), access);
-            #else
-                File_Handle=new fstream(File_Name.c_str(), access);
-            #endif //UNICODE
+            File_Handle=new fstream(FileName_To_Native(File_Name).c_str(), access);
             return ((fstream*)File_Handle)->is_open();
         #elif defined WINDOWS
             #ifdef WINDOWS_UWP
@@ -1415,11 +1399,7 @@ bool File::Exists(const Ztring &File_Name)
             #endif //defined WINDOWS
             struct stat buffer;
             int         status;
-            #ifdef UNICODE
-                status=stat(FileName_To_Native(File_Name).c_str(), &buffer);
-            #else
-                status=stat(File_Name.c_str(), &buffer);
-            #endif //UNICODE
+            status=stat(FileName_To_Native(File_Name).c_str(), &buffer);
             return status==0 && S_ISREG(buffer.st_mode);
         #elif defined WINDOWS
             if (File_Name.find(__T('*'))!=std::string::npos || (File_Name.find(__T("\\\\?\\"))!=0 && File_Name.find(__T('?'))!=std::string::npos) || (File_Name.find(__T("\\\\?\\"))==0 && File_Name.find(__T('?'), 4)!=std::string::npos))
@@ -1598,11 +1578,7 @@ bool File::Delete(const Ztring &File_Name)
         return wxRemoveFile(File_Name.c_str());
     #else //ZENLIB_USEWX
         #ifdef ZENLIB_STANDARD
-            #ifdef UNICODE
-                return unlink(FileName_To_Native(File_Name).c_str())==0;
-            #else
-                return unlink(File_Name.c_str())==0;
-            #endif //UNICODE
+            return unlink(FileName_To_Native(File_Name).c_str())==0;
         #elif defined WINDOWS
             #ifdef WINDOWS_UWP
                 //Ensure all slashs are converted to backslashs (WinRT file API don't like slashs)
