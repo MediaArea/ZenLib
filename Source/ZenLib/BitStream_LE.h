@@ -51,8 +51,6 @@ public:
 
     int32u Get (size_t HowMany)
     {
-        ptr_BeforeLastCall=ptr;
-
         long ret;
         static const int32u Mask[33]={
           0x00000000,
@@ -68,6 +66,8 @@ public:
 
         if (HowMany==0 || HowMany>32)
             return 0;
+
+        ptr_BeforeLastCall=ptr;
 
         unsigned long m=Mask[HowMany];
 
