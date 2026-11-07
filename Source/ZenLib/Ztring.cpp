@@ -45,7 +45,9 @@
 #include <algorithm>
 #include <iomanip>
 #include <cmath>
+#include <cstring>
 #include <ctime>
+#include <cwchar>
 #include "ZenLib/OS_Utils.h"
 #include "ZenLib/File.h"
 using namespace std;
@@ -735,12 +737,17 @@ Ztring& Ztring::From_Local (const char* S)
                 if (Local_IsASCII())
                     return From_UTF8_KeepBytes(*this, S);
 
+                //Conversion state of this call: the one of the C library is undefined after a string which is not valid, and some
+                //implementations then keep its last bytes (e.g. GB18030 on FreeBSD and macOS), so the next strings were not converted
+                mbstate_t State;
+                memset(&State, 0, sizeof(State));
                 const char* S_Size=S; //Android 7 sets it to NULL at the end of the string, also when there is no destination
-                size_t Size=mbsrtowcs(NULL, &S_Size, 0, NULL);
+                size_t Size=mbsrtowcs(NULL, &S_Size, 0, &State);
                 if (Size!=0 && Size!=(size_t)-1)
                 {
                     wchar_t* WideString=new wchar_t[Size+1];
-                    Size=mbsrtowcs(WideString, &S, Size, NULL);
+                    memset(&State, 0, sizeof(State));
+                    Size=mbsrtowcs(WideString, &S, Size, &State);
                     WideString[Size]=L'\0';
                     assign (WideString);
                     delete[] WideString; //WideString=NULL;
@@ -1890,11 +1897,17 @@ std::string Ztring::To_Local () const
                 if (Local_IsASCII())
                     return To_UTF8_KeepBytes(*this);
 
-                size_t Size=wcstombs(NULL, c_str(), 0);
+                //Conversion state of this call, see From_Local()
+                mbstate_t State;
+                memset(&State, 0, sizeof(State));
+                const wchar_t* S=c_str();
+                size_t Size=wcsrtombs(NULL, &S, 0, &State);
                 if (Size!=0 && Size!=(size_t)-1)
                 {
                     char* AnsiString=new char[Size+1];
-                    Size=wcstombs(AnsiString, c_str(), Size);
+                    memset(&State, 0, sizeof(State));
+                    S=c_str();
+                    Size=wcsrtombs(AnsiString, &S, Size, &State);
                     if (Size!=0 && Size!=(size_t)-1)
                     {
                         AnsiString[Size]='\0';
@@ -1910,13 +1923,17 @@ std::string Ztring::To_Local () const
                 //Trying with bad chars
                 char* Result=new char[MB_CUR_MAX];
                 std::string AnsiString;
+                memset(&State, 0, sizeof(State));
                 for (size_t Pos=0; Pos<size(); Pos++)
                 {
-                    size_t Result_Size=wcrtomb(Result, operator[](Pos), 0);
+                    size_t Result_Size=wcrtomb(Result, operator[](Pos), &State);
                     if (Result_Size && Result_Size!=(size_t)-1)
                         AnsiString.append(Result, Result_Size);
                     else
+                    {
                         AnsiString+='?';
+                        memset(&State, 0, sizeof(State)); //Undefined after an error
+                    }
                 }
                 delete[] Result; //Result=NULL;
                 return AnsiString;
