@@ -367,11 +367,7 @@ ZtringList Dir::GetAllFileNames(const Ztring &Dir_Name_, dirlist_t Options)
                 return ToReturn; //Does not exist
 
             //open
-            #ifdef UNICODE
-                DIR* Dir=opendir(FileName_To_Native(Dir_Name).c_str());
-            #else
-                DIR* Dir=opendir(Dir_Name.c_str());
-            #endif //UNICODE
+            DIR* Dir=opendir(FileName_To_Native(Dir_Name).c_str());
             if (Dir)
             {
                 //This is a dir
@@ -496,11 +492,7 @@ bool Dir::Exists(const Ztring &File_Name)
         #else //WINDOWS
             struct stat buffer;
             int         status;
-            #ifdef UNICODE
-                status=stat(FileName_To_Native(File_Name).c_str(), &buffer);
-            #else
-                status=stat(File_Name.c_str(), &buffer);
-            #endif //UNICODE
+            status=stat(FileName_To_Native(File_Name).c_str(), &buffer);
             return status==0 && S_ISDIR(buffer.st_mode);
         #endif
     #endif //ZENLIB_USEWX
