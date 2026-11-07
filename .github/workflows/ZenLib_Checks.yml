@@ -2,50 +2,152 @@ name: Checks
 
 on: [push, pull_request]
 
+# A new push cancels the run of the previous one on the same branch or pull request, except on master
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/master' }}
+
 jobs:
+
+  # Builds with the autotools then make check, and with CMake, with and without Unicode
+  # (one macOS job for all, macOS runners are the scarcest ones)
   Unix:
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        include:
+          - name: Linux
+            os: ubuntu-latest
+            unicode: 'yes'
+          - name: Linux without Unicode
+            os: ubuntu-latest
+            unicode: 'no'
+          - name: Sanitizers
+            os: ubuntu-latest
+            unicode: 'yes'
+            CXXFLAGS: -O1 -g -fsanitize=address,undefined -fno-sanitize-recover=undefined -fno-omit-frame-pointer
+            LDFLAGS: -fsanitize=address,undefined
+            no_cmake: true
+          - name: macOS
+            os: macos-latest
+            unicode: 'yes no'
       fail-fast: false
+    name: ${{ matrix.name }}
     runs-on: ${{ matrix.os }}
     env:
-      CXXFLAGS: -Werror
+      CXXFLAGS: ${{ matrix.CXXFLAGS || '-O0 -Wall -Wextra -Werror' }}
+      LDFLAGS: ${{ matrix.LDFLAGS }}
     steps:
       - name: Checkout
         uses: actions/checkout@v6
-      - name: Dependencies
-        run: |
-          if [ "$RUNNER_OS" == "macOS" ]; then
-            brew install automake libtool
-          fi
-      - name: Configure
-        run: |
-          cd Project/GNU/Library
-          autoreconf -if
-          ./configure
-      - name: Build
-        run: |
-          cd Project/GNU/Library
-          make -j4
+        with:
+          fetch-depth: 1
+      - name: OS packets
+        if: runner.os == 'macOS'
+        env:
+          HOMEBREW_NO_REQUIRE_TAP_TRUST: 1 # Prevent Homebrew third-party trust warnings due to GitHub's pre-installed taps
+        run: brew install automake libtool
       - name: Check
         run: |
-          cd Project/GNU/Library
-          make check
-      - name: CMake Build
-        run: |
-          mkdir Project/CMake/Build
-          cd Project/CMake/Build
-          cmake -DBUILD_ZENLIB=1 ..
-          make -j4
+          for Unicode in ${{ matrix.unicode }} ; do
+            echo "::group::Autotools, Unicode ${Unicode}"
+            ( cd Project/GNU/Library && autoreconf -if && ./configure --enable-silent-rules --enable-unicode=${Unicode} && make -j4 && make check )
+            git clean -fdxq -e 'build_*' # Also the objects next to the sources
+            echo "::endgroup::"
+            if [ -z "${{ matrix.no_cmake }}" ] ; then
+              echo "::group::CMake, Unicode ${Unicode}"
+              cmake -S Project/CMake -B build_${Unicode} -DCMAKE_BUILD_TYPE=Release -DENABLE_UNICODE=$([ "${Unicode}" == "yes" ] && echo ON || echo OFF)
+              cmake --build build_${Unicode} -j4
+              echo "::endgroup::"
+            fi
+          done
 
-  Windows:
-    runs-on: windows-latest
+  Alpine:
+    runs-on: ubuntu-latest
+    container: alpine:latest
+    env:
+      CXXFLAGS: -O0
+    steps:
+      - name: OS packets
+        run: apk add --no-cache autoconf automake bash build-base git libtool
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+      - name: Check
+        run: |
+          git config --global --add safe.directory "${PWD}" # For git clean, the container user is not the owner of the checkout
+          for Unicode in yes no ; do
+            echo "::group::Unicode ${Unicode}"
+            ( cd Project/GNU/Library && autoreconf -if && ./configure --enable-silent-rules --enable-unicode=${Unicode} && make -j4 && make check )
+            git clean -fdxq -e 'build_*' # Also the objects next to the sources
+            echo "::endgroup::"
+          done
+
+  FreeBSD:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+      - name: Check
+        uses: vmactions/freebsd-vm@v1
+        with:
+          usesh: true
+          prepare: pkg install -y autoconf automake bash gmake libtool
+          run: |
+            set -e
+            for Unicode in yes no ; do
+              echo "Unicode ${Unicode}"
+              ( cd Project/GNU/Library && autoreconf -if && ./configure --enable-silent-rules --enable-unicode=${Unicode} CXXFLAGS=-O0 && gmake -j4 && gmake check && gmake distclean )
+            done
+
+  Android:
     strategy:
       matrix:
-        architecture: [ Win32, x64, ARM64 ]
+        api: [24, 26, 28] # nl_langinfo() from API level 26, glob() from API level 28
       fail-fast: false
+    name: Android (API ${{ matrix.api }})
+    runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+      - name: Compile
+        run: |
+          Compiler="${ANDROID_NDK_LATEST_HOME}/toolchains/llvm/prebuilt/linux-x86_64/bin/x86_64-linux-android${{ matrix.api }}-clang++"
+          "${Compiler}" -std=c++11 -O1 -DUNICODE -DHAVE_GMTIME_R -ISource -static-libstdc++ -o zen_filename Project/GNU/Library/test/Source/filename.cpp $(ls Source/ZenLib/*.cpp | grep -v HTTP_Client)
+      - name: KVM for the emulator
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - name: Check
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: ${{ matrix.api }}
+          arch: x86_64
+          script: sh Project/GNU/Library/test/filename_android.sh zen_filename
+
+  Windows:
+    strategy:
+      matrix:
+        include:
+          - architecture: Win32
+            vcvarsall: x86
+          - architecture: x64
+            vcvarsall: x64
+          - architecture: ARM64
+      fail-fast: false
+    name: Windows (${{ matrix.architecture }})
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Line endings
+        run: git config --global core.autocrlf false # Test scripts with LF line endings
       - name: Checkout ZenLib
         uses: actions/checkout@v6
         with:
@@ -55,25 +157,68 @@ jobs:
         with:
           msbuild-architecture: x64
       - name: Build
-        run: msbuild -p:Configuration=Release -p:Platform=${{ matrix.architecture }} ${{ github.workspace }}\ZenLib\Project\MSVC2026\ZenLib_MSVC.slnx -verbosity:quiet -warnaserror
+        run: MSBuild.exe -p:Configuration=Release -p:Platform=${{ matrix.architecture }} ZenLib/Project/MSVC2026/ZenLib_MSVC.slnx -verbosity:quiet -warnaserror
+      - name: Compile test
+        if: matrix.vcvarsall
+        shell: cmd
+        working-directory: ZenLib
+        run: |
+          for /f "usebackq delims=" %%i in (`"%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath`) do call "%%i\VC\Auxiliary\Build\vcvarsall.bat" ${{ matrix.vcvarsall }}
+          rem Test program with and without Unicode, for the code page of the system (cp1252) and with the code page of its manifest
+          mkdir build_yes build_no
+          cl /nologo /c /MP /EHsc /O1 /DUNICODE /D_UNICODE /ISource /Fobuild_yes\ Source\ZenLib\*.cpp || exit /b 1
+          cl /nologo /c /MP /EHsc /O1 /ISource /Fobuild_no\ Source\ZenLib\*.cpp || exit /b 1
+          del build_yes\HTTP_Client.obj build_no\HTTP_Client.obj
+          cl /nologo /EHsc /O1 /DUNICODE /D_UNICODE /ISource /Fobuild_yes\zen_filename.obj /Febuild_yes\zen_filename_1252.exe Project\GNU\Library\test\Source\filename.cpp build_yes\*.obj shell32.lib user32.lib advapi32.lib || exit /b 1
+          cl /nologo /EHsc /O1 /ISource /Fobuild_no\zen_filename.obj /Febuild_no\zen_filename_1252.exe Project\GNU\Library\test\Source\filename.cpp build_no\*.obj shell32.lib user32.lib advapi32.lib || exit /b 1
+          for %%u in (yes no) do for %%c in (65001 932) do (
+            copy /y build_%%u\zen_filename_1252.exe build_%%u\zen_filename_%%c.exe >nul
+            mt -nologo -manifest Project\GNU\Library\test\codepage_%%c.manifest -outputresource:build_%%u\zen_filename_%%c.exe;1 || exit /b 1
+          )
+      - name: Check
+        if: matrix.vcvarsall
+        working-directory: ZenLib/Project/GNU/Library
+        run: |
+          # Test of make check (no make in Git Bash), with each program
+          Status=0
+          for Unicode in yes no ; do
+            for CodePage in 1252 65001 932 ; do
+              cp ../../../build_${Unicode}/zen_filename_${CodePage}.exe test/zen_filename.exe
+              # Code page set by the manifest only if this version of Windows supports it for this code page
+              Output=$(test/zen_filename.exe 0 "$(cygpath -m "$(mktemp -d)")" || true)
+              if [[ "${Output}" != *"OK: code page ${CodePage}"* ]] ; then
+                echo "SKIP: Unicode ${Unicode}, code page ${CodePage} not supported by the manifest"
+                continue
+              fi
+              echo "::group::Unicode ${Unicode}, code page ${CodePage}"
+              bash test/filename.sh 9>&1 || Status=1
+              echo "::endgroup::"
+            done
+          done
+          exit ${Status}
 
   CMake:
     strategy:
       matrix:
-        runner: [windows-latest, windows-11-vs2026-arm, ubuntu-latest, macos-latest]
-        unicode_setting: [default, utf-8]
+        runner: [windows-latest, windows-11-vs2026-arm]
       fail-fast: false
-    name: CMake (${{ matrix.runner }}${{ matrix.unicode_setting == 'utf-8' && ', utf-8' || '' }})
+    name: CMake (${{ matrix.runner }})
     runs-on: ${{ matrix.runner }}
     env:
-      CXXFLAGS: ${{ contains(matrix.runner, 'windows') && '/WX' || '-Werror' }}
+      CXXFLAGS: /WX
     steps:
       - name: Checkout ZenLib
         uses: actions/checkout@v6
-      - name: Configure CMake project
-        run: cmake -S Project/CMake -B build -DCMAKE_BUILD_TYPE=Release ${{ matrix.unicode_setting == 'utf-8' && '-DENABLE_UNICODE=OFF' || '' }}
-      - name: Build CMake project
-        run: cmake --build build ${{ runner.os == 'Windows' && '--config Release' || '-j4' }}
+      - name: Build
+        run: |
+          foreach ($Unicode in 'ON', 'OFF') {
+            Write-Host "::group::Unicode $Unicode"
+            cmake -S Project/CMake -B build_$Unicode -DCMAKE_BUILD_TYPE=Release -DENABLE_UNICODE=$Unicode
+            if ($LASTEXITCODE) { exit 1 }
+            cmake --build build_$Unicode --config Release
+            if ($LASTEXITCODE) { exit 1 }
+            Write-Host "::endgroup::"
+          }
 
   MinGW:
     runs-on: windows-latest
