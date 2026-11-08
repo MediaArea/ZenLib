@@ -953,6 +953,58 @@ Ztring& Ztring::From_CC1 (const int8u S)
     return *this;
 }
 
+//---------------------------------------------------------------------------
+#if !defined(STREAM_MISSING)
+// Integer to text without stream, same result as a stream with setbase(Radix) then MakeUpperCase():
+// hexadecimal for 16, octal for 8, else decimal
+static void Number_To_Text(Ztring& ToReturn, int64u Value, int8u Radix, bool Negative=false)
+{
+    Char Temp[24]; //Enough for 64-bit in octal and for decimal with sign
+    Char* const End=Temp+24;
+    Char* Pos=End;
+    switch (Radix)
+    {
+        case 16:
+            do
+            {
+                *--Pos=__T("0123456789ABCDEF")[Value&0xF];
+                Value>>=4;
+            }
+            while (Value);
+            break;
+        case 8:
+            do
+            {
+                *--Pos=(Char)(__T('0')+(Value&0x7));
+                Value>>=3;
+            }
+            while (Value);
+            break;
+        default:
+            do
+            {
+                *--Pos=(Char)(__T('0')+(Value%10));
+                Value/=10;
+            }
+            while (Value);
+            if (Negative)
+                *--Pos=__T('-');
+    }
+    ToReturn.assign(Pos, End-Pos);
+}
+
+// Signed integer, Value_Unsigned is the value as the unsigned type of the same size, used by streams in hexadecimal and octal
+static void Number_To_Text(Ztring& ToReturn, int64s Value, int64u Value_Unsigned, int8u Radix)
+{
+    if (Radix==16 || Radix==8)
+        Number_To_Text(ToReturn, Value_Unsigned, Radix);
+    else if (Value<0)
+        Number_To_Text(ToReturn, ((int64u)0)-(int64u)Value, 10, true);
+    else
+        Number_To_Text(ToReturn, (int64u)Value, 10);
+}
+#endif //!defined(STREAM_MISSING)
+
 Ztring& Ztring::From_Number (const int8s I, int8u Radix)
 {
     #if defined(STREAM_MISSING)
@@ -970,13 +1022,12 @@ Ztring& Ztring::From_Number (const int8s I, int8u Radix)
         assign (C1);
         delete[] C1; //C1=NULL;
     #else
-        toStringStream Stream;
         #ifdef UNICODE
-            Stream << setbase(Radix) << I;
+            Number_To_Text(*this, (int64s)I, (int64u)(unsigned int)(int)I, Radix); //Given as int to the stream
         #else //UNICODE
-            Stream << setbase(Radix) << (size_t)I; //On linux (at least), (un)signed char is detected as a char
+            Number_To_Text(*this, (int64u)(size_t)I, Radix); //Given as size_t to the stream
         #endif //UNICODE
-        assign(Stream.str());
+        return *this;
     #endif
     MakeUpperCase();
     return *this;
@@ -1011,13 +1062,8 @@ Ztring& Ztring::From_Number (const int8u I, int8u Radix)
         }
         else
         {
-            toStringStream Stream;
-            #ifdef UNICODE
-                Stream << setbase(Radix) << I;
-            #else //UNICODE
-                Stream << setbase(Radix) << (size_t)I; //On linux (at least), (un)signed char is detected as a char
-            #endif //UNICODE
-            assign(Stream.str());
+            Number_To_Text(*this, (int64u)I, Radix);
+            return *this;
         }
     #endif
     MakeUpperCase();
@@ -1041,9 +1087,8 @@ Ztring& Ztring::From_Number (const int16s I, int8u Radix)
         assign (C1);
         delete[] C1; //C1=NULL;
     #else
-        toStringStream Stream;
-        Stream << setbase(Radix) << I;
-        assign(Stream.str());
+        Number_To_Text(*this, (int64s)I, (int64u)(int16u)I, Radix);
+        return *this;
     #endif
     MakeUpperCase();
     return *this;
@@ -1078,9 +1123,8 @@ Ztring& Ztring::From_Number (const int16u I, int8u Radix)
         }
         else
         {
-            toStringStream Stream;
-            Stream << setbase(Radix) << I;
-            assign(Stream.str());
+            Number_To_Text(*this, (int64u)I, Radix);
+            return *this;
         }
     #endif
     MakeUpperCase();
@@ -1104,9 +1148,8 @@ Ztring& Ztring::From_Number (const int32s I, int8u Radix)
         assign (C1);
         delete[] C1; //C1=NULL;
     #else
-        toStringStream Stream;
-        Stream << setbase(Radix) << I;
-        assign(Stream.str());
+        Number_To_Text(*this, (int64s)I, (int64u)(int32u)I, Radix);
+        return *this;
     #endif
     MakeUpperCase();
     return *this;
@@ -1141,9 +1184,8 @@ Ztring& Ztring::From_Number (const int32u I, int8u Radix)
         }
         else
         {
-            toStringStream Stream;
-            Stream << setbase(Radix) << I;
-            assign(Stream.str());
+            Number_To_Text(*this, (int64u)I, Radix);
+            return *this;
         }
     #endif
     MakeUpperCase();
@@ -1167,9 +1209,8 @@ Ztring& Ztring::From_Number (const int64s I, int8u Radix)
         assign (C1);
         delete[] C1; //C1=NULL;
     #else
-        toStringStream Stream;
-        Stream << setbase(Radix) << I;
-        assign(Stream.str());
+        Number_To_Text(*this, (int64s)I, (int64u)(int64u)I, Radix);
+        return *this;
     #endif
     MakeUpperCase();
     return *this;
@@ -1204,9 +1245,8 @@ Ztring& Ztring::From_Number (const int64u I, int8u Radix)
         }
         else
         {
-            toStringStream Stream;
-            Stream << setbase(Radix) << I;
-            assign(Stream.str());
+            Number_To_Text(*this, (int64u)I, Radix);
+            return *this;
         }
     #endif
     MakeUpperCase();
@@ -1305,13 +1345,14 @@ Ztring& Ztring::From_Number (const size_t I, int8u Radix)
         Char C1[100];
         _tnprintf(C1, 64, Radix==10?__T("%zu"):(Radix==16?__T("%zx"):(Radix==8?__T("%zo"):__T(""))), I);
         assign(C1);
-    #else
+    #elif defined(__BORLANDC__)
         toStringStream Stream;
         Stream << setbase(Radix) << I;
         assign(Stream.str());
-        #if defined(__BORLANDC__)
-            FindAndReplace(__T(","), __T(".")); //Borland C++ Builder 2010+Windows Seven put a comma for istringstream, but does not support comma for ostringstream
-        #endif
+        FindAndReplace(__T(","), __T(".")); //Borland C++ Builder 2010+Windows Seven put a comma for istringstream, but does not support comma for ostringstream
+    #else
+        Number_To_Text(*this, (int64u)I, Radix);
+        return *this;
     #endif
     MakeUpperCase();
     return *this;
