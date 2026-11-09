@@ -367,20 +367,24 @@ ZtringList Dir::GetAllFileNames(const Ztring &Dir_Name_, dirlist_t Options)
                 return ToReturn; //Does not exist
 
             //open
-            DIR* Dir=opendir(FileName_To_Native(Dir_Name).c_str());
+            std::string Dir_Name_Native=FileName_To_Native(Dir_Name);
+            DIR* Dir=opendir(Dir_Name_Native.c_str());
             if (Dir)
             {
                 //This is a dir
                 //Normalizing dir (the / at the end)
                 if (Dir_Name.empty() || Dir_Name[Dir_Name.size()-1]!=__T('/'))
+                {
                     Dir_Name+=__T('/');
+                    Dir_Name_Native+='/';
+                }
 
                 struct dirent *DirEnt;
                 while((DirEnt=readdir(Dir))!=NULL)
                 {
-                    //A file
+                    //A file, with a name which gives the same bytes back with the directory (on macOS, they may depend on the existing files)
                     Ztring File_Name=FileName_From_Native(DirEnt->d_name);
-                    if (File_Name.empty() || FileName_To_Native(File_Name)!=DirEnt->d_name)
+                    if (File_Name.empty() || FileName_To_Native(Dir_Name+File_Name)!=Dir_Name_Native+DirEnt->d_name)
                         continue; //Can't be decoded to a name which can be opened (e.g. an overlong UTF-8 sequence decoded to "/")
                     if (!(Options&Include_Hidden) && File_Name[0]==__T('.'))
                         continue;

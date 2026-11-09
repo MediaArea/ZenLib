@@ -17,10 +17,12 @@
 #include "ZenLib/Dir.h"
 #include "ZenLib/FileName.h"
 #include "ZenLib/OS_Utils.h"
+#include <cctype>
 #include <clocale>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <map>
 #include <set>
 #include <string>
 #include <vector>
@@ -78,6 +80,63 @@ static const char* const Strings_NotUTF8[]=
     "caf\xC3\xA9\xE9\xC3\xA9",
 };
 static const size_t Strings_NotUTF8_Size=sizeof(Strings_NotUTF8)/sizeof(*Strings_NotUTF8);
+
+// Other strings for the multibyte encodings of locales: first byte without the next one (EUC, Shift_JIS, GBK, Big5, GB18030), second byte
+// which is not valid in some of them, parts of a 4-byte character of GB18030, bytes not used
+static const char* const Strings_Multibyte[]=
+{
+    "\xA5",
+    "a\xA5",
+    "\xA5\x41",
+    "\xA5\xC6\xA5",
+    "\x8E",
+    "\x8F\xA1",
+    "\x81\x30",
+    "\x81\x30\x81",
+    "\x83\x5C",
+    "\x80\xFF",
+};
+static const size_t Strings_Multibyte_Size=sizeof(Strings_Multibyte)/sizeof(*Strings_Multibyte);
+
+// Text in the encodings of locales which are neither ASCII nor UTF-8 (names of the encoding in upper case without "-" and "_"), with
+// characters which are not the same value in wchar_t with some systems (e.g. macOS and FreeBSD), and a character outside of the BMP
+// (and for EUC-JP a character whose bytes are also valid UTF-8, of another character)
+struct encoding_text
+{
+    const char* Names;
+    const char* Text;
+    const char* Local;
+    const char* Text_ValidUTF8;
+    const char* Local_ValidUTF8;
+};
+static const encoding_text Encoding_Texts[]=
+{
+    {" ISO88591 CP1252 ",       "caf\xC3\xA9",                                          "caf\xE9",                              NULL, NULL},
+    {" ISO885915 ",             "\xE2\x82\xAC caf\xC3\xA9",                             "\xA4 caf\xE9",                         NULL, NULL},
+    {" KOI8R ",                 "\xD0\xA2\xD0\xB5\xD1\x81\xD1\x82",                     "\xF4\xC5\xD3\xD4",                     NULL, NULL},
+    {" CP1251 ",                "\xD0\xA2\xD0\xB5\xD1\x81\xD1\x82",                     "\xD2\xE5\xF1\xF2",                     NULL, NULL},
+    {" EUCJP ",                 "\xE3\x83\x86\xE3\x82\xB9\xE3\x83\x88\xE8\xA1\xA8",     "\xA5\xC6\xA5\xB9\xA5\xC8\xC9\xBD",     "\xE8\xA1\xA8", "\xC9\xBD"},
+    {" SJIS SHIFTJIS CP932 ",   "\xE3\x83\x86\xE3\x82\xB9\xE3\x83\x88\xE8\xA1\xA8",     "\x83\x65\x83\x58\x83\x67\x95\x5C",     NULL, NULL},
+    {" GB18030 ",               "\xE6\xB5\x8B\xE8\xAF\x95\xF0\x9F\x8E\xB5",             "\xB2\xE2\xCA\xD4\x94\x39\xC1\x39",     NULL, NULL},
+    {" GBK CP936 ",             "\xE6\xB5\x8B\xE8\xAF\x95",                             "\xB2\xE2\xCA\xD4",                     NULL, NULL},
+    {" BIG5 CP950 ",            "\xE6\xB8\xAC\xE8\xA9\xA6",                             "\xB4\xFA\xB8\xD5",                     NULL, NULL},
+    {" EUCKR CP949 ",           "\xED\x85\x8C\xEC\x8A\xA4\xED\x8A\xB8",                 "\xC5\xD7\xBD\xBA\xC6\xAE",             NULL, NULL},
+};
+static const size_t Encoding_Texts_Size=sizeof(Encoding_Texts)/sizeof(*Encoding_Texts);
+
+// Text of the encoding of the locale or of the code page, NULL if there is none
+static const encoding_text* Encoding_Text(std::string Name)
+{
+    std::string Key=" ";
+    for (size_t Pos=0; Pos<Name.size(); Pos++)
+        if (Name[Pos]!='-' && Name[Pos]!='_')
+            Key+=(char)toupper((unsigned char)Name[Pos]);
+    Key+=' ';
+    for (size_t i=0; i<Encoding_Texts_Size; i++)
+        if (strstr(Encoding_Texts[i].Names, Key.c_str()))
+            return Encoding_Texts+i;
+    return NULL;
+}
 
 //---------------------------------------------------------------------------
 static size_t Checks=0;
@@ -154,12 +213,17 @@ static bool Reference_Encode(const Ztring& Value, std::string& ToReturn)
 }
 #endif
 
-// With an ASCII locale, a string which is not valid UTF-8 must give the same bytes back
-static void Check_Bytes(const std::string& Value)
+// A string which is not valid in the encoding of the locale (UTF-8 with an ASCII locale) must give the same bytes back, and valid UTF-8,
+// also as a file name if the names are not converted from the locale encoding to UTF-8 (e.g. on macOS)
+static void Check_Bytes(const std::string& Value, bool FileNames)
 {
     Ztring Wide;
     Wide.From_Local(Value.c_str());
     Check(!Wide.empty() && Wide.To_Local()==Value, "From_Local("+Printable(Value)+").To_Local()", "result is "+Printable(Wide.To_Local()));
+    std::string UTF8=Wide.To_UTF8();
+    Check(!From_UTF8(UTF8).empty(), "From_Local("+Printable(Value)+").To_UTF8()", "not valid UTF-8: "+Printable(UTF8));
+    if (!FileNames)
+        return;
     std::string Native=FileName_To_Native(FileName_From_Native(Value.c_str()));
     Check(Native==Value, "FileName_To_Native(FileName_From_Native("+Printable(Value)+"))", "result is "+Printable(Native));
 }
@@ -272,6 +336,33 @@ static std::string Listed_Path(const Ztring& Path)
     #endif
 }
 
+// Name typed in a terminal, as a command line argument decoded by MediaInfo
+static Ztring Typed(const std::string& Path)
+{
+    #if defined(UNICODE)
+        return FileName_From_Native(Path.c_str());
+    #else
+        return Path;
+    #endif
+}
+
+// File of a volume which keeps the bytes of the names: name of the file system, size, name typed in a terminal
+struct volume_file
+{
+    std::string Raw;
+    size_t      Size;
+    std::string Typed;
+};
+
+static void Volume_Add(std::vector<volume_file>& Files, const std::string& Raw, size_t Size, const std::string& Typed)
+{
+    volume_file File_Temp;
+    File_Temp.Raw=Raw;
+    File_Temp.Size=Size;
+    File_Temp.Typed=Typed;
+    Files.push_back(File_Temp);
+}
+
 //---------------------------------------------------------------------------
 int main(int argc, char* argv[])
 {
@@ -297,21 +388,34 @@ int main(int argc, char* argv[])
         bool IsLatin1=GetACP()==1252;
         bool FileNames_IsUnicode=true; // Wide functions of the system, narrow file names use the code page
         bool FileNames_Narrow_IsUnicode=IsUnicode;
+        char CodePage[16];
+        snprintf(CodePage, sizeof(CodePage), "CP%u", (unsigned)GetACP());
+        std::string CodeSet(CodePage);
     #else
         #if !defined(__ANDROID_API__) || __ANDROID_API__ >= 26
-            const char* CodeSet=nl_langinfo(CODESET);
+            std::string CodeSet(nl_langinfo(CODESET));
         #else
-            const char* CodeSet="UTF-8"; // Default of Android, no nl_langinfo() before API level 26
+            std::string CodeSet("UTF-8"); // Default of Android, no nl_langinfo() before API level 26
         #endif
-        bool IsASCII=!strcmp(CodeSet, "ANSI_X3.4-1968") || !strcmp(CodeSet, "ASCII") || !strcmp(CodeSet, "US-ASCII") || !strcmp(CodeSet, "646");
-        bool IsUnicode=IsASCII || !strcmp(CodeSet, "UTF-8") || !strcmp(CodeSet, "utf8");
-        bool IsLatin1=!strcmp(CodeSet, "ISO-8859-1") || !strcmp(CodeSet, "ISO8859-1");
-        #if defined(__APPLE__) || defined(__ANDROID__)
+        bool IsASCII=CodeSet=="ANSI_X3.4-1968" || CodeSet=="ASCII" || CodeSet=="US-ASCII" || CodeSet=="646";
+        bool IsUnicode=IsASCII || CodeSet=="UTF-8" || CodeSet=="utf8";
+        bool IsLatin1=CodeSet=="ISO-8859-1" || CodeSet=="ISO8859-1";
+        #if defined(__APPLE__) || defined(__ANDROID__) || defined(ZENLIB_FILENAME_UTF8)
             bool FileNames_IsUnicode=true; // UTF-8 file names whatever the locale
         #else
             bool FileNames_IsUnicode=IsUnicode;
         #endif
         bool FileNames_Narrow_IsUnicode=FileNames_IsUnicode;
+    #endif
+    printf("OK: encoding %s\n", CodeSet.c_str());
+    const encoding_text* Encoding=IsUnicode?NULL:Encoding_Text(CodeSet);
+
+    // Names of the file system converted from and to a locale which is neither ASCII nor UTF-8 (e.g. macOS, the names of the file system are
+    // UTF-8, also without Unicode), so the bytes of a name may depend on the existing files (e.g. network volumes, see FileName_To_Native())
+    #if defined(__APPLE__) || defined(ZENLIB_FILENAME_UTF8)
+        bool Names_AreConverted=!IsUnicode;
+    #else
+        bool Names_AreConverted=false;
     #endif
 
     // Text in other encodings, with a character outside of the BMP for UTF-16: UTF-8 whatever the locale, not the low byte of each value, not lost
@@ -337,6 +441,20 @@ int main(int argc, char* argv[])
         Local.From_Local(Name_Latin1);
         Text=Local.To_UTF8();
         Check(Local.empty() || !From_UTF8(Text).empty(), "From_UTF8(From_Local("+Printable(Name_Latin1)+").To_UTF8())", "result is "+Printable(Text));
+
+        // Values which are not characters, e.g. a byte kept by From_Local() or the first part of a UTF-16 surrogate pair alone: U+FFFD
+        #if defined(UNICODE)
+            Ztring Values;
+            Values+=(wchar_t)0xD83C; // Surrogate pair
+            Values+=(wchar_t)0xDFB5;
+            Values+=__T('a');
+            Values+=(wchar_t)0xDCE9;
+            Values+=(wchar_t)0xD800;
+            Values+=__T('b');
+            Values+=(wchar_t)0xD83C; // At the end of the string
+            Text=Values.To_UTF8();
+            Check(Text=="\xF0\x9F\x8E\xB5" "a\xEF\xBF\xBD\xEF\xBF\xBD" "b\xEF\xBF\xBD", "To_UTF8(values which are not characters)", "result is "+Printable(Text));
+        #endif
     }
 
     // Without Unicode, strings are the bytes of the names, no conversion whatever the locale: same results as with the bytes kept with an ASCII locale
@@ -349,79 +467,81 @@ int main(int argc, char* argv[])
         #else
             bool Bytes_AreNames=true;
         #endif
-        #if defined(__APPLE__)
-            bool Names_AreConverted=!IsUnicode; // Neither ASCII nor UTF-8
-        #endif
         IsASCII=Bytes_AreNames;
         IsUnicode=Bytes_AreNames;
         IsLatin1=false;
         FileNames_IsUnicode=Bytes_AreNames;
         FileNames_Narrow_IsUnicode=Bytes_AreNames;
         UTF8_Names_CanBeCreated=Bytes_AreNames;
-        #if defined(__APPLE__)
-            if (Names_AreConverted)
+        if (Names_AreConverted)
+        {
+            IsASCII=false; // No bytes kept as they are
+            FileNames_Narrow_IsUnicode=false;
+            if (!Encoding)
+                Check(false, "internal", "no test text for the encoding "+CodeSet);
+            else
             {
-                IsASCII=false; // No bytes kept as they are
-                FileNames_Narrow_IsUnicode=false;
+                // Name in the locale encoding (e.g. typed in a terminal) to the UTF-8 name of the file system, and back
+                std::string Name_UTF8(Encoding->Text);
+                std::string Name_Local(Encoding->Local);
+                std::string Native=FileName_To_Native(Name_Local);
+                Check(Native==Name_UTF8, "FileName_To_Native("+Printable(Name_Local)+")", "result is "+Printable(Native));
+                std::string Local=FileName_From_Native(Name_UTF8.c_str());
+                Check(Local==Name_Local, "FileName_From_Native("+Printable(Name_UTF8)+")", "result is "+Printable(Local));
 
-                // Name in the encoding of the tested locales, not valid UTF-8 (else it is kept as UTF-8, e.g. U+8868 in EUC-JP),
-                // and a name which can't be encoded in it (none for GB18030)
-                const char* CodeSet=nl_langinfo(CODESET);
-                struct encoding
+                // UTF-8 kept: a UTF-8 name (e.g. from the Finder), and from the file system a name which can't be encoded in the locale (all can
+                // be encoded in GB18030)
+                Native=FileName_To_Native(Name_UTF8);
+                Check(Native==Name_UTF8, "FileName_To_Native("+Printable(Name_UTF8)+")", "result is "+Printable(Native));
+                if (!strstr(Encoding->Names, " GB18030 "))
                 {
-                    const char* CodeSet;
-                    const char* Name_UTF8;
-                    const char* Name_Local;
-                    const char* Name_NotEncoded;
-                };
-                static const encoding Encodings[]=
-                {
-                    {"ISO8859-1", "caf\xC3\xA9",    "caf\xE9",    "\xF0\x9F\x8E\xB5"},
-                    {"eucJP",     "\xE3\x83\x86\xE3\x82\xB9\xE3\x83\x88", "\xA5\xC6\xA5\xB9\xA5\xC8", "\xF0\x9F\x8E\xB5"},
-                    {"GB18030",   "\xE8\xA1\xA8",   "\xB1\xED",   NULL},
-                };
-                const encoding* Encoding=NULL;
-                for (size_t i=0; i<sizeof(Encodings)/sizeof(*Encodings); i++)
-                    if (!strcmp(CodeSet, Encodings[i].CodeSet))
-                        Encoding=Encodings+i;
-                if (!Encoding)
-                    Check(false, "internal", std::string("no test name for the encoding ")+CodeSet);
+                    Local=FileName_From_Native(Names[2]);
+                    Check(Local==Names[2], "FileName_From_Native("+Printable(Names[2])+")", "result is "+Printable(Local));
+                }
+
+                // File created with the name in the locale encoding, the file must have the UTF-8 name, and its listing gives the locale encoding
+                std::string SubDirectory=Directory+"/converted";
+                File F;
+                if (!Create_Raw_Directory(SubDirectory))
+                    Check(false, "internal", "can't create "+Printable(SubDirectory));
                 else
                 {
-                    // Name in the locale encoding (e.g. typed in a terminal) to the UTF-8 name of the file system, and back
-                    std::string Name_UTF8(Encoding->Name_UTF8);
-                    std::string Name_Local(Encoding->Name_Local);
-                    std::string Native=FileName_To_Native(Name_Local);
-                    Check(Native==Name_UTF8, "FileName_To_Native("+Printable(Name_Local)+")", "result is "+Printable(Native));
-                    std::string Local=FileName_From_Native(Name_UTF8.c_str());
-                    Check(Local==Name_Local, "FileName_From_Native("+Printable(Name_UTF8)+")", "result is "+Printable(Local));
-
-                    // UTF-8 kept: a UTF-8 name (e.g. from the Finder), and from the file system a name which can't be encoded in the locale
-                    Native=FileName_To_Native(Name_UTF8);
-                    Check(Native==Name_UTF8, "FileName_To_Native("+Printable(Name_UTF8)+")", "result is "+Printable(Native));
-                    if (Encoding->Name_NotEncoded)
-                    {
-                        Local=FileName_From_Native(Encoding->Name_NotEncoded);
-                        Check(Local==Encoding->Name_NotEncoded, "FileName_From_Native("+Printable(Encoding->Name_NotEncoded)+")", "result is "+Printable(Local));
-                    }
-
-                    // File created with the name in the locale encoding, the file must have the UTF-8 name, and its listing gives the locale encoding
-                    std::string SubDirectory=Directory+"/converted";
-                    File F;
-                    if (!Create_Raw_Directory(SubDirectory))
-                        Check(false, "internal", "can't create "+Printable(SubDirectory));
-                    else
-                    {
-                        bool Created=F.Create(SubDirectory+"/"+Name_Local);
-                        F.Close();
-                        Check(Created && Exists_Raw(SubDirectory+"/"+Name_UTF8), "File::Create("+Printable(Name_Local)+")", "file not created with the UTF-8 name");
-                        Check(File::Exists(SubDirectory+"/"+Name_Local), "File::Exists("+Printable(Name_Local)+")", "file not found");
-                        ZtringList List=Dir::GetAllFileNames(SubDirectory);
-                        Check(List.size()==1 && List[0]==SubDirectory+"/"+Name_Local, "Dir::GetAllFileNames, name in the locale encoding", List.empty()?"nothing listed":"listed "+Printable(List[0]));
-                    }
+                    bool Created=F.Create(SubDirectory+"/"+Name_Local);
+                    F.Close();
+                    Check(Created && Exists_Raw(SubDirectory+"/"+Name_UTF8), "File::Create("+Printable(Name_Local)+")", "file not created with the UTF-8 name");
+                    Check(File::Exists(SubDirectory+"/"+Name_Local), "File::Exists("+Printable(Name_Local)+")", "file not found");
+                    ZtringList List=Dir::GetAllFileNames(SubDirectory);
+                    Check(List.size()==1 && List[0]==SubDirectory+"/"+Name_Local, "Dir::GetAllFileNames, name in the locale encoding", List.empty()?"nothing listed":"listed "+Printable(List[0]));
                 }
             }
-        #endif
+        }
+    #endif
+
+    // Conversions with another locale or code page: its encoding, also where wchar_t is not Unicode with it (e.g. macOS and FreeBSD, with iconv),
+    // without the internal state of the C library (with some systems, e.g. GB18030 on FreeBSD and macOS, it kept the last bytes of a string which
+    // is not valid in the encoding, so all the next strings were not converted)
+    #if defined(UNICODE)
+        if (!IsUnicode)
+        {
+            if (!Encoding)
+                Check(false, "internal", "no test text for the encoding "+CodeSet);
+            else
+                for (int Pass=0; Pass<2; Pass++)
+                {
+                    Ztring Text=From_UTF8(Encoding->Text);
+                    std::string Local=Text.To_Local();
+                    Check(Local==Encoding->Local, "To_Local("+Printable(Encoding->Text)+") with "+CodeSet, "result is "+Printable(Local));
+                    Ztring Wide;
+                    Wide.From_Local(Encoding->Local);
+                    Check(Wide==Text, "From_Local("+Printable(Encoding->Local)+") with "+CodeSet, "result is "+Printable(Wide.To_UTF8()));
+
+                    // Then a byte which is not valid in the multibyte encodings: the text before it is decoded character per character
+                    std::string Local_Byte=Encoding->Local+std::string("\xFF");
+                    Wide.From_Local(Local_Byte.c_str());
+                    Check(Wide.find(Text)==0 && Wide.size()==Text.size()+1 && Wide.To_Local()==Local_Byte, "From_Local("+Printable(Local_Byte)+") with "+CodeSet, "result is "+Printable(Wide.To_UTF8()));
+                    Wide.From_Local(Encoding->Local+std::string("\xA5\xC6\xA5")); // Then the end of a character missing
+                }
+        }
     #endif
 
     // Conversions with the locale: UTF-8 with an ASCII locale, not "?" (Linux) or Latin-1 bytes (macOS, FreeBSD)
@@ -462,7 +582,7 @@ int main(int argc, char* argv[])
                 Ztring Wide;
                 Wide.From_Local(Expected.c_str());
                 Check(Wide==From_UTF8(Name), "From_Local("+Printable(Expected)+")", "result is "+Printable(Wide.To_UTF8()));
-                #if !defined(_WIN32) && !defined(__APPLE__) && !defined(__ANDROID__)
+                #if !defined(_WIN32) && !defined(__APPLE__) && !defined(__ANDROID__) && !defined(ZENLIB_FILENAME_UTF8)
                     std::string Path=Directory+"/locale_"+Expected;
                     File F;
                     Check(F.Create(From_UTF8(Directory+"/locale_"+Name)) && Exists_Raw(Path), "File::Create("+Shown+") with the locale", "file not created with the name in the encoding of the locale");
@@ -528,21 +648,36 @@ int main(int argc, char* argv[])
         }
     #endif
 
-    // Strings which are not valid UTF-8 with an ASCII locale: same bytes back, not an empty string, not the UTF-8 string of the same characters,
-    // and the valid part is decoded
-    if (IsASCII)
+    // Strings which are not valid in the encoding of the locale (UTF-8 with an ASCII locale), with all the locales: same bytes back, not an empty
+    // string, not the UTF-8 string of the same characters, and the valid part is decoded, as Python with "surrogateescape"; also as file names,
+    // except if they are converted from a locale which is neither ASCII nor UTF-8 (the bytes may depend on the existing files)
+    #if !defined(_WIN32)
     {
         for (size_t i=0; i<Names_NotUTF8_Size; i++)
-            Check_Bytes(Names_NotUTF8[i]);
+            Check_Bytes(Names_NotUTF8[i], !Names_AreConverted);
         for (size_t i=0; i<Strings_NotUTF8_Size; i++)
-            Check_Bytes(Strings_NotUTF8[i]);
-        Check_Bytes(Name_Latin1);
-        Ztring Wide;
-        Wide.From_Local(Name_Latin1);
-        Check(Wide!=From_UTF8(Names[0]), "From_Local("+Printable(Name_Latin1)+")", "same string as the UTF-8 name");
-        Wide.From_Local("caf\xC3\xA9\xE9");
-        Check(Wide.find(From_UTF8(Names[0]))==0 && Wide.size()==From_UTF8(Names[0]).size()+1, "From_Local(valid text and a byte which is not valid)", "result is "+Printable(Wide.To_Local()));
+            Check_Bytes(Strings_NotUTF8[i], !Names_AreConverted);
+        for (size_t i=0; i<Strings_Multibyte_Size; i++)
+            Check_Bytes(Strings_Multibyte[i], !Names_AreConverted);
+        Check_Bytes(Name_Latin1, !Names_AreConverted);
+        if (IsUnicode)
+        {
+            Ztring Wide;
+            Wide.From_Local(Name_Latin1);
+            Check(Wide!=From_UTF8(Names[0]), "From_Local("+Printable(Name_Latin1)+")", "same string as the UTF-8 name");
+            Wide.From_Local("caf\xC3\xA9\xE9");
+            Check(Wide.find(From_UTF8(Names[0]))==0 && Wide.size()==From_UTF8(Names[0]).size()+1, "From_Local(valid text and a byte which is not valid)", "result is "+Printable(Wide.To_Local()));
+        }
+
+        // Name of the wide API with a byte kept, e.g. from Python (os.fsdecode() keeps the bytes as U+DC80 to U+DCFF with all the locales)
+        #if defined(UNICODE)
+            Ztring Wide(__T("caf"));
+            Wide+=(wchar_t)0xDCE9;
+            std::string Native=FileName_To_Native(Wide);
+            Check(Native==Name_Latin1, "FileName_To_Native(caf\\uDCE9)", "result is "+Printable(Native));
+        #endif
     }
+    #endif
 
     // File names given to the system or got from it
     if (FileNames_Narrow_IsUnicode)
@@ -650,9 +785,9 @@ int main(int argc, char* argv[])
         }
     }
 
-    // Name which is not valid UTF-8 with an ASCII locale, next to the UTF-8 name of the same characters: the file with this name is used
-    // (these names can't be created on macOS)
-    if (IsASCII)
+    // Name which is not valid UTF-8, next to the UTF-8 name of the same characters: the file with this name is used, with all the locales
+    // (these names can't be created on macOS, the UTF-8 name is used if names are converted from a locale which is neither ASCII nor UTF-8)
+    if (!Names_AreConverted)
     {
         std::string Path=Directory+"/twin_"+Name_Latin1;
         std::string Path_UTF8=Directory+"/twin_"+Names[0];
@@ -682,16 +817,16 @@ int main(int argc, char* argv[])
     Created=Create_Raw(List_Path+"/ascii.bin") && Create_Raw(List_Path+"/"+SubDirectory+"/inner.bin") && Created;
     Expected.insert("ascii.bin");
     Expected.insert(SubDirectory+"/inner.bin");
-    std::set<std::string> Expected_All=Expected; // With the names which are not valid UTF-8
+    std::set<std::string> Expected_All=Expected; // With the names which are not valid UTF-8 (not where names are converted, see the volume below)
     size_t NotUTF8_Count=0;
     for (size_t i=0; i<Names_NotUTF8_Size; i++)
-        if (Create_Raw(List_Path+"/"+Names_NotUTF8[i])) // Not on macOS and Windows
+        if (!Names_AreConverted && Create_Raw(List_Path+"/"+Names_NotUTF8[i])) // Not on macOS and Windows
         {
             NotUTF8_Count++;
             Expected_All.insert(Names_NotUTF8[i]);
         }
     std::string SubDirectory_NotUTF8=std::string("sub_")+Name_Latin1;
-    if (Create_Raw_Directory(List_Path+"/"+SubDirectory_NotUTF8) && Create_Raw(List_Path+"/"+SubDirectory_NotUTF8+"/inner.bin"))
+    if (!Names_AreConverted && Create_Raw_Directory(List_Path+"/"+SubDirectory_NotUTF8) && Create_Raw(List_Path+"/"+SubDirectory_NotUTF8+"/inner.bin"))
     {
         NotUTF8_Count++;
         Expected_All.insert(SubDirectory_NotUTF8+"/inner.bin");
@@ -715,14 +850,19 @@ int main(int argc, char* argv[])
             }
         }
         Check(NotExisting.empty(), "Dir::GetAllFileNames, existing files", "not existing:"+NotExisting);
-        if (IsASCII)
-            Check(Listed==Expected_All, "Dir::GetAllFileNames, all names", "listed:"+Listed_Shown);
-        else if (FileNames_IsUnicode)
-            Check(Listed==Expected, "Dir::GetAllFileNames, valid UTF-8 names", "listed:"+Listed_Shown);
-        else if (IsLatin1)
-            Check(List.size()==Expected.size()+NotUTF8_Count, "Dir::GetAllFileNames, all names", "listed:"+Listed_Shown); // Each byte is a character
-        else
-            Check(Listed.count("ascii.bin")==1, "Dir::GetAllFileNames, names which can be decoded", "listed:"+Listed_Shown+(Dir::Exists(From_UTF8(List_Path))?"":" (Dir::Exists() is false)")+(FileName_To_Native(From_UTF8(List_Path))==List_Path?"":" (path converted to "+Printable(FileName_To_Native(From_UTF8(List_Path)))+")")); // e.g. EUC-JP
+        #if defined(_WIN32)
+            if (IsASCII)
+                Check(Listed==Expected_All, "Dir::GetAllFileNames, all names", "listed:"+Listed_Shown);
+            else if (FileNames_IsUnicode)
+                Check(Listed==Expected, "Dir::GetAllFileNames, valid UTF-8 names", "listed:"+Listed_Shown);
+            else if (IsLatin1)
+                Check(List.size()==Expected.size()+NotUTF8_Count, "Dir::GetAllFileNames, all names", "listed:"+Listed_Shown); // Each byte is a character
+            else
+                Check(Listed.count("ascii.bin")==1, "Dir::GetAllFileNames, names which can be decoded", "listed:"+Listed_Shown); // e.g. cp932 without Unicode
+        #else
+            Check(Listed==Expected_All, "Dir::GetAllFileNames, all names", "listed:"+Listed_Shown); // With all the locales, the names which are not valid kept
+            (void)NotUTF8_Count;
+        #endif
 
         // Same names with a path separator at the end of the directory name, without a second separator
         ZtringList List_Separator=Dir::GetAllFileNames(From_UTF8(List_Path+"/"), (Dir::dirlist_t)(Dir::Include_Files|Dir::Parse_SubDirs));
@@ -734,6 +874,66 @@ int main(int argc, char* argv[])
                 Listed_Separator.insert(Path.substr(List_Path.size()+1));
         }
         Check(Listed_Separator==Listed, "Dir::GetAllFileNames, directory name with a path separator at the end", "different names or a second separator");
+    }
+
+    // Network volumes (e.g. NFS, AFS) keep the bytes of names created by other systems with another encoding, and a locale which is neither ASCII
+    // nor UTF-8 is used where names are converted to UTF-8 (e.g. macOS): names typed in this encoding are found with the UTF-8 name or with the
+    // bytes of this encoding, for each part of the path, new files get the UTF-8 name, and all the listed names give their file (only where
+    // such names can be created, e.g. with ZENLIB_FILENAME_UTF8 on Linux, not on macOS, but also with the names which are valid UTF-8)
+    if (Names_AreConverted && Encoding)
+    {
+        std::string Local(Encoding->Local), UTF8(Encoding->Text);
+        std::string Volume=Directory+"/volume";
+        std::vector<volume_file> Files;
+        // (not the UTF-8 name and the name in the other encoding of the same characters in the same directory, the UTF-8 one is used)
+        Volume_Add(Files, Volume+"/utf8_"+UTF8, 1, Volume+"/utf8_"+Local); // e.g. created on macOS
+        Volume_Add(Files, Volume+"/local_"+Local, 2, Volume+"/local_"+Local); // e.g. created on Linux with this encoding
+        Volume_Add(Files, Volume+"/dir1_"+Local+"/utf8_"+UTF8, 3, Volume+"/dir1_"+Local+"/utf8_"+Local);
+        Volume_Add(Files, Volume+"/dir2_"+UTF8+"/local_"+Local, 4, Volume+"/dir2_"+Local+"/local_"+Local);
+        if (Encoding->Text_ValidUTF8) // Name in this encoding which is also valid UTF-8, of other characters
+            Volume_Add(Files, Volume+"/valid_"+Encoding->Text_ValidUTF8, 5, Volume+"/valid_"+Encoding->Local_ValidUTF8);
+        if (!Create_Raw_Directory(Volume))
+            Check(false, "internal", "can't create "+Printable(Volume));
+        else
+        {
+            Create_Raw_Directory(Volume+"/dir1_"+Local);
+            Create_Raw_Directory(Volume+"/dir2_"+UTF8);
+            std::map<std::string, size_t> Created; // Size of the files
+            for (size_t i=0; i<Files.size(); i++)
+            {
+                if (!Create_Raw(Files[i].Raw, Files[i].Size))
+                    continue; // Not valid UTF-8, on macOS
+                Created[Files[i].Raw]=Files[i].Size;
+                std::string Shown=Printable(Files[i].Typed.substr(Volume.size()+1));
+                File F;
+                Check(File::Size_Get(Typed(Files[i].Typed))==Files[i].Size && F.Open(Typed(Files[i].Typed)) && F.Size_Get()==Files[i].Size, "File::Open("+Shown+") on a volume with names in another encoding", "file not found or another file");
+            }
+
+            // New file in a directory which exists with the bytes of this encoding: the UTF-8 name in this directory
+            if (Exists_Raw(Volume+"/dir1_"+Local, true))
+            {
+                File F;
+                bool IsCreated=F.Create(Typed(Volume+"/dir1_"+Local+"/new_"+Local));
+                F.Close();
+                Check(IsCreated && Exists_Raw(Volume+"/dir1_"+Local+"/new_"+UTF8), "File::Create(new file) in a directory with a name in another encoding", "not created with the UTF-8 name in this directory");
+                if (IsCreated)
+                    Created[Volume+"/dir1_"+Local+"/new_"+UTF8]=0;
+            }
+
+            // Listing: each name gives its file
+            ZtringList List=Dir::GetAllFileNames(From_UTF8(Volume), (Dir::dirlist_t)(Dir::Include_Files|Dir::Parse_SubDirs));
+            std::string Listed_Shown;
+            bool IsOK=List.size()==Created.size();
+            for (size_t i=0; i<List.size(); i++)
+            {
+                std::string Native=FileName_To_Native(List[i]);
+                Listed_Shown+=" "+Printable(Native);
+                std::map<std::string, size_t>::iterator Item=Created.find(Native);
+                if (Item==Created.end() || File::Size_Get(List[i])!=Item->second)
+                    IsOK=false;
+            }
+            Check(IsOK, "Dir::GetAllFileNames, volume with names in another encoding", "listed:"+Listed_Shown);
+        }
     }
 
     #if !defined(_WIN32) && (!defined(__ANDROID_API__) || __ANDROID_API__ >= 28)
