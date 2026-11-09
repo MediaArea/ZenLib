@@ -39,6 +39,10 @@ void Shell_Execute(const Ztring &ToExecute);
 // File names
 //***************************************************************************
 
+// Names for the narrow functions of the C library or of the system (e.g. fopen(), the arguments of main()), in the encoding of the locale
+// (the code page on Windows), or UTF-8 where the file names are UTF-8 (e.g. macOS). Without Unicode, the strings of ZenLib, also the names
+// it gives (e.g. Dir::GetAllFileNames()), are UTF-8 text: a name for these functions, or to show in the encoding of the locale, must be
+// converted with FileName_To_Native() or Ztring::To_Local()
 std::string FileName_To_Native(const Ztring &File_Name);
 Ztring FileName_From_Native(const char* File_Name);
 

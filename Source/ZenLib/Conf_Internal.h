@@ -21,4 +21,14 @@
     #endif
 #endif //ZENLIB_USEWX
 
+//***************************************************************************
+// Functions shared by the files of ZenLib, not in its interface
+//***************************************************************************
+
+#if defined(__GNUC__) && __GNUC__>=4 && !defined(_WIN32) && !defined(__CYGWIN__)
+    #define ZENLIB_INTERNAL __attribute__((visibility("hidden"))) //Not exported by the shared library
+#else
+    #define ZENLIB_INTERNAL
+#endif
+
 #endif

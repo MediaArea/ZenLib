@@ -29,15 +29,12 @@ AC_PROG_INSTALL
 dnl -------------------------------------------------------------------------
 dnl Libtool init
 dnl
-ZenLib_System_LIBS=
 case "$host_os" in
 	darwin*)
 		dnl libtool wrongly detects -single_module as unsupported with recent Xcode/Clang versions.
 		dnl This causes the master object to be linked using a buggy code path that does not honor
 		dnl $compiler_flags, and flags such as -arch or -mmacos-version-min to be silently dropped.
 		lt_cv_apple_cc_single_mod=yes
-		dnl iconv of the system for the file names in the locale encoding
-		ZenLib_System_LIBS="-liconv"
 		;;
 esac
 
@@ -158,10 +155,10 @@ dnl -------------------------------------------------------------------------
 dnl Common
 dnl
 if test "$enable_shared" = "yes"; then
-    ZenLib_LIBS="-L$(pwd)/.libs -lzen -lpthread $ZenLib_System_LIBS $ZenLib_LIBS"
+    ZenLib_LIBS="-L$(pwd)/.libs -lzen -lpthread $ZenLib_LIBS"
 fi
 if test "$enable_static" = "yes"; then
-    ZenLib_LIBS_Static="$(pwd)/.libs/libzen.a -lpthread $ZenLib_System_LIBS $ZenLib_LIBS_Static"
+    ZenLib_LIBS_Static="$(pwd)/.libs/libzen.a -lpthread $ZenLib_LIBS_Static"
 fi
 
 dnl #########################################################################
@@ -274,7 +271,6 @@ dnl -------------------------------------------------------------------------
 dnl External libs
 dnl
 LDFLAGS="$LDFLAGS -lpthread"
-LIBS="$LIBS $ZenLib_System_LIBS"
 
 dnl -------------------------------------------------------------------------
 dnl Check if thread safe variants of time functions are available
@@ -288,7 +284,6 @@ dnl #########################################################################
 AC_SUBST(ZenLib_CXXFLAGS)
 AC_SUBST(ZenLib_LIBS)
 AC_SUBST(ZenLib_LIBS_Static)
-AC_SUBST(ZenLib_System_LIBS)
 AC_SUBST(ZenLib_Unicode)
 AC_SUBST(ZenLib_wstring_missing)
 AC_SUBST(ZenLib_LargeFiles)

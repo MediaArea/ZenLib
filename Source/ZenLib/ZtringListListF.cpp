@@ -42,8 +42,8 @@ void ZtringListListF::ZtringListListF_Common ()
     Backup_Nb_Max=0;
     Backup_Nb=0;
     Sauvegarde=true;
-    #ifdef _UNICODE
-        Local=false;
+    #if defined(_UNICODE) || (!defined(ZENLIB_USEWX) && !defined(WSTRING_MISSING))
+        Local=false; //UTF-8 as the files written, also without Unicode (UTF-8 text), else the encoding of the locale
     #else
         Local=true;
     #endif

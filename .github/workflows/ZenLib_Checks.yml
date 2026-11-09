@@ -27,6 +27,14 @@ jobs:
             CXXFLAGS: -O1 -g -fsanitize=address,undefined -fno-sanitize-recover=undefined -fno-omit-frame-pointer
             LDFLAGS: -fsanitize=address,undefined
             no_cmake: true
+          # Code of macOS and FreeBSD for the encodings of the locales (iconv) and the network volumes (names of another encoding
+          # can't be created on macOS)
+          - name: Sanitizers, iconv and file names of macOS
+            os: ubuntu-latest
+            unicode: 'yes no'
+            CXXFLAGS: -O1 -g -fsanitize=address,undefined -fno-sanitize-recover=undefined -fno-omit-frame-pointer -DZENLIB_ICONV -DZENLIB_FILENAME_UTF8
+            LDFLAGS: -fsanitize=address,undefined
+            no_cmake: true
           - name: macOS
             os: macos-latest
             unicode: 'yes no'

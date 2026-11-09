@@ -145,11 +145,6 @@ if(CMAKE_THREAD_LIBS_INIT)
   target_link_libraries(zen PUBLIC ${CMAKE_THREAD_LIBS_INIT})
 endif()
 
-# iconv of the system for the file names in the locale encoding
-if(APPLE)
-  target_link_libraries(zen PUBLIC iconv)
-endif()
-
 if(LARGE_FILES)
   include(TestLargeFiles)
 
@@ -219,9 +214,6 @@ if(PKG_CONFIG_FOUND)
   set(ZenLib_PKGCONFIG_THREAD_LIBS "")
   if(CMAKE_THREAD_LIBS_INIT)
     set(ZenLib_PKGCONFIG_THREAD_LIBS " ${CMAKE_THREAD_LIBS_INIT}")
-  endif()
-  if(APPLE)
-    set(ZenLib_PKGCONFIG_THREAD_LIBS "${ZenLib_PKGCONFIG_THREAD_LIBS} -liconv")
   endif()
   configure_file(${CMAKE_CURRENT_SOURCE_DIR}/libzen.pc.in
                  ${CMAKE_CURRENT_BINARY_DIR}/libzen.pc

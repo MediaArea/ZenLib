@@ -29,10 +29,19 @@
     #endif
 #endif //ZENLIB_USEWX
 //---------------------------------------------------------------------------
+#if defined(WINDOWS) && !defined(UNICODE) && !defined(ZENLIB_USEWX)
+    #define ZENLIB_FILENAME_CODEPAGE_BYTES //A string which is not UTF-8 text is the bytes of the code page (see Ztring::To_Unicode())
+#endif
 #undef ZENLIB_USEWX
 
 namespace ZenLib
 {
+
+#if defined(ZENLIB_FILENAME_CODEPAGE_BYTES)
+//---------------------------------------------------------------------------
+//In Ztring.cpp
+ZENLIB_INTERNAL bool IsCodePageBytes(const char* S, size_t Size);
+#endif
 
 //***************************************************************************
 // Helpers
@@ -40,10 +49,15 @@ namespace ZenLib
 
 //---------------------------------------------------------------------------
 // Position of the last path separator: "/", also "\" on Windows
-// Without Unicode on Windows, the second byte of a character of a multibyte code page (e.g. "\" in cp932) is not a separator
+// Without Unicode on Windows, in the bytes of the code page given as they are (see Ztring::To_Unicode()), the second byte of a character of
+// a multibyte code page (e.g. "\" in cp932) is not a separator, UTF-8 text has no such byte
 static size_t PathSeparator_RFind(const Ztring &Name)
 {
     #if defined(WINDOWS) && !defined(UNICODE)
+        #if defined(ZENLIB_FILENAME_CODEPAGE_BYTES)
+            if (!IsCodePageBytes(Name.c_str(), Name.size()))
+                return Name.find_last_of(__T("\\/"));
+        #endif
         size_t ToReturn=Ztring::npos;
         for (size_t Pos=0; Pos<Name.size(); Pos++)
         {
@@ -215,16 +229,17 @@ Ztring FileName::TempFileName_Create(const Ztring &Prefix)
         return wxFileName::CreateTempFileName(Prefix.c_str()).c_str();
     #else //ZENLIB_USEWX
         #ifdef WINDOWS
-            Char Path[MAX_PATH+1];
-            if (!GetTempPath(MAX_PATH, Path))
+            //Wide functions, also without Unicode (UTF-8 text), for the characters which are not in the code page
+            wchar_t Path[MAX_PATH+1];
+            if (!GetTempPathW(MAX_PATH, Path))
                 return Ztring(); //Problem while getting a temp path
 
             #ifndef WINDOWS_GAMES
-                Char FileName[MAX_PATH+1];
-                if (!GetTempFileName(Path, Prefix.c_str(), 0, FileName))
+                wchar_t FileName[MAX_PATH+1];
+                if (!GetTempFileNameW(Path, Prefix.To_Unicode().c_str(), 0, FileName))
                     return Ztring(); //Problem while getting a file name
 
-                return Ztring(FileName);
+                return Ztring().From_Unicode(FileName);
             #else // #ifdef WINDOWS_GAMES
                 return __T("D:\\xxx.txt");
             #endif // #ifdef WINDOWS_GAMES
