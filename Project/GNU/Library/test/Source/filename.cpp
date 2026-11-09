@@ -342,6 +342,19 @@ static Ztring Typed(const std::string& Path)
     return FileName_From_Native(Path.c_str());
 }
 
+#if !defined(UNICODE)
+// Without Unicode, name of an existing file as UTF-8 text from a name which may be the bytes of the encoding of the locale (the code page on
+// Windows) given as they are, as MediaInfoLib gets it
+static Ztring Existing_Name(const Ztring& Path)
+{
+    #if defined(_WIN32)
+        return Ztring().From_Unicode(FileName_To_Wide_Existing(Path));
+    #else
+        return FileName_From_Native(FileName_To_Native(Path).c_str());
+    #endif
+}
+#endif
+
 // File of a volume which keeps the bytes of the names: name of the file system, size, name typed in a terminal
 struct volume_file
 {
@@ -556,6 +569,8 @@ int main(int argc, char* argv[])
             Check(File::Exists(Path), "File::Exists("+Shown+"), bytes of the code page", "not found");
             File F;
             Check(F.Open(Path) && F.Size_Get()==10, "File::Open("+Shown+"), bytes of the code page", "not opened");
+            Check(Existing_Name(Path)==From_UTF8(CodePage_Directory+"/"+Name), "FileName_To_Wide_Existing("+Shown+"), bytes of the code page", "result is "+Printable(Existing_Name(Path)));
+            Check(File::Exists(Existing_Name(Path)), "File::Exists(FileName_To_Wide_Existing("+Shown+")), bytes of the code page", "not found");
         }
     }
     #endif
@@ -593,6 +608,9 @@ int main(int argc, char* argv[])
             }
             ZtringList List=Dir::GetAllFileNames(From_UTF8(Path_Directory+"/"));
             Check(List.size()==1 && Listed_Path(List[0])==Path_Directory_Raw+"/file.txt" && File::Exists(List[0]), "Dir::GetAllFileNames("+Printable(Path_Directory)+"/)", List.empty()?"nothing listed":"listed "+Printable(List[0].To_UTF8()));
+            #if !defined(UNICODE)
+                Check(Existing_Name(Path)==Path && File::Exists(Existing_Name(Path)), "existing name of "+Shown, "result is "+Printable(Existing_Name(Path)));
+            #endif
         }
     }
 
@@ -672,6 +690,9 @@ int main(int argc, char* argv[])
                 const std::string& Listed=Name_UTF8;
             #endif
             Check(List.size()==1 && List[0].find(Listed)!=std::string::npos && File::Exists(List[0]), "Dir::GetAllFileNames("+Shown+"), bytes of the encoding which are also UTF-8", List.empty()?"nothing listed":"listed "+Printable(List[0]));
+            Check(Existing_Name(Path)==From_UTF8(Names_Directory+"/lookalike_"+Listed) && File::Exists(Existing_Name(Path)), "existing name of "+Shown+", bytes of the encoding which are also UTF-8", "result is "+Printable(Existing_Name(Path)));
+            Ztring Path_Directory(Names_Directory+"/lookalike_dir_"+Bytes);
+            Check(Existing_Name(Path_Directory)==From_UTF8(Names_Directory+"/lookalike_dir_"+Listed) && Dir::Exists(Existing_Name(Path_Directory)), "existing name of the directory "+Shown+", bytes of the encoding which are also UTF-8", "result is "+Printable(Existing_Name(Path_Directory)));
         }
     }
     #endif

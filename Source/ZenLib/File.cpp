@@ -95,7 +95,6 @@ namespace ZenLib
         static inline Ztring FileName_From_Wide(const wchar_t* File_Name) {return File_Name;}
     #else //UNICODE
         static inline std::wstring FileName_To_Wide(const Ztring &File_Name) {return File_Name.To_Unicode();}
-        ZENLIB_INTERNAL std::wstring FileName_To_Wide_Existing(const Ztring &File_Name); //In OS_Utils.cpp, for an existing file or directory
         static inline Ztring FileName_From_Wide(const wchar_t* File_Name) {return Ztring().From_Unicode(File_Name);}
     #endif //UNICODE
 #endif
