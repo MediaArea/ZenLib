@@ -336,8 +336,8 @@ void ZtringListList::Write(const Ztring &ToWrite)
             }
             if (IsQuote)
             {
-                //Double quote
-                if (i+Quote_Size*2<=l)
+                //Double quote, only in a quoted field: the quote opening a field is never the first one of a double quote
+                if (q && i+Quote_Size*2<=l)
                 {
                     IsQuote=false;
                     for (size_t j=0; j<Quote_Size; j++)
