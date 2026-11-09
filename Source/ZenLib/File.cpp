@@ -87,6 +87,20 @@ namespace ZenLib
 {
 
 //---------------------------------------------------------------------------
+//Names for the wide functions of Windows, also without Unicode (UTF-8 text)
+#if defined(WINDOWS) && !defined(WINDOWS_UWP) && !defined(ZENLIB_USEWX)
+    #ifdef UNICODE
+        static inline const std::wstring& FileName_To_Wide(const Ztring &File_Name) {return File_Name;}
+        static inline const std::wstring& FileName_To_Wide_Existing(const Ztring &File_Name) {return File_Name;}
+        static inline Ztring FileName_From_Wide(const wchar_t* File_Name) {return File_Name;}
+    #else //UNICODE
+        static inline std::wstring FileName_To_Wide(const Ztring &File_Name) {return File_Name.To_Unicode();}
+        ZENLIB_INTERNAL std::wstring FileName_To_Wide_Existing(const Ztring &File_Name); //In OS_Utils.cpp, for an existing file or directory
+        static inline Ztring FileName_From_Wide(const wchar_t* File_Name) {return Ztring().From_Unicode(File_Name);}
+    #endif //UNICODE
+#endif
+
+//---------------------------------------------------------------------------
 // Debug
 #ifdef ZENLIB_DEBUG
     #include <stdio.h>
@@ -369,11 +383,7 @@ bool File::Open (const tstring &File_Name_, access_t Access)
                     default                  : dwDesiredAccess=0;               dwShareMode=0;                                 dwCreationDisposition=0;             break;
                 }
 
-                #ifdef UNICODE
-                    File_Handle=CreateFileW(File_Name.c_str(), dwDesiredAccess, dwShareMode, NULL, dwCreationDisposition, 0, NULL);
-                #else
-                    File_Handle=CreateFile(File_Name.c_str(), dwDesiredAccess, dwShareMode, NULL, dwCreationDisposition, 0, NULL);
-                #endif //UNICODE
+                File_Handle=CreateFileW((Access==Access_Read?FileName_To_Wide_Existing(File_Name):FileName_To_Wide(File_Name)).c_str(), dwDesiredAccess, dwShareMode, NULL, dwCreationDisposition, 0, NULL);
                 #if 0 //Disabled
                 if (File_Handle==INVALID_HANDLE_VALUE)
                 {
@@ -392,11 +402,7 @@ bool File::Open (const tstring &File_Name_, access_t Access)
                         1000, NULL );
                         */
                         Sleep(1000);
-                        #ifdef UNICODE
-                            File_Handle=CreateFileW(File_Name.c_str(), dwDesiredAccess, dwShareMode, NULL, dwCreationDisposition, 0, NULL);
-                        #else
-                            File_Handle=CreateFile(File_Name.c_str(), dwDesiredAccess, dwShareMode, NULL, dwCreationDisposition, 0, NULL);
-                        #endif //UNICODE
+                        File_Handle=CreateFileW(FileName_To_Wide(File_Name).c_str(), dwDesiredAccess, dwShareMode, NULL, dwCreationDisposition, 0, NULL);
                     }
                 }
                 #endif //0
@@ -526,21 +532,13 @@ bool File::Create (const Ztring &File_Name_, bool OverWrite)
                 }
                 dwShareMode=0;
 
-                #ifdef UNICODE
-                    File_Handle=CreateFileW(File_Name.c_str(), dwDesiredAccess, dwShareMode, NULL, dwCreationDisposition, 0, NULL);
-                #else
-                    File_Handle=CreateFile(File_Name.c_str(), dwDesiredAccess, dwShareMode, NULL, dwCreationDisposition, 0, NULL);
-                #endif //UNICODE
+                File_Handle=CreateFileW(FileName_To_Wide(File_Name).c_str(), dwDesiredAccess, dwShareMode, NULL, dwCreationDisposition, 0, NULL);
                 #if 0 //Disabled
                 if (File_Handle==INVALID_HANDLE_VALUE)
                 {
                     //Sometime the file is locked for few milliseconds, we try again later
                     Sleep(3000);
-                    #ifdef UNICODE
-                        File_Handle=CreateFileW(File_Name.c_str(), dwDesiredAccess, dwShareMode, NULL, dwCreationDisposition, 0, NULL);
-                    #else
-                        File_Handle=CreateFile(File_Name.c_str(), dwDesiredAccess, dwShareMode, NULL, dwCreationDisposition, 0, NULL);
-                    #endif //UNICODE
+                    File_Handle=CreateFileW(FileName_To_Wide(File_Name).c_str(), dwDesiredAccess, dwShareMode, NULL, dwCreationDisposition, 0, NULL);
                 }
                 #endif //0
                 if (File_Handle==INVALID_HANDLE_VALUE)
@@ -1439,11 +1437,7 @@ bool File::Exists(const Ztring &File_Name)
 
                 return false;
             #else
-                #ifdef UNICODE
-                    DWORD FileAttributes=GetFileAttributesW(File_Name.c_str());
-                #else
-                    DWORD FileAttributes=GetFileAttributes(File_Name.c_str());
-                #endif //UNICODE
+                DWORD FileAttributes=GetFileAttributesW(FileName_To_Wide_Existing(File_Name).c_str());
 
                 ZENLIB_DEBUG2(      "File Exists",
                                     Debug+=", File_Name="; Debug+=Ztring::ToZtring(((FileAttributes!=INVALID_FILE_ATTRIBUTES) && !(FileAttributes&FILE_ATTRIBUTE_DIRECTORY))?1:0).To_UTF8())
@@ -1503,11 +1497,7 @@ bool File::Copy(const Ztring &Source, const Ztring &Destination, bool OverWrite)
 
                 return true;
             #else
-                #ifdef UNICODE
-                    return CopyFileW(Source.c_str(), Destination.c_str(), !OverWrite)!=0;
-                #else
-                    return CopyFile(Source.c_str(), Destination.c_str(), !OverWrite)!=0;
-                #endif //UNICODE
+                return CopyFileW(FileName_To_Wide(Source).c_str(), FileName_To_Wide(Destination).c_str(), !OverWrite)!=0;
             #endif
         #endif
     #endif //ZENLIB_USEWX
@@ -1561,11 +1551,7 @@ bool File::Move(const Ztring &Source, const Ztring &Destination, bool OverWrite)
 
                 return true;
             #else
-                #ifdef UNICODE
-                    return MoveFileExW(Source.c_str(), Destination.c_str(), 0)!=0;
-                #else
-                    return MoveFileEx(Source.c_str(), Destination.c_str(), 0)!=0;
-                #endif //UNICODE
+                return MoveFileExW(FileName_To_Wide(Source).c_str(), FileName_To_Wide(Destination).c_str(), 0)!=0;
             #endif
         #endif
     #endif //ZENLIB_USEWX
@@ -1601,11 +1587,7 @@ bool File::Delete(const Ztring &File_Name)
 
                 return true;
             #else
-                #ifdef UNICODE
-                    return DeleteFileW(File_Name.c_str())!=0;
-                #else
-                    return DeleteFile(File_Name.c_str())!=0;
-                #endif //UNICODE
+                return DeleteFileW(FileName_To_Wide(File_Name).c_str())!=0;
             #endif
         #endif
     #endif //ZENLIB_USEWX

@@ -17,11 +17,13 @@
 #include "ZenLib/Dir.h"
 #include "ZenLib/FileName.h"
 #include "ZenLib/OS_Utils.h"
+#include "ZenLib/ZtringListListF.h"
 #include <cctype>
 #include <clocale>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <cwctype>
 #include <map>
 #include <set>
 #include <string>
@@ -180,7 +182,7 @@ static Ztring From_UTF8(const std::string& Value)
 
 // Encoding of the locale by the C library or of the code page by the system, false if a character can't be encoded
 // (Unix: only where wchar_t is Unicode with all locales)
-#if defined(UNICODE) && (defined(_WIN32) || defined(__STDC_ISO_10646__))
+#if defined(_WIN32) || defined(__STDC_ISO_10646__)
     #define HAVE_ENCODE_REFERENCE
 
 // Other names for the multibyte encodings: Japanese (EUC-JP, cp932 where the second byte of this character is "\"), also in GB18030
@@ -191,7 +193,7 @@ static const char* const Names_Multibyte[]=
 };
 static const size_t Names_Multibyte_Size=sizeof(Names_Multibyte)/sizeof(*Names_Multibyte);
 
-static bool Reference_Encode(const Ztring& Value, std::string& ToReturn)
+static bool Reference_Encode(const std::wstring& Value, std::string& ToReturn)
 {
     #if defined(_WIN32)
         BOOL UsedDefaultChar=FALSE;
@@ -213,6 +215,32 @@ static bool Reference_Encode(const Ztring& Value, std::string& ToReturn)
 }
 #endif
 
+// Unicode of a valid UTF-8 text, independent from ZenLib (UTF-16 where wchar_t is 16-bit), where it is used
+#if !defined(UNICODE) || defined(HAVE_ENCODE_REFERENCE)
+static std::wstring UTF8_To_Wide(const std::string& Value)
+{
+    std::wstring ToReturn;
+    for (size_t Pos=0; Pos<Value.size();)
+    {
+        unsigned char Char=(unsigned char)Value[Pos++];
+        unsigned long Code=Char;
+        int More=Char>=0xF0?3:(Char>=0xE0?2:(Char>=0xC0?1:0));
+        if (More)
+            Code&=0x3F>>More;
+        for (int i=0; i<More && Pos<Value.size(); i++)
+            Code=(Code<<6)|(Value[Pos++]&0x3F);
+        if (sizeof(wchar_t)==2 && Code>=0x10000)
+        {
+            ToReturn+=(wchar_t)(0xD800|((Code-0x10000)>>10));
+            ToReturn+=(wchar_t)(0xDC00|((Code-0x10000)&0x3FF));
+        }
+        else
+            ToReturn+=(wchar_t)Code;
+    }
+    return ToReturn;
+}
+#endif
+
 // A string which is not valid in the encoding of the locale (UTF-8 with an ASCII locale) must give the same bytes back, and valid UTF-8,
 // also as a file name if the names are not converted from the locale encoding to UTF-8 (e.g. on macOS)
 static void Check_Bytes(const std::string& Value, bool FileNames)
@@ -222,14 +250,18 @@ static void Check_Bytes(const std::string& Value, bool FileNames)
     Check(!Wide.empty() && Wide.To_Local()==Value, "From_Local("+Printable(Value)+").To_Local()", "result is "+Printable(Wide.To_Local()));
     std::string UTF8=Wide.To_UTF8();
     Check(!From_UTF8(UTF8).empty(), "From_Local("+Printable(Value)+").To_UTF8()", "not valid UTF-8: "+Printable(UTF8));
+    #if !defined(UNICODE)
+        std::wstring Unicode=Ztring(Value).To_Unicode();
+        Check(Ztring().From_Unicode(Unicode).To_Unicode()==Unicode, "To_Unicode(From_Unicode(To_Unicode("+Printable(Value)+")))", "not the same values");
+    #endif
     if (!FileNames)
         return;
     std::string Native=FileName_To_Native(FileName_From_Native(Value.c_str()));
     Check(Native==Value, "FileName_To_Native(FileName_From_Native("+Printable(Value)+"))", "result is "+Printable(Native));
 }
 
-// File system functions with the bytes of the names (UTF-8 on Windows with Unicode), independent from ZenLib and from the locale
-#if defined(_WIN32) && defined(UNICODE)
+// File system functions with the bytes of the names (UTF-8 on Windows), independent from ZenLib and from the locale
+#if defined(_WIN32)
 static std::wstring To_Wide(const std::string& Path)
 {
     std::wstring ToReturn;
@@ -260,25 +292,6 @@ static FILE* Open_Raw(const std::string& Path)
 static bool Create_Raw_Directory(const std::string& Path)
 {
     return !_wmkdir(To_Wide(Path).c_str());
-}
-#elif defined(_WIN32)
-static bool Exists_Raw(const std::string& Path, bool IsDirectory=false)
-{
-    struct _stat64 Stat;
-    if (_stat64(Path.c_str(), &Stat))
-        return false;
-    return (Stat.st_mode&(IsDirectory?_S_IFDIR:_S_IFREG))!=0;
-}
-
-static FILE* Open_Raw(const std::string& Path)
-{
-    FILE* F=NULL;
-    return fopen_s(&F, Path.c_str(), "wb")?NULL:F;
-}
-
-static bool Create_Raw_Directory(const std::string& Path)
-{
-    return !_mkdir(Path.c_str());
 }
 #else //defined(_WIN32)
 static bool Exists_Raw(const std::string& Path, bool IsDirectory=false)
@@ -313,23 +326,10 @@ static bool Create_Raw(const std::string& Path, size_t Size=10)
 static std::string Listed_Path(const Ztring& Path)
 {
     #if defined(_WIN32)
-        #if defined(UNICODE)
-            std::string ToReturn=Path.To_UTF8();
-        #else
-            std::string ToReturn=Path.To_Local();
-        #endif
+        std::string ToReturn=Path.To_UTF8();
         for (size_t Pos=0; Pos<ToReturn.size(); Pos++)
-        {
-            #if !defined(UNICODE)
-                if (IsDBCSLeadByte((BYTE)ToReturn[Pos]))
-                {
-                    Pos++; // The second byte may be "\", e.g. with cp932
-                    continue;
-                }
-            #endif
             if (ToReturn[Pos]=='\\')
                 ToReturn[Pos]='/';
-        }
         return ToReturn;
     #else
         return FileName_To_Native(Path);
@@ -339,11 +339,7 @@ static std::string Listed_Path(const Ztring& Path)
 // Name typed in a terminal, as a command line argument decoded by MediaInfo
 static Ztring Typed(const std::string& Path)
 {
-    #if defined(UNICODE)
-        return FileName_From_Native(Path.c_str());
-    #else
-        return Path;
-    #endif
+    return FileName_From_Native(Path.c_str());
 }
 
 // File of a volume which keeps the bytes of the names: name of the file system, size, name typed in a terminal
@@ -436,6 +432,22 @@ int main(int argc, char* argv[])
         Text=From_UTF8(Name_Latin1).To_UTF8();
         Check(Text.empty(), "From_UTF8("+Printable(Name_Latin1)+")", "result is "+Printable(Text));
 
+        // UTF-16 surrogates encoded in UTF-8 (e.g. a byte kept in a std::string made from a Ztring, or CESU-8): accepted as with Unicode, a
+        // surrogate which is not in a pair kept, a pair as one character
+        std::wstring Surrogate=Ztring().From_UTF8("a\xED\xB3\xA9" "b").To_Unicode();
+        Check(Surrogate.size()==3 && Surrogate[1]==0xDCE9, "From_UTF8(UTF-16 surrogate which is not in a pair)", "wrong result");
+        Text=Ztring().From_UTF8("\xED\xA0\xBC\xED\xBE\xB5").To_UTF8();
+        Check(Text=="\xF0\x9F\x8E\xB5", "From_UTF8(UTF-16 surrogate pair)", "result is "+Printable(Text));
+        std::wstring Pair=Ztring().From_UTF8("\xED\xA0\xBC\xED\xBE\xB5").To_Unicode();
+        Check(Pair.size()==2 && Pair[0]==0xD83C && Pair[1]==0xDFB5, "From_UTF8(UTF-16 surrogate pair).To_Unicode()", "wrong result");
+
+        // Other sequences which are not valid UTF-8 but accepted as with Unicode: an overlong sequence is the character, a value after
+        // U+10FFFF is U+FFFD; other bytes are not accepted
+        Text=Ztring().From_UTF8("\xC1\x81" "\xE0\x81\x81" "\xF0\x80\x81\x81" "\xF4\x90\x80\x80" "b").To_UTF8();
+        Check(Text=="AAA\xEF\xBF\xBD" "b", "From_UTF8(overlong sequences and a value after U+10FFFF)", "result is "+Printable(Text));
+        Text=Ztring().From_UTF8("a\xF8\x88\x80\x80\x80").To_UTF8();
+        Check(Text.empty(), "From_UTF8(5 bytes)", "result is "+Printable(Text));
+
         // Result of To_UTF8() which can be decoded with From_UTF8(), with a string from the local encoding (it is used for documents)
         Ztring Local;
         Local.From_Local(Name_Latin1);
@@ -457,92 +469,237 @@ int main(int argc, char* argv[])
         #endif
     }
 
-    // Without Unicode, strings are the bytes of the names, no conversion whatever the locale: same results as with the bytes kept with an ASCII locale
-    // (on Windows with a multibyte code page, e.g. cp932, the bytes of the UTF-8 names are not valid names of this code page: not checked)
-    // (on macOS, where file names are UTF-8, the names are converted from and to a locale which is neither ASCII nor UTF-8)
-    bool UTF8_Names_CanBeCreated=true;
-    #if !defined(UNICODE)
-        #if defined(_WIN32)
-            bool Bytes_AreNames=GetACP()==1252 || GetACP()==CP_UTF8;
-        #else
-            bool Bytes_AreNames=true;
-        #endif
-        IsASCII=Bytes_AreNames;
-        IsUnicode=Bytes_AreNames;
-        IsLatin1=false;
-        FileNames_IsUnicode=Bytes_AreNames;
-        FileNames_Narrow_IsUnicode=Bytes_AreNames;
-        UTF8_Names_CanBeCreated=Bytes_AreNames;
-        if (Names_AreConverted)
+    // MakeLowerCase() and MakeUpperCase(): the characters as with Unicode (towlower() and towupper() of the locale), not the bytes of the UTF-8
+    // text without Unicode (e.g. with a Latin-1 locale, the bytes of other characters were changed)
+    {
+        static const wchar_t Text[]={0xC9, L'T', 0xC9, L' ', L'c', L'a', L'f', 0xE9, L' ', 0x6D4B, L' ', 0x0130, L'I', 0};
+        std::wstring Lower(Text), Upper(Text);
+        for (size_t i=0; i<Lower.size(); i++)
         {
-            IsASCII=false; // No bytes kept as they are
-            FileNames_Narrow_IsUnicode=false;
-            if (!Encoding)
-                Check(false, "internal", "no test text for the encoding "+CodeSet);
-            else
-            {
-                // Name in the locale encoding (e.g. typed in a terminal) to the UTF-8 name of the file system, and back
-                std::string Name_UTF8(Encoding->Text);
-                std::string Name_Local(Encoding->Local);
-                std::string Native=FileName_To_Native(Name_Local);
-                Check(Native==Name_UTF8, "FileName_To_Native("+Printable(Name_Local)+")", "result is "+Printable(Native));
-                std::string Local=FileName_From_Native(Name_UTF8.c_str());
-                Check(Local==Name_Local, "FileName_From_Native("+Printable(Name_UTF8)+")", "result is "+Printable(Local));
-
-                // UTF-8 kept: a UTF-8 name (e.g. from the Finder), and from the file system a name which can't be encoded in the locale (all can
-                // be encoded in GB18030)
-                Native=FileName_To_Native(Name_UTF8);
-                Check(Native==Name_UTF8, "FileName_To_Native("+Printable(Name_UTF8)+")", "result is "+Printable(Native));
-                if (!strstr(Encoding->Names, " GB18030 "))
-                {
-                    Local=FileName_From_Native(Names[2]);
-                    Check(Local==Names[2], "FileName_From_Native("+Printable(Names[2])+")", "result is "+Printable(Local));
-                }
-
-                // File created with the name in the locale encoding, the file must have the UTF-8 name, and its listing gives the locale encoding
-                std::string SubDirectory=Directory+"/converted";
-                File F;
-                if (!Create_Raw_Directory(SubDirectory))
-                    Check(false, "internal", "can't create "+Printable(SubDirectory));
-                else
-                {
-                    bool Created=F.Create(SubDirectory+"/"+Name_Local);
-                    F.Close();
-                    Check(Created && Exists_Raw(SubDirectory+"/"+Name_UTF8), "File::Create("+Printable(Name_Local)+")", "file not created with the UTF-8 name");
-                    Check(File::Exists(SubDirectory+"/"+Name_Local), "File::Exists("+Printable(Name_Local)+")", "file not found");
-                    ZtringList List=Dir::GetAllFileNames(SubDirectory);
-                    Check(List.size()==1 && List[0]==SubDirectory+"/"+Name_Local, "Dir::GetAllFileNames, name in the locale encoding", List.empty()?"nothing listed":"listed "+Printable(List[0]));
-                }
-            }
+            Lower[i]=(wchar_t)towlower(Lower[i]);
+            Upper[i]=(wchar_t)towupper(Upper[i]);
         }
+        Ztring Value;
+        Value.From_Unicode(Text);
+        std::wstring Result=Ztring(Value).MakeLowerCase().To_Unicode();
+        Check(Result==Lower, "MakeLowerCase()", "result is "+Printable(Ztring().From_Unicode(Result).To_UTF8()));
+        Result=Ztring(Value).MakeUpperCase().To_Unicode();
+        Check(Result==Upper, "MakeUpperCase()", "result is "+Printable(Ztring().From_Unicode(Result).To_UTF8()));
+    }
+
+    // Without Unicode, the UTF-8 text and Unicode with To_Unicode() and From_Unicode()
+    {
+        #if !defined(UNICODE)
+            for (size_t i=0; i<Names_Size; i++)
+            {
+                std::wstring Wide=UTF8_To_Wide(Names[i]);
+                Check(Ztring(Names[i]).To_Unicode()==Wide, "To_Unicode("+Printable(Names[i])+")", "wrong result");
+                std::string UTF8=Ztring().From_Unicode(Wide);
+                Check(UTF8==Names[i], "From_Unicode("+Printable(Names[i])+")", "result is "+Printable(UTF8));
+            }
+
+            // Bytes which are not valid UTF-8 kept as U+DC80 to U+DCFF, encoded by From_Unicode() as the other UTF-16 surrogates which are not in a
+            // pair, as 3 bytes as in WTF-8 (not other characters, e.g. bytes kept which are valid UTF-8 together), and replaced by To_UTF8()
+            #if !defined(_WIN32) // Windows: bytes of the code page, see below
+                std::wstring Kept=Ztring("caf\xC3\xA9\xE9").To_Unicode();
+                Check(Kept.size()==5 && Kept[3]==0xE9 && Kept[4]==0xDCE9, "To_Unicode(valid text and a byte which is not valid)", "wrong result");
+            #endif
+            std::wstring Bytes;
+            Bytes+=(wchar_t)0xDCC3;
+            Bytes+=(wchar_t)0xDC85;
+            Check(Ztring().From_Unicode(Bytes).To_Unicode()==Bytes, "To_Unicode(From_Unicode(bytes kept which are valid UTF-8 together))", "not the same values");
+            std::wstring Values;
+            Values+=(wchar_t)0xD83C; // Surrogate pair
+            Values+=(wchar_t)0xDFB5;
+            Values+=L'a';
+            Values+=(wchar_t)0xDCE9;
+            Values+=(wchar_t)0xD800;
+            Values+=L'b';
+            Values+=(wchar_t)0xD83C; // At the end of the string
+            std::string Text=Ztring().From_Unicode(Values);
+            Check(Text=="\xF0\x9F\x8E\xB5" "a\xED\xB3\xA9\xED\xA0\x80" "b\xED\xA0\xBC", "From_Unicode(values which are not characters)", "result is "+Printable(Text));
+            Text=Ztring(Text).To_UTF8();
+            Check(Text=="\xF0\x9F\x8E\xB5" "a\xEF\xBF\xBD\xEF\xBF\xBD" "b\xEF\xBF\xBD", "To_UTF8(From_Unicode(values which are not characters))", "result is "+Printable(Text));
+        #endif
+    }
+
+    // Without Unicode on Windows, the bytes of the code page given as they are (e.g. the arguments of main()) are not UTF-8 text: decoded with
+    // the code page as the narrow functions of Windows do, also the names of the files (not the bytes which are also UTF-8 text, read as UTF-8)
+    #if defined(_WIN32) && !defined(UNICODE)
+    {
+        bool Directory_ASCII=true; // The name with the directory must be bytes of the code page
+        for (size_t Pos=0; Pos<Directory.size(); Pos++)
+            if ((unsigned char)Directory[Pos]>=0x80)
+                Directory_ASCII=false;
+        std::string CodePage_Directory=Directory+"/codepage";
+        bool Files=Directory_ASCII && Create_Raw_Directory(CodePage_Directory);
+        for (size_t i=0; i<Names_Size+Names_Multibyte_Size; i++)
+        {
+            std::string Name(i<Names_Size?Names[i]:Names_Multibyte[i-Names_Size]);
+            std::wstring Wide=UTF8_To_Wide(Name);
+            std::string Bytes;
+            if (!Reference_Encode(Wide, Bytes) || (Bytes!=Name && !From_UTF8(Bytes).empty()))
+                continue; // Not in the code page, or also UTF-8 text
+            std::string Shown=Printable(Bytes);
+            Ztring Value(Bytes);
+            Check(Value.To_Unicode()==Wide, "To_Unicode("+Shown+"), bytes of the code page", "wrong result");
+            Check(Value.To_UTF8()==Name, "To_UTF8("+Shown+"), bytes of the code page", "result is "+Printable(Value.To_UTF8()));
+            Check(Value.To_Local()==Bytes, "To_Local("+Shown+"), bytes of the code page", "result is "+Printable(Value.To_Local()));
+            if (!Files)
+                continue;
+            if (!Create_Raw(CodePage_Directory+"/"+Name))
+            {
+                Check(false, "internal", "file not created");
+                continue;
+            }
+            Ztring Path(CodePage_Directory+"/"+Bytes);
+            Check(File::Exists(Path), "File::Exists("+Shown+"), bytes of the code page", "not found");
+            File F;
+            Check(F.Open(Path) && F.Size_Get()==10, "File::Open("+Shown+"), bytes of the code page", "not opened");
+        }
+    }
+    #endif
+
+    // Files of the next checks in their own directory
+    std::string Names_Directory=Directory+"/names";
+    if (!Create_Raw_Directory(Names_Directory))
+        Check(false, "internal", "directory not created");
+
+    // Path and name of a file in a directory whose name is not ASCII, and listing of this directory given with a separator at the end (without
+    // Unicode on Windows, the second byte of a character of a multibyte code page, e.g. "\" in cp932, is only in the bytes of the code page)
+    {
+        std::vector<std::string> Directory_Names(Names, Names+Names_Size);
+        #if defined(HAVE_ENCODE_REFERENCE)
+            Directory_Names.insert(Directory_Names.end(), Names_Multibyte, Names_Multibyte+Names_Multibyte_Size);
+        #endif
+        for (size_t i=0; i<Directory_Names.size(); i++)
+        {
+            std::string Path_Directory=Names_Directory+"/path_"+Directory_Names[i];
+            std::string Shown=Printable(Path_Directory+"/file.txt");
+            Ztring Path=From_UTF8(Path_Directory+"/file.txt");
+            Check(FileName::Path_Get(Path)==From_UTF8(Path_Directory), "FileName::Path_Get("+Shown+")", "result is "+Printable(FileName::Path_Get(Path).To_UTF8()));
+            Check(FileName::Name_Get(Path)==From_UTF8("file"), "FileName::Name_Get("+Shown+")", "result is "+Printable(FileName::Name_Get(Path).To_UTF8()));
+            #if defined(_WIN32)
+                std::string Path_Directory_Raw=Path_Directory; // UTF-8 for the wide functions
+            #else
+                std::string Path_Directory_Raw=FileName_To_Native(From_UTF8(Path_Directory));
+                if (FileName_From_Native(Path_Directory_Raw.c_str())!=From_UTF8(Path_Directory))
+                    continue; // Not in the encoding of the locale
+            #endif
+            if (!Create_Raw_Directory(Path_Directory_Raw) || !Create_Raw(Path_Directory_Raw+"/file.txt"))
+            {
+                Check(false, "internal", "file not created");
+                continue;
+            }
+            ZtringList List=Dir::GetAllFileNames(From_UTF8(Path_Directory+"/"));
+            Check(List.size()==1 && Listed_Path(List[0])==Path_Directory_Raw+"/file.txt" && File::Exists(List[0]), "Dir::GetAllFileNames("+Printable(Path_Directory)+"/)", List.empty()?"nothing listed":"listed "+Printable(List[0].To_UTF8()));
+        }
+    }
+
+    // Without Unicode on Windows, the same with the bytes of the code page given as they are, listed as UTF-8 text
+    #if defined(_WIN32) && !defined(UNICODE)
+    {
+        bool Directory_ASCII=true; // The name with the directory must be bytes of the code page
+        for (size_t Pos=0; Pos<Names_Directory.size(); Pos++)
+            if ((unsigned char)Names_Directory[Pos]>=0x80)
+                Directory_ASCII=false;
+        for (size_t i=0; Directory_ASCII && i<Names_Size+Names_Multibyte_Size; i++)
+        {
+            std::string Name(i<Names_Size?Names[i]:Names_Multibyte[i-Names_Size]);
+            std::string Bytes;
+            if (!Reference_Encode(UTF8_To_Wide(Name), Bytes) || !From_UTF8(Bytes).empty())
+                continue; // Not in the code page, or also UTF-8 text
+            std::string Shown=Printable(Names_Directory+"/raw_"+Bytes+"/file.txt");
+            Ztring Path(Names_Directory+"/raw_"+Bytes+"/file.txt");
+            Check(FileName::Path_Get(Path)==Ztring(Names_Directory+"/raw_"+Bytes), "FileName::Path_Get("+Shown+"), bytes of the code page", "result is "+Printable(FileName::Path_Get(Path)));
+            Check(FileName::Name_Get(Path)==Ztring("file"), "FileName::Name_Get("+Shown+"), bytes of the code page", "result is "+Printable(FileName::Name_Get(Path)));
+            if (!Create_Raw_Directory(Names_Directory+"/raw_"+Name) || !Create_Raw(Names_Directory+"/raw_"+Name+"/file.txt"))
+            {
+                Check(false, "internal", "file not created");
+                continue;
+            }
+            ZtringList List=Dir::GetAllFileNames(Ztring(Names_Directory+"/raw_"+Bytes));
+            Check(List.size()==1 && Listed_Path(List[0])==Names_Directory+"/raw_"+Name+"/file.txt" && File::Exists(List[0]), "Dir::GetAllFileNames("+Printable(Names_Directory+"/raw_"+Bytes)+"), bytes of the code page", List.empty()?"nothing listed":"listed "+Printable(List[0].To_UTF8()));
+        }
+    }
+    #endif
+
+    // Without Unicode, bytes of the encoding of the locale (the code page on Windows) given as they are which are also valid UTF-8, so read as
+    // UTF-8: the existing name is used, the name in this encoding if only it exists, e.g. the bytes C3 A9 are U+00C3 U+00A9 in Windows-1252 and
+    // Latin-1 and U+00E9 in UTF-8, also ideographs of GBK and GB18030, UHC, Big5, EUC-JP, and cp932 (with a half-width katakana)
+    #if !defined(UNICODE) && defined(HAVE_ENCODE_REFERENCE)
+    {
+        static const wchar_t* const Candidates[]=
+        {
+            L"\x00C3\x00A9",
+            L"\x8059",
+            L"\x4F3D",
+            L"\x7652",
+            L"\x81D3",
+            L"\x71FF\xFF61",
+        };
+        bool Directory_ASCII=true; // The name with the directory must be bytes of the encoding
+        for (size_t Pos=0; Pos<Names_Directory.size(); Pos++)
+            if ((unsigned char)Names_Directory[Pos]>=0x80)
+                Directory_ASCII=false;
+        for (size_t i=0; Directory_ASCII && i<sizeof(Candidates)/sizeof(*Candidates); i++)
+        {
+            std::wstring Wide(Candidates[i]);
+            std::string Bytes;
+            std::string Name_UTF8=Ztring().From_Unicode(Wide);
+            if (!Reference_Encode(Wide, Bytes) || From_UTF8(Bytes).empty() || Bytes==Name_UTF8)
+                continue; // Not in this encoding, not valid UTF-8, or UTF-8
+            std::string Shown=Printable(Bytes);
+            #if defined(_WIN32)
+                std::string Created=Name_UTF8; // UTF-8 for the wide functions
+            #else
+                std::string Created=Bytes;
+            #endif
+            if (!Create_Raw(Names_Directory+"/lookalike_"+Created) || !Create_Raw_Directory(Names_Directory+"/lookalike_dir_"+Created) || !Create_Raw(Names_Directory+"/lookalike_dir_"+Created+"/file.txt"))
+            {
+                Check(false, "internal", "file not created");
+                continue;
+            }
+            Ztring Path(Names_Directory+"/lookalike_"+Bytes);
+            Check(File::Exists(Path), "File::Exists("+Shown+"), bytes of the encoding which are also UTF-8", "not found");
+            File F;
+            Check(F.Open(Path) && F.Size_Get()==10, "File::Open("+Shown+"), bytes of the encoding which are also UTF-8", "not opened");
+            Check(Dir::Exists(Ztring(Names_Directory+"/lookalike_dir_"+Bytes)), "Dir::Exists("+Shown+"), bytes of the encoding which are also UTF-8", "not found");
+            ZtringList List=Dir::GetAllFileNames(Ztring(Names_Directory+"/lookalike_dir_"+Bytes));
+            #if defined(__APPLE__) || defined(__ANDROID__) || defined(ZENLIB_FILENAME_UTF8)
+                const std::string& Listed=Bytes; // UTF-8 names of the file system
+            #else
+                const std::string& Listed=Name_UTF8;
+            #endif
+            Check(List.size()==1 && List[0].find(Listed)!=std::string::npos && File::Exists(List[0]), "Dir::GetAllFileNames("+Shown+"), bytes of the encoding which are also UTF-8", List.empty()?"nothing listed":"listed "+Printable(List[0]));
+        }
+    }
     #endif
 
     // Conversions with another locale or code page: its encoding, also where wchar_t is not Unicode with it (e.g. macOS and FreeBSD, with iconv),
     // without the internal state of the C library (with some systems, e.g. GB18030 on FreeBSD and macOS, it kept the last bytes of a string which
     // is not valid in the encoding, so all the next strings were not converted)
-    #if defined(UNICODE)
-        if (!IsUnicode)
-        {
-            if (!Encoding)
-                Check(false, "internal", "no test text for the encoding "+CodeSet);
-            else
-                for (int Pass=0; Pass<2; Pass++)
-                {
-                    Ztring Text=From_UTF8(Encoding->Text);
-                    std::string Local=Text.To_Local();
-                    Check(Local==Encoding->Local, "To_Local("+Printable(Encoding->Text)+") with "+CodeSet, "result is "+Printable(Local));
-                    Ztring Wide;
-                    Wide.From_Local(Encoding->Local);
-                    Check(Wide==Text, "From_Local("+Printable(Encoding->Local)+") with "+CodeSet, "result is "+Printable(Wide.To_UTF8()));
+    if (!IsUnicode)
+    {
+        if (!Encoding)
+            Check(false, "internal", "no test text for the encoding "+CodeSet);
+        else
+            for (int Pass=0; Pass<2; Pass++)
+            {
+                Ztring Text=From_UTF8(Encoding->Text);
+                std::string Local=Text.To_Local();
+                Check(Local==Encoding->Local, "To_Local("+Printable(Encoding->Text)+") with "+CodeSet, "result is "+Printable(Local));
+                Ztring Wide;
+                Wide.From_Local(Encoding->Local);
+                Check(Wide==Text, "From_Local("+Printable(Encoding->Local)+") with "+CodeSet, "result is "+Printable(Wide.To_UTF8()));
 
-                    // Then a byte which is not valid in the multibyte encodings: the text before it is decoded character per character
-                    std::string Local_Byte=Encoding->Local+std::string("\xFF");
-                    Wide.From_Local(Local_Byte.c_str());
-                    Check(Wide.find(Text)==0 && Wide.size()==Text.size()+1 && Wide.To_Local()==Local_Byte, "From_Local("+Printable(Local_Byte)+") with "+CodeSet, "result is "+Printable(Wide.To_UTF8()));
-                    Wide.From_Local(Encoding->Local+std::string("\xA5\xC6\xA5")); // Then the end of a character missing
-                }
-        }
-    #endif
+                // Then a byte which is not valid in the multibyte encodings: the text before it is decoded character per character
+                std::string Local_Byte=Encoding->Local+std::string("\xFF");
+                Wide.From_Local(Local_Byte.c_str());
+                Check(Wide.find(Text)==0 && Wide.To_Unicode().size()==Text.To_Unicode().size()+1 && Wide.To_Local()==Local_Byte, "From_Local("+Printable(Local_Byte)+") with "+CodeSet, "result is "+Printable(Wide.To_UTF8()));
+                Wide.From_Local(Encoding->Local+std::string("\xA5\xC6\xA5")); // Then the end of a character missing
+            }
+    }
 
     // Conversions with the locale: UTF-8 with an ASCII locale, not "?" (Linux) or Latin-1 bytes (macOS, FreeBSD)
     if (IsUnicode)
@@ -574,7 +731,7 @@ int main(int argc, char* argv[])
             {
                 std::string Name(i<Names_Size?Names[i]:Names_Multibyte[i-Names_Size]);
                 std::string Expected;
-                if (!Reference_Encode(From_UTF8(Name), Expected))
+                if (!Reference_Encode(UTF8_To_Wide(Name), Expected))
                     continue; // Not in this encoding
                 std::string Shown=Printable(Name);
                 std::string Local=From_UTF8(Name).To_Local();
@@ -617,37 +774,6 @@ int main(int argc, char* argv[])
         Check(FileName_To_Native(FileName_From_Native("ascii.bin"))=="ascii.bin", "FileName_To_Native(FileName_From_Native(ascii.bin))", "result is "+Printable(FileName_To_Native(FileName_From_Native("ascii.bin"))));
     }
 
-    // Without Unicode on Windows, names are in the code page: with cp932, the second byte of some characters is "\", it is not a path separator
-    #if defined(_WIN32) && !defined(UNICODE)
-        if (GetACP()==932)
-        {
-            std::string SubDirectory=Directory+"/cp932";
-            std::string Name="\x95\x5C"; // First name of Names_Multibyte
-            std::string Path=SubDirectory+"/"+Name+".bin";
-            if (!Create_Raw_Directory(SubDirectory) || !Create_Raw(Path))
-                Check(false, "internal", "can't create "+Printable(Path));
-            else
-            {
-                std::string Shown=Printable(Name);
-                File F;
-                Check(File::Exists(Path) && File::Size_Get(Path)==10 && F.Open(Path), "File::Open("+Shown+")", "file not found");
-                F.Close();
-                std::string SubDirectory_Windows(SubDirectory); // Also with the "\" separator, the other characters are ASCII
-                for (size_t Pos=0; Pos<SubDirectory_Windows.size(); Pos++)
-                    if (SubDirectory_Windows[Pos]=='/')
-                        SubDirectory_Windows[Pos]='\\';
-                std::string Path_Windows=SubDirectory_Windows+"\\"+Name+".bin";
-                Check(FileName::Name_Get(Path)==Name && FileName::Extension_Get(Path)=="bin", "FileName::Name_Get("+Shown+")", "result is "+Printable(FileName::Name_Get(Path)));
-                Check(FileName::Path_Get(Path)==SubDirectory, "FileName::Path_Get("+Shown+")", "result is "+Printable(FileName::Path_Get(Path)));
-                Check(FileName::Name_Get(Path_Windows)==Name && FileName::Extension_Get(Path_Windows)=="bin", "FileName::Name_Get("+Printable(Path_Windows)+")", "result is "+Printable(FileName::Name_Get(Path_Windows)));
-                Check(FileName::Path_Get(Path_Windows)==SubDirectory_Windows, "FileName::Path_Get("+Printable(Path_Windows)+")", "result is "+Printable(FileName::Path_Get(Path_Windows)));
-                ZtringList List=Dir::GetAllFileNames(SubDirectory);
-                Check(List.size()==1 && Listed_Path(List[0])==Path, "Dir::GetAllFileNames, cp932 name", List.empty()?"nothing listed":"listed "+Printable(List[0]));
-                Check(File::Delete(Path) && !Exists_Raw(Path), "File::Delete("+Shown+")", "file not deleted");
-            }
-        }
-    #endif
-
     // Strings which are not valid in the encoding of the locale (UTF-8 with an ASCII locale), with all the locales: same bytes back, not an empty
     // string, not the UTF-8 string of the same characters, and the valid part is decoded, as Python with "surrogateescape"; also as file names,
     // except if they are converted from a locale which is neither ASCII nor UTF-8 (the bytes may depend on the existing files)
@@ -666,16 +792,14 @@ int main(int argc, char* argv[])
             Wide.From_Local(Name_Latin1);
             Check(Wide!=From_UTF8(Names[0]), "From_Local("+Printable(Name_Latin1)+")", "same string as the UTF-8 name");
             Wide.From_Local("caf\xC3\xA9\xE9");
-            Check(Wide.find(From_UTF8(Names[0]))==0 && Wide.size()==From_UTF8(Names[0]).size()+1, "From_Local(valid text and a byte which is not valid)", "result is "+Printable(Wide.To_Local()));
+            Check(Wide.find(From_UTF8(Names[0]))==0 && Wide.To_Unicode().size()==From_UTF8(Names[0]).To_Unicode().size()+1, "From_Local(valid text and a byte which is not valid)", "result is "+Printable(Wide.To_Local()));
         }
 
         // Name of the wide API with a byte kept, e.g. from Python (os.fsdecode() keeps the bytes as U+DC80 to U+DCFF with all the locales)
-        #if defined(UNICODE)
-            Ztring Wide(__T("caf"));
-            Wide+=(wchar_t)0xDCE9;
-            std::string Native=FileName_To_Native(Wide);
-            Check(Native==Name_Latin1, "FileName_To_Native(caf\\uDCE9)", "result is "+Printable(Native));
-        #endif
+        std::wstring Wide_Kept(L"caf");
+        Wide_Kept+=(wchar_t)0xDCE9;
+        std::string Native=FileName_To_Native(Ztring().From_Unicode(Wide_Kept));
+        Check(Native==Name_Latin1, "FileName_To_Native(caf\\uDCE9)", "result is "+Printable(Native));
     }
     #endif
 
@@ -721,6 +845,28 @@ int main(int argc, char* argv[])
             }
         }
     #endif //!defined(_WIN32)
+
+    // Text files of ZtringListListF (e.g. configuration, translations) are written in UTF-8: read as UTF-8 with all the locales, also without
+    // Unicode, else (not valid UTF-8) in the encoding of the locale
+    for (int Pass=0; Pass<2; Pass++)
+    {
+        std::string Content=Pass?Name_Latin1:Names[1];
+        std::string Path=Directory+(Pass?"/text_local.csv":"/text_utf8.csv");
+        FILE* F=Open_Raw(Path);
+        bool Written=F && fwrite(Content.c_str(), 1, Content.size(), F)==Content.size();
+        if (F && fclose(F))
+            Written=false;
+        if (!Written)
+        {
+            Check(false, "internal", "file not created");
+            continue;
+        }
+        ZtringListListF List;
+        List.Load(From_UTF8(Path));
+        Ztring Value=List.Read(0, 0);
+        Ztring Expected=Pass?Ztring().From_Local(Name_Latin1):From_UTF8(Names[1]);
+        Check(Value==Expected, "ZtringListListF::Load("+Printable(Content)+")", "result is "+Printable(Value.To_UTF8()));
+    }
 
     // File and Dir functions with the names of the wide API, the files must have the UTF-8 names
     if (FileNames_IsUnicode)
@@ -805,10 +951,10 @@ int main(int argc, char* argv[])
 
     // Directory listing with names which can't be decoded, or not to a name which can be opened: it must end, with existing files only
     std::string List_Path=Directory+"/list";
-    std::string SubDirectory=std::string("sub_")+(UTF8_Names_CanBeCreated?Names[0]:"ascii");
+    std::string SubDirectory=std::string("sub_")+Names[0];
     std::set<std::string> Expected; // Names relative to List_Path
     bool Created=Create_Raw_Directory(List_Path) && Create_Raw_Directory(List_Path+"/"+SubDirectory);
-    for (size_t i=0; UTF8_Names_CanBeCreated && i<Names_Size; i++)
+    for (size_t i=0; i<Names_Size; i++)
     {
         std::string Name=std::string(Names[i])+".bin";
         Created=Create_Raw(List_Path+"/"+Name) && Created;

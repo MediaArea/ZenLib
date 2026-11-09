@@ -109,7 +109,7 @@ public :
     Ztring& From_UTF16LE (const char *S, size_type Length)                      {return From_UTF16LE(S, 0, Length);}
         /// @brief convert an Locael encoded string into Ztring
     Ztring& From_Local   (const std::string &S)                                 {return From_Local(S.c_str());}
-        /// @brief convert an Local encoded string into Ztring
+        /// @brief convert an Local encoded string into Ztring (without Unicode: into UTF-8 text, the bytes which are not valid kept)
     Ztring& From_Local   (const char  *S);
         /// @brief convert an Local encoded string into Ztring
     Ztring& From_Local   (const char  *S, size_type Start,  size_type Length);
@@ -221,14 +221,16 @@ public :
 
     //Conversions - To
     #ifndef WSTRING_MISSING
-        /// @brief Convert into Unicode chars
+        /// @brief Convert into Unicode chars (without Unicode: from UTF-8, the bytes which are not valid kept as U+DC80 to U+DCFF, and the
+        /// UTF-16 surrogates which are not in a pair, which From_Unicode() encodes as 3 bytes as in WTF-8; on Windows a string which is not
+        /// UTF-8 text is the bytes of the code page, decoded as the narrow functions of Windows do, e.g. the arguments of main())
         /// @return the string corresponding \n
     std::wstring To_Unicode () const;
     #endif //WSTRING_MISSING
-        /// @brief Convert into char* (UTF-8 encoded)
+        /// @brief Convert into char* (UTF-8 encoded, without Unicode on Windows a string which is not UTF-8 text decoded as with To_Unicode())
         /// @return the string corresponding \n
     std::string To_UTF8     () const;
-        /// @brief Convert into char* (Local encoded)
+        /// @brief Convert into char* (Local encoded, without Unicode from UTF-8 text, the bytes kept by From_Local() back)
         /// @return the string corresponding \n
     std::string To_Local    () const;
         /// @brief Convert into 16 byte UUID number

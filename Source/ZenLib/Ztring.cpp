@@ -55,16 +55,13 @@ using namespace std;
 
 //---------------------------------------------------------------------------
 //Text in the encoding of the locale on Unix-like systems (see From_Local()):
-//bytes kept with Unicode, and iconv of the system where wchar_t is not Unicode
-//with some locales (e.g. macOS, FreeBSD) or if ZENLIB_ICONV is defined (e.g.
-//tests), also for the file names of macOS without Unicode (see OS_Utils.cpp)
-#if !defined(ZENLIB_USEWX) && !defined(WINDOWS)
-    #if defined(_UNICODE)
-        #define ZENLIB_LOCAL_KEEPBYTES
-        #include <climits>
-    #endif
-    #if (defined(_UNICODE) && (defined(ZENLIB_ICONV) || !(defined(__STDC_ISO_10646__) || defined(__GLIBC__) || defined(__linux__) || defined(__EMSCRIPTEN__)))) \
-     || (!defined(_UNICODE) && (defined(__APPLE__) || defined(ZENLIB_FILENAME_UTF8)))
+//bytes kept, with and without Unicode (then the text is UTF-8), and iconv of
+//the system where wchar_t is not Unicode with some locales (e.g. macOS,
+//FreeBSD) or if ZENLIB_ICONV is defined (e.g. tests)
+#if !defined(ZENLIB_USEWX) && !defined(WINDOWS) && !defined(WSTRING_MISSING)
+    #define ZENLIB_LOCAL_KEEPBYTES
+    #include <climits>
+    #if defined(ZENLIB_ICONV) || !(defined(__STDC_ISO_10646__) || defined(__GLIBC__) || defined(__linux__) || defined(__EMSCRIPTEN__))
         #define ZENLIB_LOCAL_ICONV
         #include <cerrno>
         #include <dlfcn.h>
@@ -261,6 +258,13 @@ bool Ztring::Assign_FromFile (const Ztring &FileName)
 
 #if !defined(ZENLIB_USEWX) && (!defined(WINDOWS) || !defined(_UNICODE))
 static size_t UTF8_Char_Size(const int8u* Z);
+#if !defined(_UNICODE)
+static size_t UTF8_Sequence_Size(const int8u* Z);
+#endif //!defined(_UNICODE)
+#ifndef WSTRING_MISSING
+static void UTF8_Decode_KeepBytes(std::wstring& ToReturn, const char* S, size_t Size, bool WTF8=false);
+#endif //WSTRING_MISSING
+static void UTF8_Encode_KeepBytes(std::string& ToReturn, const wchar_t* S, size_t Size, bool KeepBytes=true);
 
 //A surrogate pair of UTF-16 is one character where wchar_t is 32-bit
 static void UTF16_Append(std::wstring& Wide, int16u Value)
@@ -295,46 +299,11 @@ Ztring& Ztring::From_Unicode (const wchar_t* S)
             if (OK!=0 && OK!=Error)
                 assign(wxConvCurrent->cWC2MB(S));
         #else //ZENLIB_USEWX
-            #ifdef WINDOWS
-                int Size=WideCharToMultiByte(CP_UTF8, 0, S, -1, NULL, 0, NULL, NULL);
-                if (Size!=0)
-                {
-                    char* AnsiString=new char[Size+1];
-                    WideCharToMultiByte(CP_UTF8, 0, S, -1, AnsiString, Size, NULL, NULL);
-                    AnsiString[Size]='\0';
-                    assign (AnsiString);
-                    delete[] AnsiString;
-                }
-                else
-                    clear();
-            #else //WINDOWS
-                //UTF-8, as From_UTF8() and on Windows, whatever the locale
-                clear();
-                for (; *S; S++)
-                {
-                    int32u Value=(int32u)*S;
-                    if (Value<0x80)
-                        append(1, (char)Value);
-                    else if (Value<0x800)
-                    {
-                        append(1, (char)(0xC0|(Value>>6)));
-                        append(1, (char)(0x80|(Value&0x3F)));
-                    }
-                    else if (Value<0x10000)
-                    {
-                        append(1, (char)(0xE0|(Value>>12)));
-                        append(1, (char)(0x80|((Value>>6)&0x3F)));
-                        append(1, (char)(0x80|(Value&0x3F)));
-                    }
-                    else
-                    {
-                        append(1, (char)(0xF0|(Value>>18)));
-                        append(1, (char)(0x80|((Value>>12)&0x3F)));
-                        append(1, (char)(0x80|((Value>>6)&0x3F)));
-                        append(1, (char)(0x80|(Value&0x3F)));
-                    }
-                }
-            #endif
+            //UTF-8 whatever the locale, as From_UTF8(), the UTF-16 surrogates which are not in a pair (e.g. the bytes kept by To_Unicode())
+            //as 3 bytes as in WTF-8, which are not valid UTF-8 so are never other characters, To_Unicode() gives them back
+            std::string ToReturn;
+            UTF8_Encode_KeepBytes(ToReturn, S, wcslen(S), false);
+            assign(ToReturn);
         #endif //ZENLIB_USEWX
     #endif
     return *this;
@@ -415,21 +384,23 @@ Ztring& Ztring::From_UTF8 (const char* S)
                 {
                     if ((*(Z+1)&0xC0)==0x80 && (*(Z+2)&0xC0)==0x80 && (*(Z+3)&0xC0)==0x80)
                     {
+                        int32u Value = ((((int32u)(*Z&0x0F))<<18)|((*(Z+1)&0x3F)<<12)|((*(Z+2)&0x3F)<<6)|(*(Z+3)&0x3F));
+                        if (Value>0x10FFFF)
+                            Value=0xFFFD; //Not a character, as without Unicode
                         #if defined(_MSC_VER)
                             #pragma warning(push)
                             #pragma warning(disable:4127)
                         #endif //defined(_MSC_VER)
-                        if (sizeof(wchar_t) == 2)
+                        if (sizeof(wchar_t) == 2 && Value>=0x10000)
                         #if defined(_MSC_VER)
                             #pragma warning(pop)
                         #endif //defined(_MSC_VER)
                         {
-                            int32u Value = ((((int32u)(*Z&0x0F))<<18)|((*(Z+1)&0x3F)<<12)|((*(Z+2)&0x3F)<<6)|(*(Z+3)&0x3F));
-                            operator += (0xD800|((Value>>10)-0x40));
-                            operator += (0xDC00| (Value&0x3FF));
+                            operator += ((wchar_t)(0xD800|((Value-0x10000)>>10)));
+                            operator += ((wchar_t)(0xDC00|(Value&0x3FF)));
                         }
                         else
-                            operator += ((((wchar_t)(*Z&0x0F))<<18)|((*(Z+1)&0x3F)<<12)|((*(Z+2)&0x3F)<<6)|(*(Z+3)&0x3F));
+                            operator += ((wchar_t)Value); //Also an overlong sequence, as with 2 or 3 bytes
                         Z+=4;
                     }
                     else
@@ -445,18 +416,67 @@ Ztring& Ztring::From_UTF8 (const char* S)
                 }
             }
         #else
-            //Text is UTF-8 without Unicode, it must be valid as it is the way to detect another encoding
+            //Text is UTF-8 without Unicode, it must be valid as it is the way to detect another encoding, with the sequences accepted with
+            //Unicode: a UTF-16 surrogate is kept as it is (e.g. the 3 bytes of a byte kept, see From_Unicode(), in a std::string made
+            //from a Ztring), an overlong sequence is the character and a value after U+10FFFF is U+FFFD
+            bool Decode=false;
             for (const int8u* Z=(const int8u*)S; *Z; )
             {
                 size_t Size=UTF8_Char_Size(Z);
                 if (!Size)
                 {
-                    clear();
-                    return *this; //Bad character
+                    Size=UTF8_Sequence_Size(Z);
+                    if (!Size)
+                    {
+                        clear();
+                        return *this; //Bad character
+                    }
+                    if (Size!=3 || Z[0]!=0xED || Z[1]<0xA0)
+                        Decode=true; //Not a UTF-16 surrogate
                 }
                 Z+=Size;
             }
-            assign(S);
+            if (!Decode)
+            {
+                assign(S);
+                return *this;
+            }
+            std::string ToReturn;
+            for (const int8u* Z=(const int8u*)S; *Z; )
+            {
+                size_t Size=UTF8_Char_Size(Z);
+                if (Size)
+                {
+                    ToReturn.append((const char*)Z, Size);
+                    Z+=Size;
+                    continue;
+                }
+                Size=UTF8_Sequence_Size(Z);
+                int32u Value;
+                switch (Size)
+                {
+                    case 2 : Value=((Z[0]&0x1F)<<6)|(Z[1]&0x3F); break;
+                    case 3 : Value=((Z[0]&0x0F)<<12)|((Z[1]&0x3F)<<6)|(Z[2]&0x3F); break;
+                    default: Value=((Z[0]&0x07)<<18)|((Z[1]&0x3F)<<12)|((Z[2]&0x3F)<<6)|(Z[3]&0x3F);
+                }
+                if (Value>0x10FFFF)
+                    Value=0xFFFD;
+                if (Value<0x80) //Before U+10000, the values of 4 bytes are overlong sequences
+                    ToReturn+=(char)Value;
+                else if (Value<0x800)
+                {
+                    ToReturn+=(char)(0xC0|(Value>>6));
+                    ToReturn+=(char)(0x80|(Value&0x3F));
+                }
+                else
+                {
+                    ToReturn+=(char)(0xE0|(Value>>12));
+                    ToReturn+=(char)(0x80|((Value>>6)&0x3F));
+                    ToReturn+=(char)(0x80|(Value&0x3F));
+                }
+                Z+=Size;
+            }
+            assign(ToReturn);
         #endif
     #endif //ZENLIB_USEWX
     return *this;
@@ -636,7 +656,8 @@ Ztring& Ztring::From_UTF16LE (const char* S, size_type Start, size_type Length)
 }
 
 //---------------------------------------------------------------------------
-//Text in the encoding of the locale, with Unicode on Unix-like systems:
+//Text in the encoding of the locale on Unix-like systems, with and without
+//Unicode (then from and to UTF-8):
 //An ASCII locale such as "C", which programs get when they don't call
 //setlocale() or when the environment sets no locale, can't encode non-ASCII
 //characters, or converts them byte per byte, so UTF-8 is used instead, as
@@ -651,7 +672,7 @@ Ztring& Ztring::From_UTF16LE (const char* S, size_type Start, size_type Length)
 #if defined(ZENLIB_LOCAL_KEEPBYTES) || defined(ZENLIB_LOCAL_ICONV)
 //Encoding of the locale if it is neither ASCII nor UTF-8, else NULL, also used by OS_Utils.cpp
 //(Android has no other encoding, and no nl_langinfo() before API level 26)
-const char* Local_Other()
+ZENLIB_INTERNAL const char* Local_Other()
 {
     #if defined(__ANDROID__)
         return NULL;
@@ -705,9 +726,30 @@ static size_t UTF8_Char_Size(const int8u* Z)
             return 0;
     return Size;
 }
-#endif
 
-#if defined(ZENLIB_LOCAL_KEEPBYTES)
+#if !defined(_UNICODE)
+//Count of bytes of the sequence at Z accepted by From_UTF8() with Unicode (also an overlong sequence, a UTF-16 surrogate or a value after
+//U+10FFFF), 0 if there is none
+static size_t UTF8_Sequence_Size(const int8u* Z)
+{
+    size_t Size;
+    if (*Z<0x80)
+        return 1;
+    else if (*Z>=0xC0 && *Z<=0xDF)
+        Size=2;
+    else if (*Z>=0xE0 && *Z<=0xEF)
+        Size=3;
+    else if (*Z>=0xF0 && *Z<=0xF7)
+        Size=4;
+    else
+        return 0;
+    for (size_t Pos=1; Pos<Size; Pos++)
+        if ((Z[Pos]&0xC0)!=0x80)
+            return 0;
+    return Size;
+}
+#endif //!defined(_UNICODE)
+
 static bool IsASCII(const char* S, size_t Size)
 {
     for (size_t Pos=0; Pos<Size; Pos++)
@@ -716,7 +758,133 @@ static bool IsASCII(const char* S, size_t Size)
     return true;
 }
 
-static bool IsASCII(const Ztring& S)
+//Byte kept as U+DC80 to U+DCFF, not the second part of a UTF-16 surrogate pair
+static bool IsKeptByte(const wchar_t* S, size_t Pos)
+{
+    return S[Pos]>=0xDC80 && S[Pos]<=0xDCFF && (!Pos || (S[Pos-1]&0xFC00)!=0xD800);
+}
+
+#ifndef WSTRING_MISSING
+//UTF-8 decoded and appended, the bytes which are not valid kept (Size bytes, S[Size] is 0), with WTF8 also the UTF-16 surrogates
+//which are not in a pair as 3 bytes (see From_Unicode() without Unicode)
+static void UTF8_Decode_KeepBytes(std::wstring& ToReturn, const char* S, size_t Size, bool WTF8)
+{
+    const int8u* Z=(const int8u*)S;
+    const int8u* End=Z+Size;
+    while (Z<End)
+    {
+        size_t Char_Size=UTF8_Char_Size(Z);
+        if (!Char_Size || Char_Size>(size_t)(End-Z))
+        {
+            if (WTF8 && *Z==0xED && End-Z>=3 && (Z[1]&0xE0)==0xA0 && (Z[2]&0xC0)==0x80)
+            {
+                ToReturn+=(wchar_t)(0xD000|((Z[1]&0x3F)<<6)|(Z[2]&0x3F)); //UTF-16 surrogate
+                Z+=3;
+                continue;
+            }
+            ToReturn+=(wchar_t)(0xDC00+*Z);
+            Z++;
+            continue;
+        }
+        int32u Value;
+        switch (Char_Size)
+        {
+            case 1 : Value=Z[0]; break;
+            case 2 : Value=((Z[0]&0x1F)<<6)|(Z[1]&0x3F); break;
+            case 3 : Value=((Z[0]&0x0F)<<12)|((Z[1]&0x3F)<<6)|(Z[2]&0x3F); break;
+            default: Value=((Z[0]&0x07)<<18)|((Z[1]&0x3F)<<12)|((Z[2]&0x3F)<<6)|(Z[3]&0x3F);
+        }
+        if (Value>=0x10000 && sizeof(wchar_t)==2)
+        {
+            ToReturn+=(wchar_t)(0xD800+((Value-0x10000)>>10)); //UTF-16 surrogate pair
+            ToReturn+=(wchar_t)(0xDC00+((Value-0x10000)&0x3FF));
+        }
+        else
+            ToReturn+=(wchar_t)Value;
+        Z+=Char_Size;
+    }
+}
+#endif //WSTRING_MISSING
+
+#if defined(WINDOWS) && !defined(WSTRING_MISSING)
+//Text is UTF-8 without Unicode, also with the UTF-16 surrogates which are not in a pair of From_Unicode() as 3 bytes, so the strings made
+//by ZenLib are always UTF-8 text; else these are the bytes of the code page given as they are, as with the previous versions (e.g. the
+//arguments of main() or a name of the narrow functions of Windows, in a program which does not use From_Local())
+ZENLIB_INTERNAL bool IsCodePageBytes(const char* S, size_t Size)
+{
+    const int8u* Z=(const int8u*)S;
+    const int8u* End=Z+Size;
+    while (Z<End)
+    {
+        size_t Char_Size=UTF8_Char_Size(Z);
+        if (Char_Size && Char_Size<=(size_t)(End-Z))
+            Z+=Char_Size;
+        else if (*Z==0xED && End-Z>=3 && (Z[1]&0xE0)==0xA0 && (Z[2]&0xC0)==0x80)
+            Z+=3; //UTF-16 surrogate of From_Unicode()
+        else
+            return true;
+    }
+    return false;
+}
+
+//Bytes of the code page decoded as the narrow functions of Windows decode them
+static std::wstring CodePage_Decode(const char* S, size_t Size)
+{
+    std::wstring ToReturn;
+    int Wide_Size=Size?MultiByteToWideChar(CP_ACP, 0, S, (int)Size, NULL, 0):0;
+    if (Wide_Size>0)
+    {
+        ToReturn.resize(Wide_Size);
+        MultiByteToWideChar(CP_ACP, 0, S, (int)Size, &ToReturn[0], Wide_Size);
+    }
+    return ToReturn;
+}
+#endif //defined(WINDOWS) && !defined(WSTRING_MISSING)
+
+//UTF-8 encoded and appended: with KeepBytes the bytes kept back and U+FFFD for the UTF-16 surrogates which are not in a pair as
+//To_UTF8() with Unicode, else these surrogates (also the bytes kept) as 3 bytes as in WTF-8; U+FFFD for the values after U+10FFFF
+static void UTF8_Encode_KeepBytes(std::string& ToReturn, const wchar_t* S, size_t Size, bool KeepBytes)
+{
+    for (size_t Pos=0; Pos<Size; Pos++)
+    {
+        int32u Value=(int32u)S[Pos];
+        if (Value<0x80)
+        {
+            ToReturn+=(char)Value;
+            continue;
+        }
+        if (KeepBytes && IsKeptByte(S, Pos))
+        {
+            ToReturn+=(char)(Value-0xDC00);
+            continue;
+        }
+        if ((Value&0xFC00)==0xD800 && Pos+1<Size && ((int32u)S[Pos+1]&0xFC00)==0xDC00)
+        {
+            Value=0x10000+((Value&0x3FF)<<10)+((int32u)S[Pos+1]&0x3FF); //UTF-16 surrogate pair
+            Pos++;
+        }
+        else if ((KeepBytes && Value>=0xD800 && Value<=0xDFFF) || Value>0x10FFFF)
+            Value=0xFFFD;
+        if (Value<0x800)
+            ToReturn+=(char)(0xC0|(Value>>6));
+        else
+        {
+            if (Value<0x10000)
+                ToReturn+=(char)(0xE0|(Value>>12));
+            else
+            {
+                ToReturn+=(char)(0xF0|(Value>>18));
+                ToReturn+=(char)(0x80|((Value>>12)&0x3F));
+            }
+            ToReturn+=(char)(0x80|((Value>>6)&0x3F));
+        }
+        ToReturn+=(char)(0x80|(Value&0x3F));
+    }
+}
+#endif
+
+#if defined(ZENLIB_LOCAL_KEEPBYTES)
+static bool IsASCII(const std::wstring& S)
 {
     for (size_t Pos=0; Pos<S.size(); Pos++)
         if ((int32u)S[Pos]>=0x80)
@@ -724,45 +892,17 @@ static bool IsASCII(const Ztring& S)
     return true;
 }
 
-//Byte kept as U+DC80 to U+DCFF, not the second part of a UTF-16 surrogate pair
-static bool IsKeptByte(const Ztring& S, size_t Pos)
-{
-    return S[Pos]>=0xDC80 && S[Pos]<=0xDCFF && (!Pos || (S[Pos-1]&0xFC00)!=0xD800);
-}
-
 //UTF-8 with the bytes which are not valid kept, also used by OS_Utils.cpp
-Ztring& From_UTF8_KeepBytes(Ztring& ToReturn, const char* S)
+ZENLIB_INTERNAL void From_UTF8_KeepBytes(std::wstring& ToReturn, const char* S)
 {
     ToReturn.clear();
-    const char* Valid=S;
-    while (*S)
-    {
-        size_t Size=UTF8_Char_Size((const int8u*)S);
-        if (Size)
-        {
-            S+=Size;
-            continue;
-        }
-        ToReturn+=Ztring().From_UTF8(Valid, 0, S-Valid);
-        ToReturn+=(wchar_t)(0xDC00+*(const int8u*)S);
-        Valid=++S;
-    }
-    ToReturn+=Ztring().From_UTF8(Valid);
-    return ToReturn;
+    UTF8_Decode_KeepBytes(ToReturn, S, strlen(S));
 }
 
-std::string To_UTF8_KeepBytes(const Ztring& S)
+ZENLIB_INTERNAL std::string To_UTF8_KeepBytes(const std::wstring& S)
 {
     std::string ToReturn;
-    size_t Valid=0;
-    for (size_t Pos=0; Pos<S.size(); Pos++)
-        if (IsKeptByte(S, Pos))
-        {
-            ToReturn+=Ztring(S, Valid, Pos-Valid).To_UTF8();
-            ToReturn+=(char)(S[Pos]-0xDC00);
-            Valid=Pos+1;
-        }
-    ToReturn+=Ztring(S, Valid).To_UTF8();
+    UTF8_Encode_KeepBytes(ToReturn, S.c_str(), S.size());
     return ToReturn;
 }
 
@@ -770,7 +910,7 @@ std::string To_UTF8_KeepBytes(const Ztring& S)
 //back (e.g. a character with two encodings, the name could not be opened), kept
 //Conversion state of each call: the one of the C library is undefined after a string which is not valid, and some implementations
 //then keep its last bytes (e.g. GB18030 on FreeBSD and macOS), so the next strings were not converted
-static void From_Local_C(Ztring& ToReturn, const char* S, size_t Size)
+static void From_Local_C(std::wstring& ToReturn, const char* S, size_t Size)
 {
     ToReturn.clear();
     mbstate_t State;
@@ -804,7 +944,7 @@ static void From_Local_C(Ztring& ToReturn, const char* S, size_t Size)
 }
 
 //Encoding of the locale with the C library: the bytes kept by From_Local() back, "?" for the characters which can't be encoded
-static void To_Local_C(const Ztring& S, std::string& ToReturn)
+static void To_Local_C(const std::wstring& S, std::string& ToReturn)
 {
     ToReturn.clear();
     mbstate_t State;
@@ -814,7 +954,7 @@ static void To_Local_C(const Ztring& S, std::string& ToReturn)
     {
         if ((int32u)S[Pos]<0x80)
             ToReturn+=(char)S[Pos];
-        else if (IsKeptByte(S, Pos))
+        else if (IsKeptByte(S.c_str(), Pos))
             ToReturn+=(char)(S[Pos]-0xDC00);
         else
         {
@@ -958,80 +1098,11 @@ static void GB18030_Supplementary_Encode(int32u Value, std::string& ToReturn)
     ToReturn.append(Bytes, 4);
 }
 
-//Conversion of all the bytes from or to GB18030, the characters after U+FFFF without iconv and the other parts with it, false if a
-//character can't be converted
-static bool Local_Iconv_Run_GB18030(const local_iconv& Iconv, void* Converter, const char* S, size_t Size, std::string& ToReturn, bool ToUTF8)
-{
-    ToReturn.clear();
-    std::string Part;
-    size_t Start=0;
-    for (size_t Pos=0; Pos<Size;)
-    {
-        //Length of the character (a second byte from "0" to "9" is in a 4-byte character of GB18030), and its value if it is after U+FFFF
-        const int8u* Char=(const int8u*)S+Pos;
-        size_t Char_Size;
-        int32u Value=0;
-        if (ToUTF8)
-        {
-            Char_Size=*Char<0x80?1:((Pos+1<Size && Char[1]>=0x30 && Char[1]<=0x39)?4:2);
-            if (Char_Size==4 && !GB18030_Supplementary_Decode(Char, Size-Pos, Value))
-                Value=0;
-        }
-        else
-        {
-            Char_Size=UTF8_Char_Size(Char);
-            if (Char_Size==4)
-                Value=((Char[0]&0x07)<<18)|((Char[1]&0x3F)<<12)|((Char[2]&0x3F)<<6)|(Char[3]&0x3F);
-        }
-        if (!Char_Size || Char_Size>Size-Pos)
-            return false;
-        if (Value)
-        {
-            if (Pos>Start && !Local_Iconv_Run(Iconv, Converter, S+Start, Pos-Start, Part))
-                return false;
-            if (Pos>Start)
-                ToReturn+=Part;
-            if (ToUTF8)
-            {
-                ToReturn+=(char)(0xF0|(Value>>18));
-                ToReturn+=(char)(0x80|((Value>>12)&0x3F));
-                ToReturn+=(char)(0x80|((Value>>6)&0x3F));
-                ToReturn+=(char)(0x80|(Value&0x3F));
-            }
-            else
-                GB18030_Supplementary_Encode(Value, ToReturn);
-            Start=Pos+Char_Size;
-        }
-        Pos+=Char_Size;
-    }
-    if (Size>Start)
-    {
-        if (!Local_Iconv_Run(Iconv, Converter, S+Start, Size-Start, Part))
-            return false;
-        ToReturn+=Part;
-    }
-    return true;
-}
-
-//Conversion of all the bytes from the encoding of the locale to UTF-8 or the reverse, false if iconv or the encoding is not available
-//or if a character can't be converted, also used by OS_Utils.cpp
-bool Local_Iconv_Convert(const char* S, size_t Size, std::string& ToReturn, bool ToUTF8, const char* CodeSet)
-{
-    const local_iconv* Iconv=Local_Iconv();
-    void* Converter=Iconv?Local_Iconv_Open(*Iconv, CodeSet, ToUTF8):NULL;
-    if (!Converter)
-        return false;
-    bool IsConverted=Local_Iconv_Run(*Iconv, Converter, S, Size, ToReturn);
-    if (!IsConverted && !strcmp(CodeSet, "GB18030"))
-        IsConverted=Local_Iconv_Run_GB18030(*Iconv, Converter, S, Size, ToReturn, ToUTF8);
-    Iconv->Close(Converter);
-    return IsConverted;
-}
 #endif //ZENLIB_LOCAL_ICONV
 
 #if defined(ZENLIB_LOCAL_KEEPBYTES) && defined(ZENLIB_LOCAL_ICONV)
 //Character after U+FFFF, as a UTF-16 surrogate pair where wchar_t is 16-bit
-static void Append_Supplementary(Ztring& ToReturn, int32u Value)
+static void Append_Supplementary(std::wstring& ToReturn, int32u Value)
 {
     if (sizeof(wchar_t)==2)
     {
@@ -1045,7 +1116,7 @@ static void Append_Supplementary(Ztring& ToReturn, int32u Value)
 //Encoding of the locale with iconv, false if it is not available: all the text at once if it gives the same bytes back, else character
 //per character with the length of the character from the C library (its wchar_t may not be Unicode), bytes which are not valid or
 //which don't give the same bytes back (e.g. a character with two encodings) kept
-static bool From_Local_Iconv(Ztring& ToReturn, const char* S, size_t Size, const char* CodeSet)
+static bool From_Local_Iconv(std::wstring& ToReturn, const char* S, size_t Size, const char* CodeSet)
 {
     const local_iconv* Iconv=Local_Iconv();
     void* Decoder=Iconv?Local_Iconv_Open(*Iconv, CodeSet, true):NULL;
@@ -1057,12 +1128,12 @@ static bool From_Local_Iconv(Ztring& ToReturn, const char* S, size_t Size, const
         return false;
     }
 
+    ToReturn.clear();
     std::string UTF8, Back;
     if (Local_Iconv_Run(*Iconv, Decoder, S, Size, UTF8) && Local_Iconv_Run(*Iconv, Encoder, UTF8.data(), UTF8.size(), Back) && Back.size()==Size && !memcmp(Back.data(), S, Size))
-        ToReturn.From_UTF8(UTF8.c_str());
+        UTF8_Decode_KeepBytes(ToReturn, UTF8.c_str(), UTF8.size());
     else
     {
-        ToReturn.clear();
         bool IsGB18030=!strcmp(CodeSet, "GB18030");
         mbstate_t State;
         memset(&State, 0, sizeof(State));
@@ -1086,7 +1157,7 @@ static bool From_Local_Iconv(Ztring& ToReturn, const char* S, size_t Size, const
              && Local_Iconv_Run(*Iconv, Decoder, S+Pos, Char_Size, UTF8) && !UTF8.empty()
              && Local_Iconv_Run(*Iconv, Encoder, UTF8.data(), UTF8.size(), Back) && Back.size()==Char_Size && !memcmp(Back.data(), S+Pos, Char_Size))
             {
-                ToReturn+=Ztring().From_UTF8(UTF8.c_str());
+                UTF8_Decode_KeepBytes(ToReturn, UTF8.c_str(), UTF8.size());
                 Pos+=Char_Size;
                 continue;
             }
@@ -1103,7 +1174,7 @@ static bool From_Local_Iconv(Ztring& ToReturn, const char* S, size_t Size, const
 
 //Encoding of the locale with iconv, false if it is not available: the bytes kept by From_Local() back, "?" for the characters which
 //can't be encoded
-static bool To_Local_Iconv(const Ztring& S, std::string& ToReturn, const char* CodeSet)
+static bool To_Local_Iconv(const std::wstring& S, std::string& ToReturn, const char* CodeSet)
 {
     const local_iconv* Iconv=Local_Iconv();
     void* Encoder=Iconv?Local_Iconv_Open(*Iconv, CodeSet, false):NULL;
@@ -1115,13 +1186,14 @@ static bool To_Local_Iconv(const Ztring& S, std::string& ToReturn, const char* C
     size_t Start=0;
     for (size_t Pos=0; Pos<=S.size(); Pos++)
     {
-        bool IsByte=Pos<S.size() && IsKeptByte(S, Pos);
+        bool IsByte=Pos<S.size() && IsKeptByte(S.c_str(), Pos);
         if (Pos<S.size() && !IsByte)
             continue;
         if (Pos>Start)
         {
             //All the characters at once, else character per character
-            std::string UTF8=Ztring(S, Start, Pos-Start).To_UTF8(), Local;
+            std::string UTF8, Local;
+            UTF8_Encode_KeepBytes(UTF8, S.c_str()+Start, Pos-Start); //No byte kept from Start
             if (Local_Iconv_Run(*Iconv, Encoder, UTF8.data(), UTF8.size(), Local))
                 ToReturn+=Local;
             else
@@ -1150,6 +1222,53 @@ static bool To_Local_Iconv(const Ztring& S, std::string& ToReturn, const char* C
 }
 #endif //defined(ZENLIB_LOCAL_KEEPBYTES) && defined(ZENLIB_LOCAL_ICONV)
 
+#if defined(ZENLIB_LOCAL_KEEPBYTES)
+//Encoding of the locale, the bytes which are not valid kept (From_Local() and To_Local(), with Unicode and from and to UTF-8 without)
+static void From_Local_KeepBytes(std::wstring& ToReturn, const char* S, size_t Size)
+{
+    //ASCII: the same with all encodings, without the C library or iconv
+    if (IsASCII(S, Size))
+    {
+        ToReturn.assign(S, S+Size);
+        return;
+    }
+
+    const char* CodeSet=Local_Other();
+    if (!CodeSet)
+    {
+        From_UTF8_KeepBytes(ToReturn, S); //ASCII (UTF-8 instead) or UTF-8
+        return;
+    }
+    #if defined(ZENLIB_LOCAL_ICONV)
+        if (From_Local_Iconv(ToReturn, S, Size, CodeSet))
+            return;
+    #endif
+    From_Local_C(ToReturn, S, Size);
+}
+
+static void To_Local_KeepBytes(const std::wstring& S, std::string& ToReturn)
+{
+    //ASCII: the same with all encodings, without the C library or iconv
+    if (IsASCII(S))
+    {
+        ToReturn.assign(S.begin(), S.end());
+        return;
+    }
+
+    const char* CodeSet=Local_Other();
+    if (!CodeSet)
+    {
+        ToReturn=To_UTF8_KeepBytes(S); //ASCII (UTF-8 instead) or UTF-8
+        return;
+    }
+    #if defined(ZENLIB_LOCAL_ICONV)
+        if (To_Local_Iconv(S, ToReturn, CodeSet))
+            return;
+    #endif
+    To_Local_C(S, ToReturn); //All the bytes, there can be a 0 in a character (FreeBSD accepts the end of a string as second byte of an EUC character)
+}
+#endif //ZENLIB_LOCAL_KEEPBYTES
+
 Ztring& Ztring::From_Local (const char* S)
 {
     if (S==NULL)
@@ -1174,26 +1293,35 @@ Ztring& Ztring::From_Local (const char* S)
                 else
                     clear();
             #else //WINDOWS
-                //ASCII: the same with all encodings, without the C library or iconv
-                size_t Size=strlen(S);
-                if (IsASCII(S, Size))
-                {
-                    assign(S, S+Size);
-                    return *this;
-                }
-
-                const char* CodeSet=Local_Other();
-                if (!CodeSet)
-                    return From_UTF8_KeepBytes(*this, S); //ASCII (UTF-8 instead) or UTF-8
-                #if defined(ZENLIB_LOCAL_ICONV)
-                    if (From_Local_Iconv(*this, S, Size, CodeSet))
-                        return *this;
-                #endif
-                From_Local_C(*this, S, Size);
+                From_Local_KeepBytes(*this, S, strlen(S));
             #endif
         #endif //ZENLIB_USEWX
-    #else
+    #elif defined(ZENLIB_USEWX) || defined(WSTRING_MISSING)
         assign(S);
+    #else
+        //Text is UTF-8 without Unicode: decoded with the encoding of the locale (code page on Windows), the bytes which are not valid kept
+        //(see To_Unicode()), as with Unicode
+        size_t Size=strlen(S);
+        if (IsASCII(S, Size))
+        {
+            assign(S, Size);
+            return *this;
+        }
+        std::wstring Wide;
+        #ifdef WINDOWS
+            int Wide_Size=MultiByteToWideChar(CP_ACP, 0, S, -1, NULL, 0);
+            if (Wide_Size>0)
+            {
+                wchar_t* WideString=new wchar_t[Wide_Size];
+                MultiByteToWideChar(CP_ACP, 0, S, -1, WideString, Wide_Size);
+                Wide.assign(WideString);
+                delete[] WideString; //WideString=NULL;
+            }
+        #else //WINDOWS
+            From_Local_KeepBytes(Wide, S, Size);
+        #endif //WINDOWS
+        clear();
+        UTF8_Encode_KeepBytes(*this, Wide.c_str(), Wide.size(), false);
     #endif
     return *this;
 }
@@ -1205,7 +1333,17 @@ Ztring& Ztring::From_Local (const char* S, size_type Start, size_type Length)
 
     if (Length==Error)
         Length=strlen(S+Start);
-    #ifdef _UNICODE
+    #if !defined(_UNICODE) && !defined(ZENLIB_USEWX) && !defined(WSTRING_MISSING)
+        size_t ASCII_Size=0; //ASCII (e.g. a code of 4 characters), as it is
+        while (ASCII_Size<Length && S[Start+ASCII_Size] && !((int8u)S[Start+ASCII_Size]&0x80))
+            ASCII_Size++;
+        if (ASCII_Size==Length || !S[Start+ASCII_Size])
+        {
+            assign(S+Start, ASCII_Size);
+            return *this;
+        }
+    #endif
+    #if defined(_UNICODE) || (!defined(ZENLIB_USEWX) && !defined(WSTRING_MISSING))
         char* Temp=new char[Length+1];
         strncpy (Temp, S+Start, Length);
         Temp[Length]='\0';
@@ -2218,7 +2356,16 @@ std::wstring Ztring::To_Unicode () const
         #ifdef ZENLIB_USEWX
             return wxConvCurrent->cMB2WC(c_str()).data();
         #else //ZENLIB_USEWX
-            return std::wstring(); //Not implemented
+            //Text is UTF-8 without Unicode, the bytes which are not valid kept as U+DC80 to U+DCFF (e.g. a file name in another
+            //encoding, see From_Local()), and the UTF-16 surrogates from From_Unicode() decoded
+            size_t Size=strlen(c_str()); //Until the first 0, as with Unicode
+            #ifdef WINDOWS
+                if (IsCodePageBytes(c_str(), Size))
+                    return CodePage_Decode(c_str(), Size); //Not UTF-8 text, so the bytes of the code page, as the narrow functions of Windows
+            #endif //WINDOWS
+            std::wstring ToReturn;
+            UTF8_Decode_KeepBytes(ToReturn, c_str(), Size, true);
+            return ToReturn;
         #endif //ZENLIB_USEWX
     #endif //_UNICODE
 }
@@ -2272,7 +2419,13 @@ std::string Ztring::To_UTF8 () const
         #ifdef ZENLIB_USEWX
             return wxConvUTF8.cWC2MB(wxConvCurrent->cMB2WC(c_str())).data();
         #else //ZENLIB_USEWX
-            //Text is UTF-8 without Unicode, but not the bytes of a file name: replaced, the result may be in a document decoded with From_UTF8()
+            //Text is UTF-8 without Unicode, but not the bytes of a file name nor the UTF-16 surrogates of From_Unicode(): replaced, as with
+            //Unicode, the result may be in a document decoded with From_UTF8()
+            #if defined(WINDOWS) && !defined(WSTRING_MISSING)
+                size_t Size=strlen(c_str());
+                if (IsCodePageBytes(c_str(), Size))
+                    return Ztring().From_Unicode(CodePage_Decode(c_str(), Size).c_str()).To_UTF8(); //Not UTF-8 text, see To_Unicode()
+            #endif //defined(WINDOWS) && !defined(WSTRING_MISSING)
             std::string ToReturn;
             for (const int8u* Z=(const int8u*)c_str(); *Z; )
             {
@@ -2282,10 +2435,20 @@ std::string Ztring::To_UTF8 () const
                     ToReturn.append((const char*)Z, Size);
                     Z+=Size;
                 }
+                else if (Z[0]==0xED && (Z[1]&0xF0)==0xA0 && (Z[2]&0xC0)==0x80 && Z[3]==0xED && (Z[4]&0xF0)==0xB0 && (Z[5]&0xC0)==0x80)
+                {
+                    //UTF-16 surrogate pair (e.g. from From_UTF8()): one character, as with Unicode
+                    int32u Value=0x10000+((((Z[1]&0x0F)<<6)|(Z[2]&0x3F))<<10)+(((Z[4]&0x0F)<<6)|(Z[5]&0x3F));
+                    ToReturn+=(char)(0xF0|(Value>>18));
+                    ToReturn+=(char)(0x80|((Value>>12)&0x3F));
+                    ToReturn+=(char)(0x80|((Value>>6)&0x3F));
+                    ToReturn+=(char)(0x80|(Value&0x3F));
+                    Z+=6;
+                }
                 else
                 {
                     ToReturn+="\xEF\xBF\xBD";
-                    Z++;
+                    Z+=(Z[0]==0xED && (Z[1]&0xE0)==0xA0 && (Z[2]&0xC0)==0x80)?3:1; //UTF-16 surrogate of From_Unicode() as one value
                 }
             }
             return ToReturn;
@@ -2317,24 +2480,33 @@ std::string Ztring::To_Local () const
                 else
                     return std::string();
             #else //WINDOWS
-                //ASCII: the same with all encodings, without the C library or iconv
-                if (IsASCII(*this))
-                    return std::string(begin(), end());
-
-                const char* CodeSet=Local_Other();
-                if (!CodeSet)
-                    return To_UTF8_KeepBytes(*this); //ASCII (UTF-8 instead) or UTF-8
                 std::string ToReturn;
-                #if defined(ZENLIB_LOCAL_ICONV)
-                    if (To_Local_Iconv(*this, ToReturn, CodeSet))
-                        return ToReturn;
-                #endif
-                To_Local_C(*this, ToReturn); //All the bytes, there can be a 0 in a character (FreeBSD accepts the end of a string as second byte of an EUC character)
+                To_Local_KeepBytes(*this, ToReturn);
                 return ToReturn;
             #endif
         #endif //ZENLIB_USEWX
-    #else
+    #elif defined(ZENLIB_USEWX) || defined(WSTRING_MISSING)
         return c_str();
+    #else
+        //Text is UTF-8 without Unicode: encoded with the encoding of the locale (code page on Windows), the bytes kept by From_Local() back,
+        //as with Unicode, and on Windows the bytes of the code page given as they are (see To_Unicode()) back
+        if (IsASCII(c_str(), size()))
+            return c_str();
+        std::wstring Wide=To_Unicode();
+        #ifdef WINDOWS
+            int Size=WideCharToMultiByte(CP_ACP, 0, Wide.c_str(), -1, NULL, 0, NULL, NULL);
+            if (Size<=0)
+                return std::string();
+            char* AnsiString=new char[Size];
+            WideCharToMultiByte(CP_ACP, 0, Wide.c_str(), -1, AnsiString, Size, NULL, NULL);
+            std::string ToReturn(AnsiString);
+            delete[] AnsiString; //AnsiString=NULL;
+            return ToReturn;
+        #else //WINDOWS
+            std::string ToReturn;
+            To_Local_KeepBytes(Wide, ToReturn);
+            return ToReturn;
+        #endif //WINDOWS
     #endif
 }
 
@@ -2964,11 +3136,39 @@ bool Ztring::IsNumber() const
 }
 
 //---------------------------------------------------------------------------
+#if !defined(__UNICODE__) && !defined(ZENLIB_USEWX) && !defined(WSTRING_MISSING)
+//UTF-8 text without Unicode: the characters are changed as with Unicode, not the bytes (towlower() and towupper() may also change an
+//ASCII character to a character which is not ASCII, e.g. "I" with a Turkish locale)
+static void Case_Change(Ztring& S, wint_t (*Change)(wint_t))
+{
+    size_t Pos=0;
+    for (; Pos<S.size(); Pos++)
+    {
+        wint_t Changed=(int8u)S[Pos];
+        if (Changed<0x80)
+            Changed=Change(Changed);
+        if (Changed>=0x80)
+            break;
+        S[Pos]=(char)Changed;
+    }
+    if (Pos==S.size())
+        return;
+
+    std::wstring Wide=S.To_Unicode();
+    for (size_t i=0; i<Wide.size(); i++)
+        Wide[i]=(wchar_t)Change(Wide[i]);
+    S.From_Unicode(Wide);
+}
+#endif
+
+//---------------------------------------------------------------------------
 //Mise en minuscules
 Ztring &Ztring::MakeLowerCase()
 {
 #if defined(__UNICODE__)
     transform(begin(), end(), begin(), [](wchar_t c) { return towlower(c); });
+#elif !defined(ZENLIB_USEWX) && !defined(WSTRING_MISSING)
+    Case_Change(*this, [](wint_t c) { return towlower(c); });
 #else // defined(__UNICODE__)
     transform(begin(), end(), begin(), [](unsigned char c) { return tolower(c); });
 #endif // defined(__UNICODE__)
@@ -2981,6 +3181,8 @@ Ztring &Ztring::MakeUpperCase()
 {
 #if defined(__UNICODE__)
     transform(begin(), end(), begin(), [](wchar_t c) { return towupper(c); });
+#elif !defined(ZENLIB_USEWX) && !defined(WSTRING_MISSING)
+    Case_Change(*this, [](wint_t c) { return towupper(c); });
 #else // defined(__UNICODE__)
     transform(begin(), end(), begin(), [](unsigned char c) { return toupper(c); });
 #endif // defined(__UNICODE__)
