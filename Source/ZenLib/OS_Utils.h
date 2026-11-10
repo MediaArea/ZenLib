@@ -46,6 +46,13 @@ void Shell_Execute(const Ztring &ToExecute);
 std::string FileName_To_Native(const Ztring &File_Name);
 Ztring FileName_From_Native(const char* File_Name);
 
+#if defined(WINDOWS) && !defined(WINDOWS_UWP) && !defined(UNICODE) && !defined(ZENLIB_USEWX)
+// Without Unicode on Windows, name of an existing file or directory for the wide functions, as File and Dir open it: UTF-8 text, or the
+// bytes of the code page given as they are (see Ztring::To_Unicode()), also when these bytes are valid UTF-8 but only the name in the code
+// page exists. Ztring::From_Unicode() gives this name as UTF-8 text, as FileName_From_Native(FileName_To_Native()) on the other systems.
+std::wstring FileName_To_Wide_Existing(const Ztring &File_Name);
+#endif
+
 //***************************************************************************
 // Directorues
 //***************************************************************************

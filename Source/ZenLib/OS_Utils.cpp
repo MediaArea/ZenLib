@@ -446,9 +446,7 @@ Ztring FileName_From_Native(const char* File_Name)
 ZENLIB_INTERNAL bool IsCodePageBytes(const char* S, size_t Size);
 
 //---------------------------------------------------------------------------
-//Name of an existing file or directory for the wide functions, without Unicode: UTF-8 text, or the bytes of the code page given as they are
-//(see Ztring::To_Unicode()), also when these bytes are valid UTF-8 but only the name in the code page exists
-ZENLIB_INTERNAL std::wstring FileName_To_Wide_Existing(const Ztring &File_Name)
+std::wstring FileName_To_Wide_Existing(const Ztring &File_Name)
 {
     std::wstring Name=File_Name.To_Unicode();
     size_t ASCII_Size=0;
