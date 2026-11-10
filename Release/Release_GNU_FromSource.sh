@@ -53,6 +53,7 @@ cp -r ../Source/ZenLib/TinyXml/*.cpp ZenLib_GNU_FromSource/Source/ZenLib/TinyXml
 mkdir -p ZenLib_GNU_FromSource/Project/GNU/Library
 cp ../Project/GNU/Library/aclocal.m4 ZenLib_GNU_FromSource/Project/GNU/Library/
 cp ../Project/GNU/Library/autogen.sh ZenLib_GNU_FromSource/Project/GNU/Library/
+cp ../Project/GNU/Library/compile ZenLib_GNU_FromSource/Project/GNU/Library/
 cp ../Project/GNU/Library/config.guess ZenLib_GNU_FromSource/Project/GNU/Library/
 cp ../Project/GNU/Library/config.sub ZenLib_GNU_FromSource/Project/GNU/Library/
 cp ../Project/GNU/Library/configure ZenLib_GNU_FromSource/Project/GNU/Library/
