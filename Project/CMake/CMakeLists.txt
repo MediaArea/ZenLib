@@ -189,6 +189,12 @@ if(BUILD_ZENLIB_TESTS)
   target_link_libraries(zen_bitstream_tests PRIVATE zen)
   enable_latest_cxx(zen_bitstream_tests)
   add_test(NAME ZenLib.BitStream COMMAND zen_bitstream_tests)
+
+  add_executable(zen_bitstream_fast_tests
+    ${CMAKE_CURRENT_SOURCE_DIR}/../GNU/Library/Tests/BitStream_Fast.cpp)
+  target_link_libraries(zen_bitstream_fast_tests PRIVATE zen)
+  enable_latest_cxx(zen_bitstream_fast_tests)
+  add_test(NAME ZenLib.BitStreamFast COMMAND zen_bitstream_fast_tests)
 endif()
 
 install(TARGETS zen EXPORT zen-export

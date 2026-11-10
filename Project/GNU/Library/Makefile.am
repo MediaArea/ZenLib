@@ -82,11 +82,13 @@ AM_TESTS_FD_REDIRECT = 9>&2
 
 TESTS = \
  test/filename.sh \
- Tests/zen_bitstream
+ Tests/zen_bitstream \
+ Tests/zen_bitstream_fast
 
 check_PROGRAMS = \
  test/zen_filename \
- Tests/zen_bitstream
+ Tests/zen_bitstream \
+ Tests/zen_bitstream_fast
 test_zen_filename_SOURCES = test/Source/filename.cpp
 test_zen_filename_CXXFLAGS = $(AM_CXXFLAGS) -Wall -Wextra
 test_zen_filename_LDADD = libzen.la
@@ -94,6 +96,10 @@ test_zen_filename_LDADD = libzen.la
 Tests_zen_bitstream_SOURCES = Tests/BitStream.cpp
 Tests_zen_bitstream_CXXFLAGS = $(AM_CXXFLAGS) -Wall -Wextra
 Tests_zen_bitstream_LDADD = libzen.la
+
+Tests_zen_bitstream_fast_SOURCES = Tests/BitStream_Fast.cpp
+Tests_zen_bitstream_fast_CXXFLAGS = $(AM_CXXFLAGS) -Wall -Wextra
+Tests_zen_bitstream_fast_LDADD = libzen.la
 
 AM_CXXFLAGS = -std=c++11
 AM_CPPFLAGS = -I../../../Source
