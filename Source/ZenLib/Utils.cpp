@@ -45,9 +45,7 @@ int8u  LittleEndian2int8u  (const char* Liste)
 // Little Endian - 16 bits
 int16s LittleEndian2int16s (const char* Liste)
 {
-    int16s Retour=     (int8s)Liste[1];
-    Retour=(Retour<<8)|(int8u)Liste[0];
-    return Retour;
+    return (int16s)LittleEndian2int16u(Liste); //Computed unsigned, a left shift of a negative value is undefined
 }
 
 int16u LittleEndian2int16u (const char* Liste)
@@ -61,10 +59,10 @@ int16u LittleEndian2int16u (const char* Liste)
 // Little Endian - 24 bits
 int32s LittleEndian2int24s (const char* Liste)
 {
-    int32s Retour=     (int8s)Liste[2];
-    Retour=(Retour<<8)|(int8u)Liste[1];
-    Retour=(Retour<<8)|(int8u)Liste[0];
-    return Retour;
+    int32u Retour=LittleEndian2int24u(Liste); //Computed unsigned, a left shift of a negative value is undefined
+    if (Retour&0x00800000)
+        Retour|=0xFF000000; //Sign extension
+    return (int32s)Retour;
 }
 
 int32u LittleEndian2int24u (const char* Liste)
@@ -79,11 +77,7 @@ int32u LittleEndian2int24u (const char* Liste)
 // Little Endian - 32 bits
 int32s LittleEndian2int32s (const char* Liste)
 {
-    int32s Retour=     (int8s)Liste[3];
-    Retour=(Retour<<8)|(int8u)Liste[2];
-    Retour=(Retour<<8)|(int8u)Liste[1];
-    Retour=(Retour<<8)|(int8u)Liste[0];
-    return Retour;
+    return (int32s)LittleEndian2int32u(Liste); //Computed unsigned, a left shift of a negative value is undefined
 }
 
 int32u LittleEndian2int32u (const char* Liste)
@@ -171,15 +165,7 @@ int64u LittleEndian2int56u (const char* Liste)
 // Little Endian - 64 bits
 int64s LittleEndian2int64s (const char* Liste)
 {
-    int64s Retour=     (int8s)Liste[7];
-    Retour=(Retour<<8)|(int8u)Liste[6];
-    Retour=(Retour<<8)|(int8u)Liste[5];
-    Retour=(Retour<<8)|(int8u)Liste[4];
-    Retour=(Retour<<8)|(int8u)Liste[3];
-    Retour=(Retour<<8)|(int8u)Liste[2];
-    Retour=(Retour<<8)|(int8u)Liste[1];
-    Retour=(Retour<<8)|(int8u)Liste[0];
-    return Retour;
+    return (int64s)LittleEndian2int64u(Liste); //Computed unsigned, a left shift of a negative value is undefined
 }
 
 int64u LittleEndian2int64u (const char* Liste)
@@ -498,9 +484,7 @@ int8u  BigEndian2int8u     (const char* Liste)
 // Big Endian - 16 bits
 int16s BigEndian2int16s    (const char* Liste)
 {
-    int16s Retour=     (int8s)Liste[0];
-    Retour=(Retour<<8)|(int8u)Liste[1];
-    return Retour;
+    return (int16s)BigEndian2int16u(Liste); //Computed unsigned, a left shift of a negative value is undefined
 }
 
 int16u BigEndian2int16u    (const char* Liste)
@@ -514,10 +498,10 @@ int16u BigEndian2int16u    (const char* Liste)
 // Big Endian - 24 bits
 int32s BigEndian2int24s    (const char* Liste)
 {
-    int32s Retour=     (int8s)Liste[0];
-    Retour=(Retour<<8)|(int8u)Liste[1];
-    Retour=(Retour<<8)|(int8u)Liste[2];
-    return Retour;
+    int32u Retour=BigEndian2int24u(Liste); //Computed unsigned, a left shift of a negative value is undefined
+    if (Retour&0x00800000)
+        Retour|=0xFF000000; //Sign extension
+    return (int32s)Retour;
 }
 
 int32u BigEndian2int24u    (const char* Liste)
@@ -532,11 +516,7 @@ int32u BigEndian2int24u    (const char* Liste)
 // Big Endian - 32 bits
 int32s BigEndian2int32s    (const char* Liste)
 {
-    int32s Retour=     (int8s)Liste[0];
-    Retour=(Retour<<8)|(int8u)Liste[1];
-    Retour=(Retour<<8)|(int8u)Liste[2];
-    Retour=(Retour<<8)|(int8u)Liste[3];
-    return Retour;
+    return (int32s)BigEndian2int32u(Liste); //Computed unsigned, a left shift of a negative value is undefined
 }
 
 int32u BigEndian2int32u    (const char* Liste)
@@ -552,12 +532,10 @@ int32u BigEndian2int32u    (const char* Liste)
 // Big Endian - 40 bits
 int64s  BigEndian2int40s    (const char* Liste)
 {
-    int64s Retour=     (int8s)Liste[0];
-    Retour=(Retour<<8)|(int8u)Liste[1];
-    Retour=(Retour<<8)|(int8u)Liste[2];
-    Retour=(Retour<<8)|(int8u)Liste[3];
-    Retour=(Retour<<8)|(int8u)Liste[4];
-    return Retour;
+    int64u Retour=BigEndian2int40u(Liste); //Computed unsigned, a left shift of a negative value is undefined
+    if (Retour&((int64u)1<<39))
+        Retour|=(((int64u)-1)<<40); //Sign extension
+    return (int64s)Retour;
 }
 
 int64u BigEndian2int40u    (const char* Liste)
@@ -574,13 +552,10 @@ int64u BigEndian2int40u    (const char* Liste)
 // Big Endian - 48 bits
 int64s  BigEndian2int48s    (const char* Liste)
 {
-    int64s Retour=     (int8s)Liste[0];
-    Retour=(Retour<<8)|(int8u)Liste[1];
-    Retour=(Retour<<8)|(int8u)Liste[2];
-    Retour=(Retour<<8)|(int8u)Liste[3];
-    Retour=(Retour<<8)|(int8u)Liste[4];
-    Retour=(Retour<<8)|(int8u)Liste[5];
-    return Retour;
+    int64u Retour=BigEndian2int48u(Liste); //Computed unsigned, a left shift of a negative value is undefined
+    if (Retour&((int64u)1<<47))
+        Retour|=(((int64u)-1)<<48); //Sign extension
+    return (int64s)Retour;
 }
 
 int64u BigEndian2int48u    (const char* Liste)
@@ -598,14 +573,10 @@ int64u BigEndian2int48u    (const char* Liste)
 // Big Endian - 56 bits
 int64s  BigEndian2int56s    (const char* Liste)
 {
-    int64s Retour=     (int8s)Liste[0];
-    Retour=(Retour<<8)|(int8u)Liste[1];
-    Retour=(Retour<<8)|(int8u)Liste[2];
-    Retour=(Retour<<8)|(int8u)Liste[3];
-    Retour=(Retour<<8)|(int8u)Liste[4];
-    Retour=(Retour<<8)|(int8u)Liste[5];
-    Retour=(Retour<<8)|(int8u)Liste[6];
-    return Retour;
+    int64u Retour=BigEndian2int56u(Liste); //Computed unsigned, a left shift of a negative value is undefined
+    if (Retour&((int64u)1<<55))
+        Retour|=(((int64u)-1)<<56); //Sign extension
+    return (int64s)Retour;
 }
 
 int64u BigEndian2int56u    (const char* Liste)
@@ -624,15 +595,7 @@ int64u BigEndian2int56u    (const char* Liste)
 // Big Endian - 64 bits
 int64s  BigEndian2int64s    (const char* Liste)
 {
-    int64s Retour=(int8s)Liste[0];
-    Retour=(Retour<<8)|(int8u)Liste[1];
-    Retour=(Retour<<8)|(int8u)Liste[2];
-    Retour=(Retour<<8)|(int8u)Liste[3];
-    Retour=(Retour<<8)|(int8u)Liste[4];
-    Retour=(Retour<<8)|(int8u)Liste[5];
-    Retour=(Retour<<8)|(int8u)Liste[6];
-    Retour=(Retour<<8)|(int8u)Liste[7];
-    return Retour;
+    return (int64s)BigEndian2int64u(Liste); //Computed unsigned, a left shift of a negative value is undefined
 }
 
 int64u BigEndian2int64u    (const char* Liste)
