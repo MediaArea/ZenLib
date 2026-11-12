@@ -266,15 +266,34 @@ static void UTF8_Decode_KeepBytes(std::wstring& ToReturn, const char* S, size_t 
 #endif //WSTRING_MISSING
 static void UTF8_Encode_KeepBytes(std::string& ToReturn, const wchar_t* S, size_t Size, bool KeepBytes=true);
 
-//A surrogate pair of UTF-16 is one character where wchar_t is 32-bit
+//A surrogate pair of UTF-16 is one character where wchar_t is 32-bit (after the first part of a pair, not after a character of which the low
+//16 bits are the same, e.g. U+1D800)
 static void UTF16_Append(std::wstring& Wide, int16u Value)
 {
-    if (sizeof(wchar_t)==4 && (Value&0xFC00)==0xDC00 && !Wide.empty() && (Wide[Wide.size()-1]&0xFC00)==0xD800)
+    if (sizeof(wchar_t)==4 && (Value&0xFC00)==0xDC00 && !Wide.empty() && ((int32u)Wide[Wide.size()-1]&0xFFFFFC00)==0xD800)
         Wide[Wide.size()-1]=(wchar_t)(0x10000+((Wide[Wide.size()-1]&0x3FF)<<10)+(Value&0x3FF));
     else
         Wide+=(wchar_t)Value;
 }
 #endif
+
+#if !defined(ZENLIB_USEWX)
+//UTF-16 surrogates which are not in a pair (e.g. bytes of a file which are not UTF-16 text) are U+FFFD, as with the decoders which replace the
+//errors (e.g. Python): they are not characters, To_UTF8() replaces them, and To_Local() would give U+DC80 to U+DCFF as bytes kept by From_Local()
+static void UTF16_LoneSurrogates_Replace(std::wstring& Wide)
+{
+    for (size_t Pos=0; Pos<Wide.size(); Pos++)
+    {
+        int32u Value=(int32u)Wide[Pos];
+        if (Value<0xD800 || Value>0xDFFF)
+            continue;
+        if (Value<0xDC00 && Pos+1<Wide.size() && ((int32u)Wide[Pos+1]&0xFFFFFC00)==0xDC00)
+            Pos++; //UTF-16 surrogate pair where wchar_t is 16-bit
+        else
+            Wide[Pos]=(wchar_t)0xFFFD;
+    }
+}
+#endif //!defined(ZENLIB_USEWX)
 
 Ztring& Ztring::From_Unicode (const wchar_t S)
 {
@@ -563,6 +582,7 @@ Ztring& Ztring::From_UTF16BE (const char* S)
                 append(1, Temp);
                 Pos++;
             }
+            UTF16_LoneSurrogates_Replace(*this);
         #else //defined(WINDOWS) && defined(_UNICODE)
             std::wstring Wide;
             while (S[0]!=0 || S[1]!=0)
@@ -570,6 +590,7 @@ Ztring& Ztring::From_UTF16BE (const char* S)
                 UTF16_Append(Wide, BigEndian2int16u(S));
                 S+=2;
             }
+            UTF16_LoneSurrogates_Replace(Wide);
             From_Unicode(Wide.c_str());
         #endif
     #endif //ZENLIB_USEWX
@@ -619,6 +640,7 @@ Ztring& Ztring::From_UTF16LE (const char* S)
         #if defined(WINDOWS) && defined(_UNICODE)
             const wchar_t* SW=(const wchar_t*)S;
             assign(SW);
+            UTF16_LoneSurrogates_Replace(*this);
         #else //defined(WINDOWS) && defined(_UNICODE)
             std::wstring Wide;
             while (S[0]!=0 || S[1]!=0)
@@ -626,6 +648,7 @@ Ztring& Ztring::From_UTF16LE (const char* S)
                 UTF16_Append(Wide, LittleEndian2int16u(S));
                 S+=2;
             }
+            UTF16_LoneSurrogates_Replace(Wide);
             From_Unicode(Wide.c_str());
         #endif
     #endif //ZENLIB_USEWX
