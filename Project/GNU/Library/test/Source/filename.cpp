@@ -441,6 +441,15 @@ int main(int argc, char* argv[])
         Text=Ztring().From_CC4(0xA9746F6F).To_UTF8();
         Check(Text=="\xC2\xA9too", "From_CC4(0xA9746F6F)", "result is "+Printable(Text));
 
+        // UTF-16 surrogates which are not in a pair (e.g. bytes of a file which are not UTF-16 text): U+FFFD in the string, not only with To_UTF8()
+        // (To_Local() gives U+DC80 to U+DCFF as bytes kept by From_Local()), also after a character of which the low 16 bits are the first part of
+        // a pair (U+1D800) and at the end; a pair is one character
+        static const unsigned char UTF16BE_LoneSurrogates[]={0x00, 0x61, 0xDC, 0xB0, 0xD8, 0x3C, 0x00, 0x62, 0xD8, 0x3C, 0xDF, 0xB5, 0xD8, 0x36, 0xDC, 0x00, 0xDC, 0xE9, 0xD8, 0x3C, 0x00, 0x00};
+        static const unsigned char UTF16LE_LoneSurrogates[]={0x61, 0x00, 0xB0, 0xDC, 0x3C, 0xD8, 0x62, 0x00, 0x3C, 0xD8, 0xB5, 0xDF, 0x36, 0xD8, 0x00, 0xDC, 0xE9, 0xDC, 0x3C, 0xD8, 0x00, 0x00};
+        Ztring Expected_LoneSurrogates=From_UTF8("a\xEF\xBF\xBD\xEF\xBF\xBD" "b\xF0\x9F\x8E\xB5\xF0\x9D\xA0\x80\xEF\xBF\xBD\xEF\xBF\xBD");
+        Check(Ztring().From_UTF16BE((const char*)UTF16BE_LoneSurrogates)==Expected_LoneSurrogates, "From_UTF16BE(UTF-16 surrogates which are not in a pair)", "wrong result");
+        Check(Ztring().From_UTF16LE((const char*)UTF16LE_LoneSurrogates)==Expected_LoneSurrogates, "From_UTF16LE(UTF-16 surrogates which are not in a pair)", "wrong result");
+
         // Text which is not valid UTF-8: detected, it is the way to try another encoding
         Text=From_UTF8(Name_Latin1).To_UTF8();
         Check(Text.empty(), "From_UTF8("+Printable(Name_Latin1)+")", "result is "+Printable(Text));
