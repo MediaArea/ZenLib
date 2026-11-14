@@ -66,16 +66,18 @@ namespace ZenLib
     #else //UNICODE
         static inline std::wstring FileName_To_Wide(const Ztring &File_Name) {return File_Name.To_Unicode();}
         static inline Ztring FileName_From_Wide(const wchar_t* File_Name) {return Ztring().From_Unicode(File_Name);}
-        ZENLIB_INTERNAL bool IsCodePageBytes(const char* S, size_t Size); //In Ztring.cpp
     #endif //UNICODE
+#endif
+#if defined(WINDOWS) && !defined(UNICODE) && !defined(ZENLIB_USEWX)
+    ZENLIB_INTERNAL bool IsCodePageBytes(const char* S, size_t Size); //In Ztring.cpp
 #endif
 
 //---------------------------------------------------------------------------
-// Pattern of the content of a directory, "\" and "/" are path separators on Windows
+// Directory name with a path separator at the end, "\" and "/" are path separators on Windows
 // Without Unicode, in the bytes of the code page given as they are (see Ztring::To_Unicode()), the second byte of a character of a multibyte
 // code page (e.g. "\" in cp932) is not a separator, UTF-8 text has no such byte
-#if defined(WINDOWS) && !defined(WINDOWS_UWP)
-static Ztring Dir_Pattern(const Ztring &Dir_Name)
+#if defined(WINDOWS)
+static bool Dir_EndsWithSeparator(const Ztring &Dir_Name)
 {
     #if !defined(UNICODE)
         #if !defined(ZENLIB_USEWX)
@@ -93,7 +95,16 @@ static Ztring Dir_Pattern(const Ztring &Dir_Name)
                 Pos++; //Second byte
         #endif
     }
-    return Dir_Name+(EndsWithSeparator?__T("*"):__T("\\*"));
+    return EndsWithSeparator;
+}
+#endif
+
+//---------------------------------------------------------------------------
+// Pattern of the content of a directory
+#if defined(WINDOWS) && !defined(WINDOWS_UWP)
+static Ztring Dir_Pattern(const Ztring &Dir_Name)
+{
+    return Dir_Name+(Dir_EndsWithSeparator(Dir_Name)?__T("*"):__T("\\*"));
 }
 #endif
 
@@ -241,10 +252,10 @@ ZtringList Dir::GetAllFileNames(const Ztring &Dir_Name_, dirlist_t Options)
         #ifdef WINDOWS
             #ifdef WINDOWS_UWP
                 //Ensure all slashs are converted to backslashs (WinRT file API don't like slashs)
-                Dir_Name.FindAndReplace(__T("/"), __T("\\"));
+                Dir_Name.FindAndReplace(__T("/"), __T("\\"), 0, Ztring_Recursive);
 
                 ComPtr<IStorageFolder> Folder;
-                if (FAILED(Get_Folder(HStringReference(Dir_Name.c_str(), (unsigned int)Dir_Name.size()), Folder)))
+                if (FAILED(Get_Folder(WinRT_Name(Dir_Name).Ref(), Folder)))
                     return ToReturn;
 
                 ComPtr<IAsyncOperation<IVectorView<IStorageItem*>* > > Async_GetItems;
@@ -259,6 +270,10 @@ ZtringList Dir::GetAllFileNames(const Ztring &Dir_Name_, dirlist_t Options)
                 if (FAILED(Items->get_Size(&Size)))
                     return ToReturn;
 
+                Ztring Dir_Name_Separator=Dir_Name; //One separator before the names, also for a name given with one at the end
+                if (!Dir_EndsWithSeparator(Dir_Name_Separator))
+                    Dir_Name_Separator+=__T('\\');
+
                 for (unsigned int Pos=0; Pos<Size; ++Pos)
                 {
                     ComPtr<IStorageItem> Item;
@@ -269,12 +284,12 @@ ZtringList Dir::GetAllFileNames(const Ztring &Dir_Name_, dirlist_t Options)
                     if (FAILED(Item->get_Name(File_Name_HString.GetAddressOf())))
                         continue;
 
-                    Ztring File_Name(WindowsGetStringRawBuffer(File_Name_HString.Get(), NULL));
+                    Ztring File_Name=Ztring().From_Unicode(WindowsGetStringRawBuffer(File_Name_HString.Get(), NULL));
 
                     if (File_Name.empty() || (!(Options&Include_Hidden) && File_Name[0]==__T('.')))
                         continue;
 
-                    tstring File_Name_Complete = Dir_Name + __T("\\") + File_Name;
+                    tstring File_Name_Complete = Dir_Name_Separator + File_Name;
 
                     boolean IsFile = FALSE;
                     boolean IsFolder = FALSE;
@@ -283,12 +298,12 @@ ZtringList Dir::GetAllFileNames(const Ztring &Dir_Name_, dirlist_t Options)
 
                     if ((Options&Include_Files) && IsFile && ((Options&Include_Hidden) || File_Name[0] != __T('.')))
                     {
-                        Add_Item_To_FUA(HStringReference(File_Name_Complete.c_str(), (unsigned int)File_Name_Complete.length()), Item);
+                        Add_Item_To_FUA(WinRT_Name(File_Name_Complete).Ref(), Item);
                         ToReturn.push_back(File_Name_Complete);
                     }
                     else if ((Options&Include_Dirs) && IsFolder)
                     {
-                        Add_Item_To_FUA(HStringReference(File_Name_Complete.c_str(), (unsigned int)File_Name_Complete.length()), Item);
+                        Add_Item_To_FUA(WinRT_Name(File_Name_Complete).Ref(), Item);
                         ToReturn.push_back(File_Name_Complete);
                     }
 
@@ -461,11 +476,11 @@ bool Dir::Exists(const Ztring &File_Name)
            #ifdef WINDOWS_UWP
                 //Ensure all slashs are converted to backslashs (WinRT file API don't like slashs)
                 Ztring File_Name_=File_Name;
-                File_Name_.FindAndReplace(__T("/"), __T("\\"));
+                File_Name_.FindAndReplace(__T("/"), __T("\\"), 0, Ztring_Recursive);
 
                 //Try to access folder directly
                 ComPtr<IStorageFolder> Folder;
-                if (SUCCEEDED(Get_Folder(HStringReference(File_Name_.c_str(), (unsigned int)File_Name_.size()), Folder)))
+                if (SUCCEEDED(Get_Folder(WinRT_Name(File_Name_).Ref(), Folder)))
                     return true;
 
                 //Try directory access methods
@@ -473,7 +488,7 @@ bool Dir::Exists(const Ztring &File_Name)
                 tstring Dir=FileName::Name_Get(File_Name_);
 
                 ComPtr<IStorageFolder> Parent_Folder;
-                if (FAILED(Get_Folder(HStringReference(Parent.c_str(), (unsigned int)Parent.size()), Parent_Folder)))
+                if (FAILED(Get_Folder(WinRT_Name(Parent).Ref(), Parent_Folder)))
                     return false;
 
                 //IStorageFolder don't provide TryGetItemAsync
@@ -484,7 +499,7 @@ bool Dir::Exists(const Ztring &File_Name)
                 ComPtr<IAsyncOperation<IStorageItem*> > Async_GetItem;
                 ComPtr<IStorageItem> Item;
                 ComPtr<IStorageFolder> Child;
-                if (SUCCEEDED(Parent_Folder2->TryGetItemAsync(HStringReference(Dir.c_str(), (unsigned int)Dir.size()).Get(), &Async_GetItem)) &&
+                if (SUCCEEDED(Parent_Folder2->TryGetItemAsync(WinRT_Name(Dir).Ref().Get(), &Async_GetItem)) &&
                     SUCCEEDED(Await(Async_GetItem)) &&
                     SUCCEEDED(Async_GetItem->GetResults(&Item)) &&
                     Item &&
@@ -528,7 +543,7 @@ bool Dir::Create(const Ztring &File_Name)
                 CreationCollisionOption Collision_Option=CreationCollisionOption_FailIfExists;
 
                 //Ensure all slashs are converted to backslashs (WinRT file API don't like slashs)
-                Parent.FindAndReplace(__T("/"), __T("\\"));
+                Parent.FindAndReplace(__T("/"), __T("\\"), 0, Ztring_Recursive);
 
                 //Split folder and parent
                 Ztring Dir=FileName::Name_Get(File_Name);
@@ -538,13 +553,13 @@ bool Dir::Create(const Ztring &File_Name)
 
                 //Open parent folder
                 ComPtr<IStorageFolder> Folder;
-                if (FAILED(Get_Folder(HStringReference(Parent.c_str(), (unsigned int)Parent.size()), Folder)))
+                if (FAILED(Get_Folder(WinRT_Name(Parent).Ref(), Folder)))
                     return false;
 
                 //Create folder
                 ComPtr<IAsyncOperation<StorageFolder*> > Async_Create;
                 ComPtr<IStorageFolder> New;
-                if (FAILED(Folder->CreateFolderAsync(HStringReference(Dir.c_str(), (unsigned int)Dir.size()).Get(), Collision_Option, &Async_Create)) ||
+                if (FAILED(Folder->CreateFolderAsync(WinRT_Name(Dir).Ref().Get(), Collision_Option, &Async_Create)) ||
                     FAILED(Await(Async_Create)) ||
                     FAILED(Async_Create->GetResults(&New)) ||
                     !New)

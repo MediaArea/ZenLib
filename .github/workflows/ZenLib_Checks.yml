@@ -148,8 +148,13 @@ jobs:
           - architecture: x64
             vcvarsall: x64
           - architecture: ARM64
+          # Functions of the UWP API (WinRT for the files, which works without package except FutureAccessList), not in a solution
+          - name: UWP (x64)
+            architecture: x64
+            vcvarsall: x64
+            uwp: true
       fail-fast: false
-    name: Windows (${{ matrix.architecture }})
+    name: ${{ matrix.name || format('Windows ({0})', matrix.architecture) }}
     runs-on: windows-latest
     defaults:
       run:
@@ -166,6 +171,7 @@ jobs:
         with:
           msbuild-architecture: x64
       - name: Build
+        if: ${{ !matrix.uwp }}
         run: MSBuild.exe -p:Configuration=Release -p:Platform=${{ matrix.architecture }} ZenLib/Project/MSVC2026/ZenLib_MSVC.slnx -verbosity:quiet -warnaserror
       - name: Compile test
         if: matrix.vcvarsall
@@ -174,12 +180,15 @@ jobs:
         run: |
           for /f "usebackq delims=" %%i in (`"%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath`) do call "%%i\VC\Auxiliary\Build\vcvarsall.bat" ${{ matrix.vcvarsall }}
           rem Test program with and without Unicode, for the code page of the system (cp1252) and with the code page of its manifest
+          rem UWP: the program initializes WinRT as an application does it, the warnings of the library are not checked by a solution
+          set Flags=${{ matrix.uwp && '/DWINAPI_FAMILY=WINAPI_FAMILY_APP /D__WRL_NO_DEFAULT_LIB__ /W3 /WX' || '' }}
+          set Libs=${{ matrix.uwp && 'runtimeobject.lib' || 'shell32.lib user32.lib advapi32.lib' }}
           mkdir build_yes build_no
-          cl /nologo /c /MP /EHsc /O1 /DUNICODE /D_UNICODE /ISource /Fobuild_yes\ Source\ZenLib\*.cpp || exit /b 1
-          cl /nologo /c /MP /EHsc /O1 /ISource /Fobuild_no\ Source\ZenLib\*.cpp || exit /b 1
+          cl /nologo /c /MP /EHsc /O1 %Flags% /DUNICODE /D_UNICODE /ISource /Fobuild_yes\ Source\ZenLib\*.cpp || exit /b 1
+          cl /nologo /c /MP /EHsc /O1 %Flags% /ISource /Fobuild_no\ Source\ZenLib\*.cpp || exit /b 1
           del build_yes\HTTP_Client.obj build_no\HTTP_Client.obj
-          cl /nologo /EHsc /O1 /DUNICODE /D_UNICODE /ISource /Fobuild_yes\zen_filename.obj /Febuild_yes\zen_filename_1252.exe Project\GNU\Library\test\Source\filename.cpp build_yes\*.obj shell32.lib user32.lib advapi32.lib || exit /b 1
-          cl /nologo /EHsc /O1 /ISource /Fobuild_no\zen_filename.obj /Febuild_no\zen_filename_1252.exe Project\GNU\Library\test\Source\filename.cpp build_no\*.obj shell32.lib user32.lib advapi32.lib || exit /b 1
+          cl /nologo /EHsc /O1 %Flags% /DUNICODE /D_UNICODE /ISource /Fobuild_yes\zen_filename.obj /Febuild_yes\zen_filename_1252.exe Project\GNU\Library\test\Source\filename.cpp build_yes\*.obj %Libs% || exit /b 1
+          cl /nologo /EHsc /O1 %Flags% /ISource /Fobuild_no\zen_filename.obj /Febuild_no\zen_filename_1252.exe Project\GNU\Library\test\Source\filename.cpp build_no\*.obj %Libs% || exit /b 1
           for %%u in (yes no) do for %%c in (65001 932) do (
             copy /y build_%%u\zen_filename_1252.exe build_%%u\zen_filename_%%c.exe >nul
             mt -nologo -manifest Project\GNU\Library\test\codepage_%%c.manifest -outputresource:build_%%u\zen_filename_%%c.exe;1 || exit /b 1

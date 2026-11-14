@@ -315,9 +315,9 @@ bool File::Open (const tstring &File_Name_, access_t Access)
                 }
 
                 // Ensure all slashs are converted to backslashs (WinRT file API don't like slashs)
-                File_Name.FindAndReplace(__T("/"), __T("\\"));
+                File_Name.FindAndReplace(__T("/"), __T("\\"), 0, Ztring_Recursive);
 
-                if (FAILED(Get_File(HStringReference(File_Name.c_str(), (unsigned int)File_Name.size()), ((WrtFile*)File_Handle)->File)))
+                if (FAILED(Get_File(WinRT_Name(File_Name).Ref(), ((WrtFile*)File_Handle)->File)))
                 {
                     if (Access==Access_Write || Access==Access_Read_Write || Access==Access_Write_Append)
                     {
@@ -487,7 +487,7 @@ bool File::Create (const Ztring &File_Name_, bool OverWrite)
                     Collision_Option=CreationCollisionOption_ReplaceExisting;
 
                 //Ensure all slashs are converted to backslashs (WinRT file API don't like slashs)
-                File_Name.FindAndReplace(__T("/"), __T("\\"));
+                File_Name.FindAndReplace(__T("/"), __T("\\"), 0, Ztring_Recursive);
 
                 //Split file and folder
                 tstring Destination_Dir=FileName::Path_Get(File_Name);
@@ -495,13 +495,13 @@ bool File::Create (const Ztring &File_Name_, bool OverWrite)
 
                 //Open dst folder
                 ComPtr<IStorageFolder> Folder;
-                if (FAILED(Get_Folder(HStringReference(Destination_Dir.c_str(), (unsigned int)Destination_Dir.size()), Folder)))
+                if (FAILED(Get_Folder(WinRT_Name(Destination_Dir).Ref(), Folder)))
                     return false;
 
                 //Create file
                 ComPtr<IAsyncOperation<StorageFile*> > Async_Create;
                 ComPtr<IStorageFile> File;
-                if (FAILED(Folder->CreateFileAsync(HStringReference(Destination_File.c_str(), (unsigned int)Destination_File.size()).Get(), Collision_Option, &Async_Create)) ||
+                if (FAILED(Folder->CreateFileAsync(WinRT_Name(Destination_File).Ref().Get(), Collision_Option, &Async_Create)) ||
                     FAILED(Await(Async_Create)) ||
                     FAILED(Async_Create->GetResults(&((WrtFile*)File_Handle)->File)) ||
                     !((WrtFile*)File_Handle)->File)
@@ -1404,11 +1404,11 @@ bool File::Exists(const Ztring &File_Name)
             #ifdef WINDOWS_UWP
                 //Ensure all slashs are converted to backslashs (WinRT file API don't like slashs)
                 Ztring File_Name_=File_Name;
-                File_Name_.FindAndReplace(__T("/"), __T("\\"));
+                File_Name_.FindAndReplace(__T("/"), __T("\\"), 0, Ztring_Recursive);
 
                 //Try to access file directly
                 ComPtr<IStorageFile> File;
-                if (SUCCEEDED(Get_File(HStringReference(File_Name_.c_str(), (unsigned int)File_Name_.size()), File)))
+                if (SUCCEEDED(Get_File(WinRT_Name(File_Name_).Ref(), File)))
                     return true;
 
                 //Try directory access methods
@@ -1416,7 +1416,7 @@ bool File::Exists(const Ztring &File_Name)
                 tstring File_=FileName::Name_Get(File_Name_);
 
                 ComPtr<IStorageFolder> Folder;
-                if (FAILED(Get_Folder(HStringReference(Dir_.c_str(), (unsigned int)Dir_.size()), Folder)))
+                if (FAILED(Get_Folder(WinRT_Name(Dir_).Ref(), Folder)))
                     return false;
 
                 //IStorageFolder don't provide TryGetItemAsync
@@ -1427,7 +1427,7 @@ bool File::Exists(const Ztring &File_Name)
                 ComPtr<IAsyncOperation<IStorageItem*> > Async_GetItem;
                 ComPtr<IStorageItem> Item;
                 ComPtr<IStorageFile> AsFile;
-                if (SUCCEEDED(Folder2->TryGetItemAsync(HStringReference(File_.c_str(), (unsigned int)File_.size()).Get(), &Async_GetItem)) &&
+                if (SUCCEEDED(Folder2->TryGetItemAsync(WinRT_Name(File_).Ref().Get(), &Async_GetItem)) &&
                     SUCCEEDED(Await(Async_GetItem)) &&
                     SUCCEEDED(Async_GetItem->GetResults(&Item)) &&
                     Item &&
@@ -1466,10 +1466,10 @@ bool File::Copy(const Ztring &Source, const Ztring &Destination, bool OverWrite)
 
                 //Ensure all slashs are converted to backslashs (WinRT file API don't like slashs)
                 Ztring Source_=Source;
-                Source_.FindAndReplace(__T("/"), __T("\\"));
+                Source_.FindAndReplace(__T("/"), __T("\\"), 0, Ztring_Recursive);
 
                 Ztring Destination_=Destination;
-                Destination_.FindAndReplace(__T("/"), __T("\\"));
+                Destination_.FindAndReplace(__T("/"), __T("\\"), 0, Ztring_Recursive);
 
                 //Split destination file and folder
                 tstring Destination_Dir=FileName::Path_Get(Destination_);
@@ -1477,18 +1477,18 @@ bool File::Copy(const Ztring &Source, const Ztring &Destination, bool OverWrite)
 
                 //Open src file
                 ComPtr<IStorageFile> File;
-                if (FAILED(Get_File(HStringReference(Source_.c_str(), (unsigned int)Source_.size()), File)))
+                if (FAILED(Get_File(WinRT_Name(Source_).Ref(), File)))
                     return false;
 
                 //Open dst folder
                 ComPtr<IStorageFolder> Folder;
-                if (FAILED(Get_Folder(HStringReference(Destination_Dir.c_str(), (unsigned int)Destination_Dir.size()), Folder)))
+                if (FAILED(Get_Folder(WinRT_Name(Destination_Dir).Ref(), Folder)))
                     return false;
 
                 //Copy file
                 ComPtr<IAsyncOperation<StorageFile*> > Async_Copy;
                 ComPtr<IStorageFile> New_File;
-                if (FAILED(File->CopyOverload(*Folder.GetAddressOf(), HStringReference(Destination_File.c_str(), (unsigned int)Destination_File.size()).Get(), Collision_Option, &Async_Copy)) ||
+                if (FAILED(File->CopyOverload(*Folder.GetAddressOf(), WinRT_Name(Destination_File).Ref().Get(), Collision_Option, &Async_Copy)) ||
                     FAILED(Await(Async_Copy)) ||
                     FAILED(Async_Copy->GetResults(&New_File)) ||
                     !New_File)
@@ -1522,10 +1522,10 @@ bool File::Move(const Ztring &Source, const Ztring &Destination, bool OverWrite)
 
                 //Ensure all slashs are converted to backslashs (WinRT file API don't like slashs)
                 Ztring Source_=Source;
-                Source_.FindAndReplace(__T("/"), __T("\\"));
+                Source_.FindAndReplace(__T("/"), __T("\\"), 0, Ztring_Recursive);
 
                 Ztring Destination_=Destination;
-                Destination_.FindAndReplace(__T("/"), __T("\\"));
+                Destination_.FindAndReplace(__T("/"), __T("\\"), 0, Ztring_Recursive);
 
                 //Split destination file and folder
                 tstring Destination_Dir=FileName::Path_Get(Destination_);
@@ -1533,17 +1533,17 @@ bool File::Move(const Ztring &Source, const Ztring &Destination, bool OverWrite)
 
                 //Open src file
                 ComPtr<IStorageFile> File;
-                if (FAILED(Get_File(HStringReference(Source_.c_str(), (unsigned int)Source_.size()), File)))
+                if (FAILED(Get_File(WinRT_Name(Source_).Ref(), File)))
                     return false;
 
                 //Open dst folder
                 ComPtr<IStorageFolder> Folder;
-                if (FAILED(Get_Folder(HStringReference(Destination_Dir.c_str(), (unsigned int)Destination_Dir.size()), Folder)))
+                if (FAILED(Get_Folder(WinRT_Name(Destination_Dir).Ref(), Folder)))
                     return false;
 
                 //Move file
                 ComPtr<IAsyncAction> Async_Move;
-                if (FAILED(File->MoveOverload(*Folder.GetAddressOf(), HStringReference(Destination_File.c_str(), (unsigned int)Destination_File.size()).Get(), Collision_Option, &Async_Move)) ||
+                if (FAILED(File->MoveOverload(*Folder.GetAddressOf(), WinRT_Name(Destination_File).Ref().Get(), Collision_Option, &Async_Move)) ||
                     FAILED(Await(Async_Move)) ||
                     FAILED(Async_Move->GetResults()))
                     return false;
@@ -1568,10 +1568,10 @@ bool File::Delete(const Ztring &File_Name)
             #ifdef WINDOWS_UWP
                 //Ensure all slashs are converted to backslashs (WinRT file API don't like slashs)
                 Ztring File_Name_=File_Name;
-                File_Name_.FindAndReplace(__T("/"), __T("\\"));
+                File_Name_.FindAndReplace(__T("/"), __T("\\"), 0, Ztring_Recursive);
 
                 ComPtr<IStorageFile> File_;
-                if (FAILED(Get_File(HStringReference(File_Name_.c_str(), (unsigned int)File_Name_.size()), File_)))
+                if (FAILED(Get_File(WinRT_Name(File_Name_).Ref(), File_)))
                     return false;
 
                 ComPtr<IStorageItem> Item;
