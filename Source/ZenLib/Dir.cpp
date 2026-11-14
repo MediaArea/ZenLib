@@ -244,7 +244,7 @@ ZtringList Dir::GetAllFileNames(const Ztring &Dir_Name_, dirlist_t Options)
                 Dir_Name.FindAndReplace(__T("/"), __T("\\"));
 
                 ComPtr<IStorageFolder> Folder;
-                if (FAILED(Get_Folder(HStringReference(Dir_Name.c_str(), (unsigned int)Dir_Name.size()), Folder)))
+                if (FAILED(Get_Folder(WinRT_Name(Dir_Name).Ref(), Folder)))
                     return ToReturn;
 
                 ComPtr<IAsyncOperation<IVectorView<IStorageItem*>* > > Async_GetItems;
@@ -269,7 +269,7 @@ ZtringList Dir::GetAllFileNames(const Ztring &Dir_Name_, dirlist_t Options)
                     if (FAILED(Item->get_Name(File_Name_HString.GetAddressOf())))
                         continue;
 
-                    Ztring File_Name(WindowsGetStringRawBuffer(File_Name_HString.Get(), NULL));
+                    Ztring File_Name=Ztring().From_Unicode(WindowsGetStringRawBuffer(File_Name_HString.Get(), NULL));
 
                     if (File_Name.empty() || (!(Options&Include_Hidden) && File_Name[0]==__T('.')))
                         continue;
@@ -283,12 +283,12 @@ ZtringList Dir::GetAllFileNames(const Ztring &Dir_Name_, dirlist_t Options)
 
                     if ((Options&Include_Files) && IsFile && ((Options&Include_Hidden) || File_Name[0] != __T('.')))
                     {
-                        Add_Item_To_FUA(HStringReference(File_Name_Complete.c_str(), (unsigned int)File_Name_Complete.length()), Item);
+                        Add_Item_To_FUA(WinRT_Name(File_Name_Complete).Ref(), Item);
                         ToReturn.push_back(File_Name_Complete);
                     }
                     else if ((Options&Include_Dirs) && IsFolder)
                     {
-                        Add_Item_To_FUA(HStringReference(File_Name_Complete.c_str(), (unsigned int)File_Name_Complete.length()), Item);
+                        Add_Item_To_FUA(WinRT_Name(File_Name_Complete).Ref(), Item);
                         ToReturn.push_back(File_Name_Complete);
                     }
 
@@ -465,7 +465,7 @@ bool Dir::Exists(const Ztring &File_Name)
 
                 //Try to access folder directly
                 ComPtr<IStorageFolder> Folder;
-                if (SUCCEEDED(Get_Folder(HStringReference(File_Name_.c_str(), (unsigned int)File_Name_.size()), Folder)))
+                if (SUCCEEDED(Get_Folder(WinRT_Name(File_Name_).Ref(), Folder)))
                     return true;
 
                 //Try directory access methods
@@ -473,7 +473,7 @@ bool Dir::Exists(const Ztring &File_Name)
                 tstring Dir=FileName::Name_Get(File_Name_);
 
                 ComPtr<IStorageFolder> Parent_Folder;
-                if (FAILED(Get_Folder(HStringReference(Parent.c_str(), (unsigned int)Parent.size()), Parent_Folder)))
+                if (FAILED(Get_Folder(WinRT_Name(Parent).Ref(), Parent_Folder)))
                     return false;
 
                 //IStorageFolder don't provide TryGetItemAsync
@@ -484,7 +484,7 @@ bool Dir::Exists(const Ztring &File_Name)
                 ComPtr<IAsyncOperation<IStorageItem*> > Async_GetItem;
                 ComPtr<IStorageItem> Item;
                 ComPtr<IStorageFolder> Child;
-                if (SUCCEEDED(Parent_Folder2->TryGetItemAsync(HStringReference(Dir.c_str(), (unsigned int)Dir.size()).Get(), &Async_GetItem)) &&
+                if (SUCCEEDED(Parent_Folder2->TryGetItemAsync(WinRT_Name(Dir).Ref().Get(), &Async_GetItem)) &&
                     SUCCEEDED(Await(Async_GetItem)) &&
                     SUCCEEDED(Async_GetItem->GetResults(&Item)) &&
                     Item &&
@@ -538,13 +538,13 @@ bool Dir::Create(const Ztring &File_Name)
 
                 //Open parent folder
                 ComPtr<IStorageFolder> Folder;
-                if (FAILED(Get_Folder(HStringReference(Parent.c_str(), (unsigned int)Parent.size()), Folder)))
+                if (FAILED(Get_Folder(WinRT_Name(Parent).Ref(), Folder)))
                     return false;
 
                 //Create folder
                 ComPtr<IAsyncOperation<StorageFolder*> > Async_Create;
                 ComPtr<IStorageFolder> New;
-                if (FAILED(Folder->CreateFolderAsync(HStringReference(Dir.c_str(), (unsigned int)Dir.size()).Get(), Collision_Option, &Async_Create)) ||
+                if (FAILED(Folder->CreateFolderAsync(WinRT_Name(Dir).Ref().Get(), Collision_Option, &Async_Create)) ||
                     FAILED(Await(Async_Create)) ||
                     FAILED(Async_Create->GetResults(&New)) ||
                     !New)

@@ -92,6 +92,19 @@ inline HRESULT Await(const Microsoft::WRL::ComPtr<T> &Operation)
     return Result;
 }
 
+// Name for the WinRT functions, e.g. Get_File(WinRT_Name(File_Name).Ref(), File): in wide characters, also without Unicode (the UTF-8
+// text converted, see Ztring::To_Unicode()). The reference given by Ref() is valid while this object exists, e.g. until the end of the
+// expression which creates it
+class WinRT_Name
+{
+public:
+    explicit WinRT_Name(const Ztring &Name) : Wide(Name.To_Unicode()) {}
+    Microsoft::WRL::Wrappers::HStringReference Ref() const {return Microsoft::WRL::Wrappers::HStringReference(Wide.c_str(), (unsigned int)Wide.size());}
+
+private:
+    const std::wstring Wide;
+};
+
 HRESULT Add_Item_To_FUA(Microsoft::WRL::Wrappers::HStringReference Path, Microsoft::WRL::ComPtr<ABI::Windows::Storage::IStorageItem> &Item);
 HRESULT Get_File(Microsoft::WRL::Wrappers::HStringReference File_Name,  Microsoft::WRL::ComPtr<ABI::Windows::Storage::IStorageFile> &File);
 HRESULT Get_Folder(Microsoft::WRL::Wrappers::HStringReference Folder_Name,  Microsoft::WRL::ComPtr<ABI::Windows::Storage::IStorageFolder> &Folder);
