@@ -241,7 +241,7 @@ ZtringList Dir::GetAllFileNames(const Ztring &Dir_Name_, dirlist_t Options)
         #ifdef WINDOWS
             #ifdef WINDOWS_UWP
                 //Ensure all slashs are converted to backslashs (WinRT file API don't like slashs)
-                Dir_Name.FindAndReplace(__T("/"), __T("\\"));
+                Dir_Name.FindAndReplace(__T("/"), __T("\\"), 0, Ztring_Recursive);
 
                 ComPtr<IStorageFolder> Folder;
                 if (FAILED(Get_Folder(WinRT_Name(Dir_Name).Ref(), Folder)))
@@ -461,7 +461,7 @@ bool Dir::Exists(const Ztring &File_Name)
            #ifdef WINDOWS_UWP
                 //Ensure all slashs are converted to backslashs (WinRT file API don't like slashs)
                 Ztring File_Name_=File_Name;
-                File_Name_.FindAndReplace(__T("/"), __T("\\"));
+                File_Name_.FindAndReplace(__T("/"), __T("\\"), 0, Ztring_Recursive);
 
                 //Try to access folder directly
                 ComPtr<IStorageFolder> Folder;
@@ -528,7 +528,7 @@ bool Dir::Create(const Ztring &File_Name)
                 CreationCollisionOption Collision_Option=CreationCollisionOption_FailIfExists;
 
                 //Ensure all slashs are converted to backslashs (WinRT file API don't like slashs)
-                Parent.FindAndReplace(__T("/"), __T("\\"));
+                Parent.FindAndReplace(__T("/"), __T("\\"), 0, Ztring_Recursive);
 
                 //Split folder and parent
                 Ztring Dir=FileName::Name_Get(File_Name);

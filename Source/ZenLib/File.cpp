@@ -315,7 +315,7 @@ bool File::Open (const tstring &File_Name_, access_t Access)
                 }
 
                 // Ensure all slashs are converted to backslashs (WinRT file API don't like slashs)
-                File_Name.FindAndReplace(__T("/"), __T("\\"));
+                File_Name.FindAndReplace(__T("/"), __T("\\"), 0, Ztring_Recursive);
 
                 if (FAILED(Get_File(WinRT_Name(File_Name).Ref(), ((WrtFile*)File_Handle)->File)))
                 {
@@ -487,7 +487,7 @@ bool File::Create (const Ztring &File_Name_, bool OverWrite)
                     Collision_Option=CreationCollisionOption_ReplaceExisting;
 
                 //Ensure all slashs are converted to backslashs (WinRT file API don't like slashs)
-                File_Name.FindAndReplace(__T("/"), __T("\\"));
+                File_Name.FindAndReplace(__T("/"), __T("\\"), 0, Ztring_Recursive);
 
                 //Split file and folder
                 tstring Destination_Dir=FileName::Path_Get(File_Name);
@@ -1404,7 +1404,7 @@ bool File::Exists(const Ztring &File_Name)
             #ifdef WINDOWS_UWP
                 //Ensure all slashs are converted to backslashs (WinRT file API don't like slashs)
                 Ztring File_Name_=File_Name;
-                File_Name_.FindAndReplace(__T("/"), __T("\\"));
+                File_Name_.FindAndReplace(__T("/"), __T("\\"), 0, Ztring_Recursive);
 
                 //Try to access file directly
                 ComPtr<IStorageFile> File;
@@ -1466,10 +1466,10 @@ bool File::Copy(const Ztring &Source, const Ztring &Destination, bool OverWrite)
 
                 //Ensure all slashs are converted to backslashs (WinRT file API don't like slashs)
                 Ztring Source_=Source;
-                Source_.FindAndReplace(__T("/"), __T("\\"));
+                Source_.FindAndReplace(__T("/"), __T("\\"), 0, Ztring_Recursive);
 
                 Ztring Destination_=Destination;
-                Destination_.FindAndReplace(__T("/"), __T("\\"));
+                Destination_.FindAndReplace(__T("/"), __T("\\"), 0, Ztring_Recursive);
 
                 //Split destination file and folder
                 tstring Destination_Dir=FileName::Path_Get(Destination_);
@@ -1522,10 +1522,10 @@ bool File::Move(const Ztring &Source, const Ztring &Destination, bool OverWrite)
 
                 //Ensure all slashs are converted to backslashs (WinRT file API don't like slashs)
                 Ztring Source_=Source;
-                Source_.FindAndReplace(__T("/"), __T("\\"));
+                Source_.FindAndReplace(__T("/"), __T("\\"), 0, Ztring_Recursive);
 
                 Ztring Destination_=Destination;
-                Destination_.FindAndReplace(__T("/"), __T("\\"));
+                Destination_.FindAndReplace(__T("/"), __T("\\"), 0, Ztring_Recursive);
 
                 //Split destination file and folder
                 tstring Destination_Dir=FileName::Path_Get(Destination_);
@@ -1568,7 +1568,7 @@ bool File::Delete(const Ztring &File_Name)
             #ifdef WINDOWS_UWP
                 //Ensure all slashs are converted to backslashs (WinRT file API don't like slashs)
                 Ztring File_Name_=File_Name;
-                File_Name_.FindAndReplace(__T("/"), __T("\\"));
+                File_Name_.FindAndReplace(__T("/"), __T("\\"), 0, Ztring_Recursive);
 
                 ComPtr<IStorageFile> File_;
                 if (FAILED(Get_File(WinRT_Name(File_Name_).Ref(), File_)))
