@@ -187,6 +187,16 @@ jobs:
           cl /nologo /c /MP /EHsc /O1 %Flags% /DUNICODE /D_UNICODE /ISource /Fobuild_yes\ Source\ZenLib\*.cpp || exit /b 1
           cl /nologo /c /MP /EHsc /O1 %Flags% /ISource /Fobuild_no\ Source\ZenLib\*.cpp || exit /b 1
           del build_yes\HTTP_Client.obj build_no\HTTP_Client.obj
+          rem Test program for the long paths (FileName_To_Wide() is not in UWP builds), without and with longPathAware in its manifest (object
+          rem files out of the directories of the library)
+          if not "${{ matrix.uwp }}"=="true" (
+            cl /nologo /EHsc /O1 /DUNICODE /D_UNICODE /ISource /Fozen_longpath_yes.obj /Febuild_yes\zen_longpath.exe Project\GNU\Library\test\Source\longpath.cpp build_yes\*.obj %Libs% || exit /b 1
+            cl /nologo /EHsc /O1 /ISource /Fozen_longpath_no.obj /Febuild_no\zen_longpath.exe Project\GNU\Library\test\Source\longpath.cpp build_no\*.obj %Libs% || exit /b 1
+            for %%u in (yes no) do (
+              copy /y build_%%u\zen_longpath.exe build_%%u\zen_longpath_aware.exe >nul
+              mt -nologo -manifest Project\GNU\Library\test\longpathaware.manifest -outputresource:build_%%u\zen_longpath_aware.exe;1 || exit /b 1
+            )
+          )
           cl /nologo /EHsc /O1 %Flags% /DUNICODE /D_UNICODE /ISource /Fobuild_yes\zen_filename.obj /Febuild_yes\zen_filename_1252.exe Project\GNU\Library\test\Source\filename.cpp build_yes\*.obj %Libs% || exit /b 1
           cl /nologo /EHsc /O1 %Flags% /ISource /Fobuild_no\zen_filename.obj /Febuild_no\zen_filename_1252.exe Project\GNU\Library\test\Source\filename.cpp build_no\*.obj %Libs% || exit /b 1
           for %%u in (yes no) do for %%c in (65001 932) do (
@@ -211,6 +221,29 @@ jobs:
               echo "::group::Unicode ${Unicode}, code page ${CodePage}"
               bash test/filename.sh 9>&1 || Status=1
               echo "::endgroup::"
+            done
+          done
+          exit ${Status}
+      - name: Check long paths
+        if: matrix.vcvarsall && !matrix.uwp
+        working-directory: ZenLib/Project/GNU/Library
+        run: |
+          # Names longer than MAX_PATH with the support of long paths by the system (read at the start of each process) and the program, or
+          # without it (then the extended-length prefix)
+          Status=0
+          for LongPathsEnabled in 0 1 ; do
+            MSYS_NO_PATHCONV=1 reg add 'HKLM\SYSTEM\CurrentControlSet\Control\FileSystem' /v LongPathsEnabled /t REG_DWORD /d ${LongPathsEnabled} /f >/dev/null || exit 1
+            for Unicode in yes no ; do
+              for Aware in no yes ; do
+                cp ../../../build_${Unicode}/zen_longpath$([ "${Aware}" == "yes" ] && echo _aware).exe test/zen_longpath.exe
+                Expected=disabled
+                if [ "${LongPathsEnabled}" == "1" ] && [ "${Aware}" == "yes" ] ; then
+                  Expected=enabled
+                fi
+                echo "::group::LongPathsEnabled ${LongPathsEnabled}, Unicode ${Unicode}, longPathAware ${Aware}"
+                LONGPATHS_EXPECTED=${Expected} bash test/longpath.sh 9>&1 || Status=1
+                echo "::endgroup::"
+              done
             done
           done
           exit ${Status}
