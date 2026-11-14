@@ -66,16 +66,18 @@ namespace ZenLib
     #else //UNICODE
         static inline std::wstring FileName_To_Wide(const Ztring &File_Name) {return File_Name.To_Unicode();}
         static inline Ztring FileName_From_Wide(const wchar_t* File_Name) {return Ztring().From_Unicode(File_Name);}
-        ZENLIB_INTERNAL bool IsCodePageBytes(const char* S, size_t Size); //In Ztring.cpp
     #endif //UNICODE
+#endif
+#if defined(WINDOWS) && !defined(UNICODE) && !defined(ZENLIB_USEWX)
+    ZENLIB_INTERNAL bool IsCodePageBytes(const char* S, size_t Size); //In Ztring.cpp
 #endif
 
 //---------------------------------------------------------------------------
-// Pattern of the content of a directory, "\" and "/" are path separators on Windows
+// Directory name with a path separator at the end, "\" and "/" are path separators on Windows
 // Without Unicode, in the bytes of the code page given as they are (see Ztring::To_Unicode()), the second byte of a character of a multibyte
 // code page (e.g. "\" in cp932) is not a separator, UTF-8 text has no such byte
-#if defined(WINDOWS) && !defined(WINDOWS_UWP)
-static Ztring Dir_Pattern(const Ztring &Dir_Name)
+#if defined(WINDOWS)
+static bool Dir_EndsWithSeparator(const Ztring &Dir_Name)
 {
     #if !defined(UNICODE)
         #if !defined(ZENLIB_USEWX)
@@ -93,7 +95,16 @@ static Ztring Dir_Pattern(const Ztring &Dir_Name)
                 Pos++; //Second byte
         #endif
     }
-    return Dir_Name+(EndsWithSeparator?__T("*"):__T("\\*"));
+    return EndsWithSeparator;
+}
+#endif
+
+//---------------------------------------------------------------------------
+// Pattern of the content of a directory
+#if defined(WINDOWS) && !defined(WINDOWS_UWP)
+static Ztring Dir_Pattern(const Ztring &Dir_Name)
+{
+    return Dir_Name+(Dir_EndsWithSeparator(Dir_Name)?__T("*"):__T("\\*"));
 }
 #endif
 
@@ -259,6 +270,10 @@ ZtringList Dir::GetAllFileNames(const Ztring &Dir_Name_, dirlist_t Options)
                 if (FAILED(Items->get_Size(&Size)))
                     return ToReturn;
 
+                Ztring Dir_Name_Separator=Dir_Name; //One separator before the names, also for a name given with one at the end
+                if (!Dir_EndsWithSeparator(Dir_Name_Separator))
+                    Dir_Name_Separator+=__T('\\');
+
                 for (unsigned int Pos=0; Pos<Size; ++Pos)
                 {
                     ComPtr<IStorageItem> Item;
@@ -274,7 +289,7 @@ ZtringList Dir::GetAllFileNames(const Ztring &Dir_Name_, dirlist_t Options)
                     if (File_Name.empty() || (!(Options&Include_Hidden) && File_Name[0]==__T('.')))
                         continue;
 
-                    tstring File_Name_Complete = Dir_Name + __T("\\") + File_Name;
+                    tstring File_Name_Complete = Dir_Name_Separator + File_Name;
 
                     boolean IsFile = FALSE;
                     boolean IsFolder = FALSE;
