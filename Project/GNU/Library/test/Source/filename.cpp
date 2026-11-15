@@ -33,6 +33,9 @@
 #if defined(_WIN32)
     #include <direct.h>
     #include <windows.h>
+    #if defined(WINDOWS_UWP)
+        #include <roapi.h>
+    #endif
 #else
     #include <langinfo.h>
     #include <locale.h>
@@ -347,7 +350,9 @@ static Ztring Typed(const std::string& Path)
 // Windows) given as they are, as MediaInfoLib gets it
 static Ztring Existing_Name(const Ztring& Path)
 {
-    #if defined(_WIN32)
+    #if defined(WINDOWS_UWP)
+        return Ztring().From_Unicode(Path.To_Unicode()); // The name File and Dir give to WinRT (see WinRT_Name)
+    #elif defined(_WIN32)
         return Ztring().From_Unicode(FileName_To_Wide_Existing(Path));
     #else
         return FileName_From_Native(FileName_To_Native(Path).c_str());
@@ -381,6 +386,9 @@ int main(int argc, char* argv[])
         return 2;
     }
     setvbuf(stdout, NULL, _IONBF, 0); // Lines already written if the program is stopped, e.g. endless directory listing
+    #if defined(WINDOWS_UWP)
+        RoInitialize(RO_INIT_MULTITHREADED); // WinRT for File and Dir, as an application does it (the program is run without package)
+    #endif
     bool SetLocale=!strcmp(argv[1], "1");
     if (SetLocale)
         setlocale(LC_ALL, "");
@@ -654,7 +662,9 @@ int main(int argc, char* argv[])
     // Without Unicode, bytes of the encoding of the locale (the code page on Windows) given as they are which are also valid UTF-8, so read as
     // UTF-8: the existing name is used, the name in this encoding if only it exists, e.g. the bytes C3 A9 are U+00C3 U+00A9 in Windows-1252 and
     // Latin-1 and U+00E9 in UTF-8, also ideographs of GBK and GB18030, UHC, Big5, EUC-JP, and cp932 (with a half-width katakana)
-    #if !defined(UNICODE) && defined(HAVE_ENCODE_REFERENCE)
+    // Not with UWP: the names are given to WinRT read as UTF-8, the files of an application are not all visible to the functions which would
+    // check which name exists (e.g. a file from a picker)
+    #if !defined(UNICODE) && defined(HAVE_ENCODE_REFERENCE) && !defined(WINDOWS_UWP)
     {
         static const wchar_t* const Candidates[]=
         {
