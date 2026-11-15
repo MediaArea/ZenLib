@@ -98,6 +98,9 @@ namespace ZenLib
         static inline Ztring FileName_From_Wide(const wchar_t* File_Name) {return Ztring().From_Unicode(File_Name);}
     #endif //UNICODE
 #endif
+#if defined(WINDOWS_UWP)
+    ZENLIB_INTERNAL Ztring FileName_Item_Get(const Ztring &File_Name); //In FileName.cpp
+#endif
 
 //---------------------------------------------------------------------------
 // Debug
@@ -491,7 +494,7 @@ bool File::Create (const Ztring &File_Name_, bool OverWrite)
 
                 //Split file and folder
                 tstring Destination_Dir=FileName::Path_Get(File_Name);
-                tstring Destination_File=FileName::Name_Get(File_Name);
+                tstring Destination_File=FileName_Item_Get(File_Name);
 
                 //Open dst folder
                 ComPtr<IStorageFolder> Folder;
@@ -1413,7 +1416,7 @@ bool File::Exists(const Ztring &File_Name)
 
                 //Try directory access methods
                 tstring Dir_=FileName::Path_Get(File_Name_);
-                tstring File_=FileName::Name_Get(File_Name_);
+                tstring File_=FileName_Item_Get(File_Name_);
 
                 ComPtr<IStorageFolder> Folder;
                 if (FAILED(Get_Folder(WinRT_Name(Dir_).Ref(), Folder)))
@@ -1473,7 +1476,7 @@ bool File::Copy(const Ztring &Source, const Ztring &Destination, bool OverWrite)
 
                 //Split destination file and folder
                 tstring Destination_Dir=FileName::Path_Get(Destination_);
-                tstring Destination_File=FileName::Name_Get(Destination_);
+                tstring Destination_File=FileName_Item_Get(Destination_);
 
                 //Open src file
                 ComPtr<IStorageFile> File;
@@ -1529,7 +1532,7 @@ bool File::Move(const Ztring &Source, const Ztring &Destination, bool OverWrite)
 
                 //Split destination file and folder
                 tstring Destination_Dir=FileName::Path_Get(Destination_);
-                tstring Destination_File=FileName::Name_Get(Destination_);
+                tstring Destination_File=FileName_Item_Get(Destination_);
 
                 //Open src file
                 ComPtr<IStorageFile> File;

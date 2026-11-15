@@ -74,6 +74,20 @@ static size_t PathSeparator_RFind(const Ztring &Name)
     #endif
 }
 
+//---------------------------------------------------------------------------
+// Last item of a path, the whole name of the file or directory (Name_Get() gives it without the extension), for the WinRT functions which
+// take the folder of the item (Path_Get()) and its name
+#if defined(WINDOWS_UWP)
+ZENLIB_INTERNAL Ztring FileName_Item_Get(const Ztring &File_Name)
+{
+    size_t Pos_Path=PathSeparator_RFind(File_Name);
+    if (Pos_Path==Ztring::npos)
+        return File_Name; //Not found
+    else
+        return Ztring(File_Name, Pos_Path+1);
+}
+#endif
+
 //***************************************************************************
 // Read/Write
 //***************************************************************************
