@@ -30,6 +30,14 @@
         #include <sys/stat.h>
         #if !defined(WINDOWS)
             #include <unistd.h>
+            #include <fcntl.h>
+            #include <cerrno>
+            #ifndef O_DIRECTORY
+                #define O_DIRECTORY 0
+            #endif
+            #ifndef O_CLOEXEC
+                #define O_CLOEXEC 0
+            #endif
             #if defined(LINUX)
                 #include <features.h>
                 #if defined(__GLIBC__) && defined(__GLIBC_PREREQ)
@@ -67,7 +75,12 @@
             using namespace ABI::Windows::Storage;
             using namespace ABI::Windows::Storage::Streams;
             using namespace ABI::Windows::Storage::FileProperties;
-        #endif
+        #else //WINDOWS_UWP
+            #include <map>
+            #ifndef FIND_FIRST_EX_LARGE_FETCH
+                #define FIND_FIRST_EX_LARGE_FETCH 0x00000002
+            #endif
+        #endif //WINDOWS_UWP
     #endif
 #endif //ZENLIB_USEWX
 #include "ZenLib/OS_Utils.h"
@@ -1363,6 +1376,133 @@ int64u File::Size_Get(const Ztring &File_Name)
 {
     File F(File_Name);
     return F.Size_Get();
+}
+
+//---------------------------------------------------------------------------
+#if !defined(ZENLIB_USEWX) && !defined(ZENLIB_STANDARD) && defined(WINDOWS) && !defined(WINDOWS_UWP)
+//File names compared as the file system does, without case
+struct File_Name_Less
+{
+    bool operator()(const std::wstring& A, const std::wstring& B) const
+    {
+        return CompareStringOrdinal(A.c_str(), (int)A.size(), B.c_str(), (int)B.size(), TRUE)==CSTR_LESS_THAN;
+    }
+};
+#endif
+
+//---------------------------------------------------------------------------
+std::vector<int64u> File::Sizes_Get(const std::vector<Ztring> &File_Names)
+{
+    std::vector<int64u> Sizes;
+    if (File_Names.empty())
+        return Sizes;
+    Sizes.reserve(File_Names.size());
+
+    #if !defined(ZENLIB_USEWX) && !defined(ZENLIB_STANDARD) && defined(WINDOWS) && !defined(WINDOWS_UWP)
+        //Sizes from one listing of the directory, much quicker than opening each file (metadata of each file read from the disk or network)
+        std::vector<std::wstring> Names;
+        Names.reserve(File_Names.size());
+        for (size_t Pos=0; Pos<File_Names.size(); Pos++)
+            Names.push_back(FileName_To_Wide(File_Names[Pos]));
+        const std::wstring& First=Names[0];
+        size_t Name_Pos=First.find_last_of(L"\\/");
+        Name_Pos=(Name_Pos==std::wstring::npos)?0:(Name_Pos+1);
+
+        //Names in the listing as Windows opens them, without trailing dots and spaces (e.g. "frame0002." for files without extension) except
+        //with the \\?\ prefix; names maybe not in the listing (another directory, stream name, drive-relative "C:name", short 8.3 name) use Size_Get()
+        bool Name_Trim=First.compare(0, 4, L"\\\\?\\")!=0;
+        std::vector<std::wstring> Names_Listed(Names.size()); //Empty if not in the listing
+        const std::wstring* Name_Begin=NULL; //Common beginning of the names (numbers may have no leading zeroes), only files beginning with it are listed
+        size_t Name_Begin_Size=0;
+        for (size_t Pos=0; Pos<Names.size(); Pos++)
+        {
+            const std::wstring& Name=Names[Pos];
+            if (Name.size()<=Name_Pos || Name.compare(0, Name_Pos, First, 0, Name_Pos) || Name.find_first_of(L"\\/:~", Name_Pos)!=std::wstring::npos)
+                continue;
+            std::wstring& Name_Listed=Names_Listed[Pos];
+            Name_Listed=Name.substr(Name_Pos);
+            if (Name_Trim)
+            {
+                size_t Name_Listed_Last=Name_Listed.find_last_not_of(L". ");
+                Name_Listed.erase(Name_Listed_Last==std::wstring::npos?0:(Name_Listed_Last+1));
+            }
+            if (Name_Listed.empty())
+                continue;
+            if (!Name_Begin)
+            {
+                Name_Begin=&Name_Listed;
+                Name_Begin_Size=Name_Listed.size();
+            }
+            else
+            {
+                size_t Size=0;
+                while (Size<Name_Begin_Size && Size<Name_Listed.size() && (*Name_Begin)[Size]==Name_Listed[Size])
+                    Size++;
+                Name_Begin_Size=Size;
+            }
+        }
+        #ifndef UNICODE
+            if (Name_Begin && FileName_To_Wide_Existing(File_Names[0])!=First)
+                Name_Begin=NULL; //Name in the code page, not as UTF-8 text
+        #endif //UNICODE
+        if (Name_Begin)
+        {
+            WIN32_FIND_DATAW FindFileData;
+            HANDLE hFind=FindFirstFileExW((First.substr(0, Name_Pos)+Name_Begin->substr(0, Name_Begin_Size)+L'*').c_str(), FindExInfoBasic, &FindFileData, FindExSearchNameMatch, NULL, FIND_FIRST_EX_LARGE_FETCH);
+            if (hFind!=INVALID_HANDLE_VALUE)
+            {
+                std::map<std::wstring, int64u, File_Name_Less> Listed;
+                do
+                {
+                    size_t Listed_Size=wcslen(FindFileData.cFileName);
+                    if (Listed_Size>=Name_Begin_Size && CompareStringOrdinal(FindFileData.cFileName, (int)Name_Begin_Size, Name_Begin->c_str(), (int)Name_Begin_Size, TRUE)==CSTR_EQUAL) //The pattern may also match short (8.3) names
+                        Listed.insert(std::make_pair(std::wstring(FindFileData.cFileName, Listed_Size), (((int64u)FindFileData.nFileSizeHigh)<<32)|FindFileData.nFileSizeLow));
+                }
+                while (FindNextFileW(hFind, &FindFileData));
+                FindClose(hFind);
+
+                for (size_t Pos=0; Pos<Names.size(); Pos++)
+                {
+                    if (Names_Listed[Pos].empty())
+                    {
+                        Sizes.push_back(Size_Get(File_Names[Pos]));
+                        continue;
+                    }
+                    std::map<std::wstring, int64u, File_Name_Less>::iterator Item=Listed.find(Names_Listed[Pos]);
+                    Sizes.push_back(Item==Listed.end()?0:Item->second);
+                }
+                return Sizes;
+            }
+        }
+    #elif !defined(ZENLIB_USEWX) && defined(ZENLIB_STANDARD) && !defined(WINDOWS)
+        //Status of each file from its name relative to the directory opened once, quicker than from the full path (parsed again for each file)
+        std::string First=FileName_To_Native(File_Names[0]);
+        size_t Name_Pos=First.rfind('/');
+        Name_Pos=(Name_Pos==std::string::npos)?0:(Name_Pos+1);
+        int Directory=open(Name_Pos?First.substr(0, Name_Pos).c_str():".", O_RDONLY|O_DIRECTORY|O_CLOEXEC);
+        for (size_t Pos=0; Pos<File_Names.size(); Pos++)
+        {
+            std::string Name=Pos?FileName_To_Native(File_Names[Pos]):First;
+            struct stat Stat;
+            int Result;
+            if (Directory!=-1 && Name.size()>Name_Pos && Name[Name_Pos]!='/' && !Name.compare(0, Name_Pos, First, 0, Name_Pos))
+                Result=fstatat(Directory, Name.c_str()+Name_Pos, &Stat, 0);
+            else
+                Result=stat(Name.c_str(), &Stat);
+            if (Result && errno==EOVERFLOW)
+                Sizes.push_back(Size_Get(File_Names[Pos])); //Status not representable (e.g. 32-bit time or size), size from the file
+            else
+                Sizes.push_back((!Result && S_ISREG(Stat.st_mode))?((int64u)Stat.st_size):0);
+        }
+        if (Directory!=-1)
+            close(Directory);
+        return Sizes;
+    #endif
+
+    //Size from each file
+    for (size_t Pos=0; Pos<File_Names.size(); Pos++)
+        Sizes.push_back(Size_Get(File_Names[Pos]));
+    return Sizes;
 }
 
 //---------------------------------------------------------------------------

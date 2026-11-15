@@ -17,6 +17,7 @@
 
 //---------------------------------------------------------------------------
 #include "ZenLib/Ztring.h"
+#include <vector>
 
 //---------------------------------------------------------------------------
 
@@ -80,6 +81,7 @@ public :
 
     //Helpers
     static int64u   Size_Get(const Ztring &File_Name);
+    static std::vector<int64u> Sizes_Get(const std::vector<Ztring> &File_Names); ///< Sizes of files in a directory (e.g. a sequence of files), quicker than Size_Get() for each file: from a directory listing on Windows, from the status of each file relative to the directory elsewhere; 0 for a file not found
     static Ztring   Created_Get(const Ztring &File_Name);
     static Ztring   Modified_Get(const Ztring &File_Name);
     static bool     Exists(const Ztring &File_Name);
