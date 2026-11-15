@@ -31,6 +31,8 @@ namespace ZenLib
 {
 
 class BitStream_Fast_Local;
+class BitStream_Fast_EmulationPrevention_Local;
+class BitStream_Fast_Mixed_Local;
 
 #ifndef MIN
     #define MIN(a, b)  (((a) < (b)) ? (a) : (b))
@@ -71,9 +73,9 @@ class BitStream_Fast_Local;
 // A reload at byte Position/8 gives at least WordBits-7 usable bits, or all
 // the remaining bits when the word is moved back to end at the last readable
 // byte. While Buffer_Size is 0, every read fails the usability check.
-// Get8(), Get8_Unchecked() and Peek8() parts not in Window, and peeks wider
-// than a fresh Window (32-bit words), use their own word load at the position,
-// Window unchanged.
+// In the normal mode, Get8(), Get8_Unchecked() and Peek8() parts not in Window,
+// and peeks wider than a fresh Window (32-bit words), use their own word load
+// at the position, Window unchanged.
 //
 // Underrun: Remain() becomes 0 and the logical end moves to the position,
 // which is preserved for a growing Resize(); BufferUnderRun() thus implies
@@ -82,15 +84,122 @@ class BitStream_Fast_Local;
 // Memory safety: loads never go before Buffer or beyond the logical end plus
 // the declared ExtraBytesAvailable_ reserve, the reserve keeping its Attach()
 // time end. Near the end, the word is loaded so that it ends at the last
-// readable byte. If fewer bytes than a word are
-// readable (logical size plus reserve), they are copied entirely into Window,
-// zero padded, and never need another load: WindowEnd is then 0 and Reload()
-// is never called.
+// readable byte. In the normal mode, if fewer bytes than a word are readable
+// (logical size plus reserve), they are copied entirely into Window, zero
+// padded, and never need another load: WindowEnd is then 0 and Reload() is
+// never called.
 //
-class BitStream_Fast
+// Emulation prevention (H.264, H.265 and H.266 NAL units): the reads skip each
+// emulation_prevention_three_byte (0x03 after two 0x00 in the attached bytes),
+// without scanning nor copying the buffer first. Three readers from the same code:
+// BitStream_Fast (normal reads only, without the code nor the state of this mode),
+// BitStream_Fast_EmulationPrevention (always in this mode) and BitStream_Fast_Mixed
+// (Attach() for the normal mode, Attach_EmulationPrevention() for this mode).
+// A load ends the usable bits of Window before the next such byte, the next load
+// moves the position after it, and a load first counts the ones a Skip() went
+// over. Remain() and Offset_Get() count the attached bytes, these bytes included:
+// Remain() is the count of readable bits plus 8 per such byte not passed yet, so
+// Skip(Remain()) goes to the end. Skip() checks its count against Remain() and the
+// bytes it goes over are counted at the next load: until then, Offset_Get() is one
+// byte low per such byte, and a Skip() beyond the readable bits (not up to the end)
+// underruns at the next read or Sync(); Sync() counts them at once and passes the
+// one at the position, so that Offset_Get() is exact. Remain_Exact() gives the
+// count of readable bits, from a scan of the rest of the buffer. A peek does not
+// change Remain(). An attach in the middle of a unit gives the count of 0x00 bytes
+// right before it, for such a byte at the first two offsets. With fewer bytes
+// than a word readable, the usable bits of Window may end before such a byte, so
+// that Window is loaded again; the parts of Get8() not in Window load it too.
+// The code of this mode is in the slow paths, called through
+// BitStream_Fast_EmulationPrevention_Calls.
+//
+
+// Reader kind, see the class comment
+enum bitstream_fast_emulationprevention
+{
+    BitStream_Fast_EmulationPrevention_No,      // BitStream_Fast
+    BitStream_Fast_EmulationPrevention_Yes,     // BitStream_Fast_EmulationPrevention
+    BitStream_Fast_EmulationPrevention_Mixed,   // BitStream_Fast_Mixed
+};
+
+// State of the emulation prevention mode: none for BitStream_Fast (empty base, no size)
+template<bitstream_fast_emulationprevention Kind>
+struct BitStream_Fast_EmulationPrevention_State
+{
+};
+template<>
+struct BitStream_Fast_EmulationPrevention_State<BitStream_Fast_EmulationPrevention_Yes>
+{
+    size_t              Readable_;          // Readable bytes since Buffer
+    size_t              Checked;            // The bytes before are examined
+    int8u               ZerosBefore;        // 0x00 bytes of the unit right before Buffer
+
+    bool                EmulationPrevention_Mode() const                        { return true; }
+    void                EmulationPrevention_Mode(bool)                          {}
+};
+// The same members and the mode, in their padding (members of a derived struct
+// would come after the padding)
+template<>
+struct BitStream_Fast_EmulationPrevention_State<BitStream_Fast_EmulationPrevention_Mixed>
+{
+    size_t              Readable_;          // Readable bytes since Buffer
+    size_t              Checked;            // The bytes before are examined
+    int8u               ZerosBefore;        // 0x00 bytes of the unit right before Buffer
+    bool                Emulation;          // Emulation prevention mode
+
+    bool                EmulationPrevention_Mode() const                        { return Emulation; }
+    void                EmulationPrevention_Mode(bool Value)                    { Emulation=Value; }
+};
+
+template<bitstream_fast_emulationprevention Kind>
+class BitStream_Fast_Template;
+
+// Calls of the emulation prevention mode from the common code, by reader kind,
+// for the reader only. BitStream_Fast: none, and Present is 0, first in each test
+// of the mode, so that the compiler drops this code before anything else (with a
+// test known only after inlining, some normal reads compile differently). The
+// other readers: the functions of this mode, only instantiated for them.
+template<bitstream_fast_emulationprevention Kind>
+struct BitStream_Fast_EmulationPrevention_Calls
+{
+private:
+    friend class BitStream_Fast_Template<Kind>;
+    enum { Present=1 };
+    template<class R> static ZENLIB_BSF_INLINE bool   Active(const R& Reader)                   { return Reader.EmulationPrevention_Mode(); }
+    template<class R> static ZENLIB_BSF_INLINE void   Attach(R& Reader, bool Mode, int8u Zeros) { Reader.Attach_State_EmulationPrevention(Mode, Zeros); }
+    template<class R> static ZENLIB_BSF_INLINE void   Fill(R& Reader, size_t Readable)          { Reader.Fill_EmulationPrevention(Readable); }
+    template<class R> static ZENLIB_BSF_INLINE void   Reload(R& Reader)                         { Reader.Reload_EmulationPrevention(); }
+    template<class R> static ZENLIB_BSF_INLINE void   Sync(R& Reader)                           { Reader.Sync_EmulationPrevention(); }
+    template<class R> static ZENLIB_BSF_INLINE int64u Read(R& Reader, unsigned HowMany)         { return Reader.Read_EmulationPrevention(HowMany); }
+    template<class R> static ZENLIB_BSF_INLINE int64u Peek(R& Reader, unsigned HowMany)         { return Reader.Peek_EmulationPrevention(HowMany); }
+    template<class R> static ZENLIB_BSF_INLINE int32u GetUE(R& Reader)                          { return Reader.GetUE_EmulationPrevention(); }
+    template<class R> static ZENLIB_BSF_INLINE size_t Remain_Exact(R& Reader)                   { return Reader.Remain_Exact_EmulationPrevention(); }
+    template<class R> static ZENLIB_BSF_INLINE void   Resize(R& Reader)                         { Reader.Resize_EmulationPrevention(); }
+    template<class R> static ZENLIB_BSF_INLINE void   Refresh(R& Reader)                        { Reader.Refresh_EmulationPrevention(); }
+};
+template<>
+struct BitStream_Fast_EmulationPrevention_Calls<BitStream_Fast_EmulationPrevention_No>
+{
+private:
+    friend class BitStream_Fast_Template<BitStream_Fast_EmulationPrevention_No>;
+    enum { Present=0 };
+    template<class R> static ZENLIB_BSF_INLINE bool   Active(const R&)                          { return false; }
+    template<class R> static ZENLIB_BSF_INLINE void   Attach(R&, bool, int8u)                   {}
+    template<class R> static ZENLIB_BSF_INLINE void   Fill(R&, size_t)                          {}
+    template<class R> static ZENLIB_BSF_INLINE void   Reload(R&)                                {}
+    template<class R> static ZENLIB_BSF_INLINE void   Sync(R&)                                  {}
+    template<class R> static ZENLIB_BSF_INLINE int64u Read(R&, unsigned)                        { return 0; }
+    template<class R> static ZENLIB_BSF_INLINE int64u Peek(R&, unsigned)                        { return 0; }
+    template<class R> static ZENLIB_BSF_INLINE int32u GetUE(R&)                                 { return 0; }
+    template<class R> static ZENLIB_BSF_INLINE size_t Remain_Exact(R&)                          { return 0; }
+    template<class R> static ZENLIB_BSF_INLINE void   Resize(R&)                                {}
+    template<class R> static ZENLIB_BSF_INLINE void   Refresh(R&)                               {}
+};
+
+template<bitstream_fast_emulationprevention Kind>
+class BitStream_Fast_Template : private BitStream_Fast_EmulationPrevention_State<Kind>
 {
 public:
-    BitStream_Fast ()                                                           { Attach(NULL, 0); }
+    BitStream_Fast_Template ()                                                  { Attach(NULL, 0); }
     // ExtraBytesAvailable_ is the number of initialized, readable bytes after
     // Buffer_+Size_, excluded from Size_ and Remain(); readable bytes must not
     // be modified while attached, except bytes not read yet followed by a call
@@ -98,19 +207,29 @@ public:
     // logical buffer. The reserve is not moved by Resize(): loads stay before
     // Buffer_+Size_+ExtraBytesAvailable_, or before the logical end if a
     // growing Resize() moved it further.
-    BitStream_Fast (const int8u* Buffer_, size_t Size_, size_t ExtraBytesAvailable_=0) { Attach(Buffer_, Size_, ExtraBytesAvailable_); }
-    ~BitStream_Fast ()                                                          {}
+    BitStream_Fast_Template (const int8u* Buffer_, size_t Size_, size_t ExtraBytesAvailable_=0) { Attach(Buffer_, Size_, ExtraBytesAvailable_); }
+    ~BitStream_Fast_Template ()                                                 {}
 
     // Same extra-byte contract as the constructor; omitted means zero.
+    // In the emulation prevention mode for BitStream_Fast_EmulationPrevention, else in the normal mode.
     ZENLIB_BSF_INLINE void Attach(const int8u* Buffer_, size_t Size_, size_t ExtraBytesAvailable_=0)
     {
-        Buffer=Buffer_;
-        Buffer_Size=Buffer_Size_Init=BitEnd=Size_*8;
-        // A reserve of one word minus one byte is enough for any load
-        ExtraBytes=(int8u)MIN(ExtraBytesAvailable_, sizeof(Word)-1);
-        BufferUnderRun_=false;
-        Fill();
+        Calls::Attach(*this, false, 0);
+        Attach_Common(Buffer_, Size_, ExtraBytesAvailable_);
     }
+
+    // Same as Attach(), the reads skipping the emulation prevention bytes: see the class comment.
+    // ZerosBefore_ (0 to 2) is the count of 0x00 bytes of the same unit right before Buffer_.
+    // Not for BitStream_Fast.
+    ZENLIB_BSF_INLINE void Attach_EmulationPrevention(const int8u* Buffer_, size_t Size_, size_t ExtraBytesAvailable_=0, int8u ZerosBefore_=0)
+    {
+        static_assert(Kind!=BitStream_Fast_EmulationPrevention_No, "Attach_EmulationPrevention() is not for BitStream_Fast");
+        Calls::Attach(*this, true, ZerosBefore_);
+        Attach_Common(Buffer_, Size_, ExtraBytesAvailable_);
+    }
+
+    // Emulation prevention mode is active
+    bool EmulationPrevention_Get() const { return Calls::Present && Calls::Active(*this); }
 
     //***********************************************************************
     // Reads
@@ -120,6 +239,8 @@ public:
     {
         if (Buffer_Size<=WindowEnd)
         {
+            if (Calls::Present && Calls::Active(*this))
+                return Calls::Read(*this, 1)!=0;
             if (!Buffer_Size)
             {
                 UnderRun();
@@ -199,8 +320,6 @@ public:
     // Sticky error state; cleared by Attach() or by growing Resize().
     bool BufferUnderRun() const { return BufferUnderRun_; }
 
-    BitStream_Fast_Local LocalReader();
-
     ZENLIB_BSF_INLINE void Skip(size_t HowMany)
     {
         if (HowMany>Buffer_Size)
@@ -215,6 +334,8 @@ public:
     {
         if (Buffer_Size<=WindowEnd)
         {
+            if (Calls::Present && Calls::Active(*this))
+                return Calls::Peek(*this, 1)!=0;
             if (!Buffer_Size)
             {
                 UnderRun();
@@ -251,6 +372,8 @@ public:
             UnderRun();
             return 0;
         }
+        if (Calls::Present && Calls::Active(*this) && HowMany+WindowEnd>Buffer_Size)
+            return Calls::Peek(*this, HowMany);
         if (HowMany<=WordBits)
             return PeekWide(Buffer_Size, HowMany);
         // 32-bit words: high part, then the 32 bits after it
@@ -261,6 +384,24 @@ public:
     inline size_t Remain() const
     {
         return Buffer_Size;
+    }
+
+    // Emulation prevention mode: counts the emulation prevention bytes a Skip() went over and passes
+    // the one at the position, so that Remain() and Offset_Get() are those of the position; a Skip()
+    // beyond the readable bits (not up to the end) underruns here. No effect in the normal mode.
+    inline void Sync()
+    {
+        if (Calls::Present && Calls::Active(*this) && Buffer_Size)
+            Calls::Sync(*this);
+    }
+
+    // Count of readable bits: Remain() less 8 per emulation prevention byte not passed yet, from a scan
+    // of the rest of the buffer (for small units). Same as Remain() in the normal mode.
+    size_t Remain_Exact()
+    {
+        if (!Calls::Present || !Calls::Active(*this) || !Buffer_Size)
+            return Buffer_Size;
+        return Calls::Remain_Exact(*this);
     }
 
     inline void Byte_Align()
@@ -290,6 +431,8 @@ public:
     {
         if (BufferUnderRun_ && Size_>Buffer_Size)
             BufferUnderRun_=false;
+        if (Calls::Present && Calls::Active(*this))
+            Calls::Resize(*this);
         BitEnd=BitEnd-Buffer_Size+Size_;
         Buffer_Size=Size_;
         Fill();
@@ -300,6 +443,8 @@ public:
     // Window may already contain them. The position and the state are kept.
     inline void Refresh()
     {
+        if (Calls::Present && Calls::Active(*this))
+            Calls::Refresh(*this);
         Fill();
     }
 
@@ -408,14 +553,30 @@ private:
         #endif
     }
 
+    ZENLIB_BSF_INLINE void Attach_Common(const int8u* Buffer_, size_t Size_, size_t ExtraBytesAvailable_)
+    {
+        Buffer=Buffer_;
+        Buffer_Size=Buffer_Size_Init=BitEnd=Size_*8;
+        // A reserve of one word minus one byte is enough for any load
+        ExtraBytes=(int8u)MIN(ExtraBytesAvailable_, sizeof(Word)-1);
+        BufferUnderRun_=false;
+        Fill();
+    }
+
     //***********************************************************************
     // Window management
     //***********************************************************************
 
     // Loads Window at byte Position/8, or at the last loadable byte offset.
-    // Precondition: a full word is readable (LastLoad is valid), which is the case if WindowEnd>0.
+    // Precondition in the normal mode: a full word is readable (LastLoad is valid), which is the case
+    // if WindowEnd>0. The emulation prevention mode loads any buffer size.
     ZENLIB_BSF_INLINE void Reload()
     {
+        if (Calls::Present && Calls::Active(*this))
+        {
+            Calls::Reload(*this);
+            return;
+        }
         size_t Load=(BitEnd-Buffer_Size)/8;
         if (Load>LastLoad)
             Load=LastLoad; // Near the end, the word ends at the last readable byte
@@ -439,6 +600,7 @@ private:
         size_t Readable=Logical+ExtraBytes;
         if (Readable>Attached)
             Readable=Logical>Attached?Logical:Attached;
+        Calls::Fill(*this, Readable);
         if (Readable>=sizeof(Word))
         {
             LastLoad=Readable-sizeof(Word);
@@ -453,6 +615,11 @@ private:
             LastLoad=0; // Never used: Window contains the whole buffer
             if (Buffer_Size)
             {
+                if (Calls::Present && Calls::Active(*this))
+                {
+                    Calls::Reload(*this);
+                    return;
+                }
                 Window=RotateRight(LoadPartial(Buffer, Readable), WordBits-BitEnd);
                 WindowEnd=0;
                 return;
@@ -471,6 +638,230 @@ private:
         Buffer_Size=0;
         WindowEnd=0;
         BufferUnderRun_=true;
+    }
+
+    //***********************************************************************
+    // Emulation prevention mode
+    //***********************************************************************
+
+    // Byte at offset Pos is an emulation prevention byte: 0x03 after two 0x00 (before Buffer: this->ZerosBefore),
+    // all before the logical end
+    ZENLIB_BSF_INLINE bool IsEmulationPrevention(size_t Pos) const
+    {
+        if (Pos*8+8>BitEnd || Buffer[Pos]!=0x03)
+            return false;
+        if (Pos>=2)
+            return !Buffer[Pos-1] && !Buffer[Pos-2];
+        if (Pos)
+            return !Buffer[0] && this->ZerosBefore;
+        return this->ZerosBefore>=2;
+    }
+
+    // Moves the position after the emulation prevention bytes up to it: the one at the position,
+    // and the ones a Skip() went over. Bytes before this->Checked were already examined. A Skip() beyond
+    // the readable bits underruns here: fewer bits left than such bytes, or such bytes left once the
+    // end is reached.
+    ZENLIB_BSF_NOINLINE void Sync_EmulationPrevention()
+    {
+        size_t Pos=(BitEnd-Buffer_Size)/8;
+        while (this->Checked<=Pos && Buffer_Size)
+        {
+            if (IsEmulationPrevention(this->Checked))
+            {
+                if (Buffer_Size<8)
+                {
+                    UnderRun();
+                    return;
+                }
+                Buffer_Size-=8;
+                if (!Buffer_Size)
+                {
+                    while (++this->Checked*8<BitEnd)
+                        if (IsEmulationPrevention(this->Checked))
+                        {
+                            UnderRun();
+                            return;
+                        }
+                    return;
+                }
+                Pos=(BitEnd-Buffer_Size)/8;
+            }
+            this->Checked++;
+        }
+    }
+
+    static ZENLIB_BSF_INLINE bool HasZeroByte(Word Value)
+    {
+        const Word Ones=(Word)-1/255; // 0x01 in each byte
+        return ((Value-Ones)&~Value&(Ones<<7))!=0;
+    }
+
+    // Loads Window at the position, any buffer size: first moves the position after the emulation
+    // prevention bytes up to it, then ends the usable bits before the next one.
+    ZENLIB_BSF_NOINLINE void Reload_EmulationPrevention()
+    {
+        Sync_EmulationPrevention();
+        const size_t Pos=(BitEnd-Buffer_Size)/8;
+        if (!Buffer_Size)
+        {
+            WindowEnd=0;
+            return;
+        }
+        size_t Load;
+        Word Value;
+        if (this->Readable_>=sizeof(Word))
+        {
+            Load=Pos<LastLoad?Pos:LastLoad; // Near the end, the word ends at the last readable byte
+            Value=LoadWord(Buffer+Load);
+        }
+        else
+        {
+            Load=0;
+            Value=LoadPartial(Buffer, this->Readable_);
+        }
+        const size_t Avail=BitEnd-Load*8;
+        const size_t WindowLow=Avail-WordBits;
+        Window=RotateRight(Value, 0-WindowLow);
+        WindowEnd=Avail>WordBits?WindowLow:0;
+        // Usable bytes after the position: an emulation prevention byte among them needs a 0x00 in the word
+        size_t End=BitEnd/8;
+        if (End>Load+sizeof(Word))
+            End=Load+sizeof(Word);
+        if (this->Readable_<sizeof(Word) || HasZeroByte(Value))
+            for (size_t i=this->Checked; i<End; i++)
+                if (IsEmulationPrevention(i))
+                {
+                    WindowEnd=BitEnd-i*8;
+                    this->Checked=i;
+                    return;
+                }
+        if (this->Checked<End)
+            this->Checked=End;
+    }
+
+    // HowMany bits (1 to 64) across emulation prevention bytes, Window reloaded as needed
+    ZENLIB_BSF_NOINLINE int64u Read_EmulationPrevention(unsigned HowMany)
+    {
+        const size_t Start_Size=Buffer_Size, Start_End=BitEnd, Start_Checked=this->Checked;
+        int64u Value=0;
+        for (;;)
+        {
+            if (Buffer_Size<=WindowEnd)
+            {
+                if (Buffer_Size)
+                    Reload_EmulationPrevention();
+                if (Buffer_Size<=WindowEnd)
+                {
+                    UnderRun_At(Start_Size, Start_End, Start_Checked);
+                    return 0;
+                }
+            }
+            size_t Usable=Buffer_Size-WindowEnd;
+            if (Usable>HowMany)
+                Usable=HowMany;
+            const unsigned Part=(unsigned)Usable;
+            Buffer_Size-=Part;
+            Value=(Part<64?(Value<<Part):0)|(RotateRight(Window, Buffer_Size)&Mask(Part));
+            HowMany-=Part;
+            if (!HowMany)
+                return Value;
+        }
+    }
+
+    // Underrun at a previous position (a read in several parts)
+    ZENLIB_BSF_NOINLINE void UnderRun_At(size_t Size, size_t End, size_t Checked_)
+    {
+        Buffer_Size=Size;
+        BitEnd=End;
+        this->Checked=Checked_;
+        UnderRun();
+    }
+
+    // Same, without moving the position; an underrun is that of the read
+    ZENLIB_BSF_NOINLINE int64u Peek_EmulationPrevention(unsigned HowMany)
+    {
+        BitStream_Fast_Template Copy(*this);
+        const int64u Value=Copy.Read_EmulationPrevention(HowMany);
+        if (Copy.BufferUnderRun_)
+        {
+            UnderRun();
+            return 0;
+        }
+        return Value;
+    }
+
+    // Exp-Golomb code across emulation prevention bytes, same results as GetUE()
+    ZENLIB_BSF_NOINLINE int32u GetUE_EmulationPrevention()
+    {
+        const size_t Start_Size=Buffer_Size, Start_End=BitEnd, Start_Checked=this->Checked;
+        unsigned LeadingZeroBits=0;
+        for (;;)
+        {
+            if (!Buffer_Size) // Also after an underrun of GetB()
+            {
+                UnderRun_At(Start_Size, Start_End, Start_Checked);
+                return 0;
+            }
+            if (GetB())
+                break;
+            if (++LeadingZeroBits>31)
+            {
+                UnderRun_At(Start_Size, Start_End, Start_Checked);
+                return 0;
+            }
+        }
+        if (!LeadingZeroBits)
+            return 0;
+        const int64u Info=Read_EmulationPrevention(LeadingZeroBits);
+        if (BufferUnderRun_)
+        {
+            UnderRun_At(Start_Size, Start_End, Start_Checked);
+            return 0;
+        }
+        return (int32u)((((int64u)1<<LeadingZeroBits)|Info)-1);
+    }
+
+    // Attach(), Attach_EmulationPrevention(): mode, then state for the attached bytes
+    ZENLIB_BSF_INLINE void Attach_State_EmulationPrevention(bool Mode, int8u ZerosBefore_)
+    {
+        this->EmulationPrevention_Mode(Mode);
+        this->ZerosBefore=ZerosBefore_;
+        this->Checked=0;
+    }
+
+    // Fill()
+    ZENLIB_BSF_INLINE void Fill_EmulationPrevention(size_t Readable)
+    {
+        this->Readable_=Readable;
+    }
+
+    // Remain_Exact(), some bits left
+    size_t Remain_Exact_EmulationPrevention()
+    {
+        Sync_EmulationPrevention();
+        if (!Buffer_Size)
+            return 0;
+        size_t Count=0;
+        const size_t End=BitEnd/8;
+        for (size_t i=this->Checked; i<End; i++)
+            if (IsEmulationPrevention(i))
+                Count++;
+        return Buffer_Size-Count*8;
+    }
+
+    // Resize(), before the change of the logical end
+    ZENLIB_BSF_INLINE void Resize_EmulationPrevention()
+    {
+        const size_t Pos=(BitEnd-Buffer_Size)/8;
+        if (this->Checked>Pos || !Buffer_Size)
+            this->Checked=Pos;
+    }
+
+    // Refresh(): the bytes after the position are examined again
+    ZENLIB_BSF_INLINE void Refresh_EmulationPrevention()
+    {
+        if (this->Checked>(BitEnd-Buffer_Size)/8)
+            this->Checked=(BitEnd-Buffer_Size)/8;
     }
 
     //***********************************************************************
@@ -493,6 +884,8 @@ private:
             return 0;
         if (HowMany+WindowEnd>Buffer_Size)
         {
+            if (Calls::Present && Calls::Active(*this))
+                return (Word)Calls::Peek(*this, HowMany);
             if (HowMany>Buffer_Size)
             {
                 UnderRun();
@@ -512,6 +905,8 @@ private:
     {
         if (HowMany+WindowEnd>Buffer_Size)
         {
+            if (Calls::Present && Calls::Active(*this))
+                return (Word)Calls::Read(*this, HowMany);
             if (HowMany>Buffer_Size)
             {
                 UnderRun();
@@ -544,6 +939,8 @@ private:
     {
         if (HowMany<=WordBits)
             return ReadWide(HowMany);
+        if (Calls::Present && Calls::Active(*this))
+            return Calls::Read(*this, HowMany);
         const int64u High=ReadWide(HowMany-32);
         return (High<<32)|ReadWide(32);
     }
@@ -555,6 +952,8 @@ private:
         Word Value;
         if (HowMany+WindowEnd<=Buffer_Size)
             Value=RotateRight(Window, Buffer_Size-HowMany)&Mask(HowMany);
+        else if (Calls::Present && Calls::Active(*this))
+            return (Word)Calls::Read(*this, HowMany);
         else if (HowMany<=Buffer_Size)
             Value=PeekDirect(Buffer_Size, HowMany);
         else
@@ -627,6 +1026,8 @@ private:
                 return (int32u)(Bits>>(WordBits-Size))-1;
             }
         }
+        if (Calls::Present && Calls::Active(*this))
+            return Calls::GetUE(*this);
         if (Buffer_Size)
         {
             const int64u Result=GetUE_Bytes(Buffer, BitEnd-Buffer_Size, Buffer_Size);
@@ -670,6 +1071,13 @@ private:
         return (int32u)((Value>>(Bytes*8-Skipped-HowMany))&(((int64u)1<<HowMany)-1));
     }
 
+    //***********************************************************************
+    // Calls of the emulation prevention mode, see BitStream_Fast_EmulationPrevention_Calls
+    //***********************************************************************
+
+    typedef BitStream_Fast_EmulationPrevention_Calls<Kind> Calls;
+    friend struct BitStream_Fast_EmulationPrevention_Calls<Kind>;
+
     // Hot state, see the class comment
     Word                Window;
     size_t              Buffer_Size;        // Remaining bits
@@ -683,32 +1091,103 @@ private:
     bool                BufferUnderRun_;
 };
 
-// Independent parsing state: changes become visible in the owner only at Commit().
-// The owner must outlive the session and must not be modified before Commit().
-class BitStream_Fast_Local : public BitStream_Fast
+//***************************************************************************
+// Readers
+//***************************************************************************
+
+// Normal reads only. The members are those of the base, also in the type of a
+// member pointer (&BitStream_Fast::Get4).
+class BitStream_Fast : public BitStream_Fast_Template<BitStream_Fast_EmulationPrevention_No>
 {
 public:
-    explicit BitStream_Fast_Local(BitStream_Fast& Owner_)
-        : BitStream_Fast(Owner_), Owner(&Owner_) {}
-    BitStream_Fast_Local(BitStream_Fast_Local&& Other)
-        : BitStream_Fast(Other), Owner(Other.Owner) { Other.Owner=NULL; }
-    BitStream_Fast_Local(const BitStream_Fast_Local&)=delete;
-    BitStream_Fast_Local& operator=(const BitStream_Fast_Local&)=delete;
+    BitStream_Fast ()                                                           {}
+    BitStream_Fast (const int8u* Buffer_, size_t Size_, size_t ExtraBytesAvailable_=0)
+        : BitStream_Fast_Template<BitStream_Fast_EmulationPrevention_No>(Buffer_, Size_, ExtraBytesAvailable_) {}
+
+    BitStream_Fast_Local LocalReader();
+};
+
+// Every read skips the emulation prevention bytes (Attach() and the constructor too), see the class comment
+class BitStream_Fast_EmulationPrevention : public BitStream_Fast_Template<BitStream_Fast_EmulationPrevention_Yes>
+{
+public:
+    BitStream_Fast_EmulationPrevention ()                                       {}
+    BitStream_Fast_EmulationPrevention (const int8u* Buffer_, size_t Size_, size_t ExtraBytesAvailable_=0)
+        : BitStream_Fast_Template<BitStream_Fast_EmulationPrevention_Yes>(Buffer_, Size_, ExtraBytesAvailable_) {}
+
+    BitStream_Fast_EmulationPrevention_Local LocalReader();
+};
+
+// Mode chosen at each attach: Attach() for the normal mode, Attach_EmulationPrevention() for the emulation
+// prevention mode, see the class comment
+class BitStream_Fast_Mixed : public BitStream_Fast_Template<BitStream_Fast_EmulationPrevention_Mixed>
+{
+public:
+    BitStream_Fast_Mixed ()                                                     {}
+    BitStream_Fast_Mixed (const int8u* Buffer_, size_t Size_, size_t ExtraBytesAvailable_=0)
+        : BitStream_Fast_Template<BitStream_Fast_EmulationPrevention_Mixed>(Buffer_, Size_, ExtraBytesAvailable_) {}
+
+    BitStream_Fast_Mixed_Local LocalReader();
+};
+
+// Independent parsing state: changes become visible in the owner only at Commit().
+// The owner must outlive the session and must not be modified before Commit().
+template<class Reader>
+class BitStream_Fast_Local_Template : public Reader
+{
+public:
+    explicit BitStream_Fast_Local_Template(Reader& Owner_)
+        : Reader(Owner_), Owner(&Owner_) {}
+    BitStream_Fast_Local_Template(BitStream_Fast_Local_Template&& Other)
+        : Reader(Other), Owner(Other.Owner) { Other.Owner=NULL; }
+    BitStream_Fast_Local_Template(const BitStream_Fast_Local_Template&)=delete;
+    BitStream_Fast_Local_Template& operator=(const BitStream_Fast_Local_Template&)=delete;
 
     // Explicit commit permits speculative parsing; destruction discards changes.
     void Commit()
     {
         if (Owner)
-            *Owner=static_cast<const BitStream_Fast&>(*this);
+            *Owner=static_cast<const Reader&>(*this);
     }
 
 private:
-    BitStream_Fast* Owner;
+    Reader* Owner;
+};
+
+class BitStream_Fast_Local : public BitStream_Fast_Local_Template<BitStream_Fast>
+{
+public:
+    explicit BitStream_Fast_Local(BitStream_Fast& Owner_)
+        : BitStream_Fast_Local_Template<BitStream_Fast>(Owner_) {}
+};
+
+class BitStream_Fast_EmulationPrevention_Local : public BitStream_Fast_Local_Template<BitStream_Fast_EmulationPrevention>
+{
+public:
+    explicit BitStream_Fast_EmulationPrevention_Local(BitStream_Fast_EmulationPrevention& Owner_)
+        : BitStream_Fast_Local_Template<BitStream_Fast_EmulationPrevention>(Owner_) {}
+};
+
+class BitStream_Fast_Mixed_Local : public BitStream_Fast_Local_Template<BitStream_Fast_Mixed>
+{
+public:
+    explicit BitStream_Fast_Mixed_Local(BitStream_Fast_Mixed& Owner_)
+        : BitStream_Fast_Local_Template<BitStream_Fast_Mixed>(Owner_) {}
 };
 
 inline BitStream_Fast_Local BitStream_Fast::LocalReader()
 {
     return BitStream_Fast_Local(*this);
+}
+
+inline BitStream_Fast_EmulationPrevention_Local BitStream_Fast_EmulationPrevention::LocalReader()
+{
+    return BitStream_Fast_EmulationPrevention_Local(*this);
+}
+
+inline BitStream_Fast_Mixed_Local BitStream_Fast_Mixed::LocalReader()
+{
+    return BitStream_Fast_Mixed_Local(*this);
 }
 
 #undef ZENLIB_BSF_INLINE
