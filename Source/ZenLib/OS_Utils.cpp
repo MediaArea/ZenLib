@@ -29,6 +29,7 @@
             #include <windows.storage.streams.h>
             #include <windows.security.cryptography.h>
             #include <windows.security.cryptography.core.h>
+            #include <map>
             using namespace Microsoft::WRL;
             using namespace Microsoft::WRL::Wrappers;
             using namespace ABI::Windows::Foundation;
@@ -45,6 +46,9 @@
     #endif
 #endif //ZENLIB_USEWX
 #include "ZenLib/OS_Utils.h"
+#if defined(WINDOWS) && defined(WINDOWS_UWP) && !defined(ZENLIB_USEWX)
+    #include "ZenLib/CriticalSection.h"
+#endif
 //File names are UTF-8 whatever the locale on macOS and Android, also on other systems if ZENLIB_FILENAME_UTF8 is defined (e.g. tests)
 #if !defined(ZENLIB_USEWX) && !defined(WINDOWS) && !defined(WSTRING_MISSING)
     #if defined(__APPLE__) || defined(__ANDROID__) || defined(ZENLIB_FILENAME_UTF8)
@@ -116,6 +120,65 @@ static HRESULT Get_Path_Hash(const HStringReference &Path, HString &Path_Hash)
 }
 
 //---------------------------------------------------------------------------
+//Items listed by Dir::GetAllFileNames(), for Get_File() and Get_Folder() when the WinRT functions don't give them by their path: kept in
+//memory until each listing which gave them is released (see Dir::ReleaseFileNames()), not in the future access list, which keeps them
+//after the end of the program and is limited to 1000 items
+struct Listed_Item
+{
+    ComPtr<IStorageItem> Item;
+    size_t Count;
+
+    Listed_Item() : Count(0) {}
+};
+struct Listed_Items_Data
+{
+    CriticalSection CS;
+    std::map<std::wstring, Listed_Item> Items;
+};
+static Listed_Items_Data& Listed_Items()
+{
+    static Listed_Items_Data* Data=new Listed_Items_Data; //Never deleted: a static object would release the items left at the end of the program, maybe after the end of WinRT
+    return *Data;
+}
+static std::wstring Listed_Item_Name(const HStringReference &Path)
+{
+    UINT32 Length=0;
+    const wchar_t* Buffer=WindowsGetStringRawBuffer(Path.Get(), &Length);
+    return std::wstring(Buffer, Length);
+}
+
+//---------------------------------------------------------------------------
+ZENLIB_INTERNAL void Listed_Item_Add(const HStringReference &Path, const ComPtr<IStorageItem> &Item)
+{
+    Listed_Items_Data& Data=Listed_Items();
+    CriticalSectionLocker CSL(Data.CS);
+    Listed_Item& Listed=Data.Items[Listed_Item_Name(Path)];
+    Listed.Item=Item;
+    Listed.Count++;
+}
+
+//---------------------------------------------------------------------------
+ZENLIB_INTERNAL void Listed_Item_Release(const HStringReference &Path)
+{
+    Listed_Items_Data& Data=Listed_Items();
+    CriticalSectionLocker CSL(Data.CS);
+    std::map<std::wstring, Listed_Item>::iterator Listed=Data.Items.find(Listed_Item_Name(Path));
+    if (Listed!=Data.Items.end() && !--Listed->second.Count)
+        Data.Items.erase(Listed);
+}
+
+//---------------------------------------------------------------------------
+static ComPtr<IStorageItem> Listed_Item_Get(const HStringReference &Path)
+{
+    Listed_Items_Data& Data=Listed_Items();
+    CriticalSectionLocker CSL(Data.CS);
+    std::map<std::wstring, Listed_Item>::iterator Listed=Data.Items.find(Listed_Item_Name(Path));
+    if (Listed==Data.Items.end())
+        return ComPtr<IStorageItem>();
+    return Listed->second.Item;
+}
+
+//---------------------------------------------------------------------------
 HRESULT Add_Item_To_FUA(HStringReference Path, ComPtr<IStorageItem> &Item)
 {
     HString Path_Hash;
@@ -147,6 +210,11 @@ HRESULT Get_File(HStringReference File_Name, ComPtr<IStorageFile> &File)
             File)
             return S_OK;
     }
+
+    //Try to access file listed by Dir::GetAllFileNames()
+    ComPtr<IStorageItem> Item=Listed_Item_Get(File_Name);
+    if (Item && SUCCEEDED(Item.As(&File)) && File)
+        return S_OK;
 
     //Try to access file by sha256 hashed path in future access list
     HString Path_Hash;
@@ -184,6 +252,11 @@ HRESULT Get_Folder(HStringReference Folder_Name, ComPtr<IStorageFolder> &Folder)
             Folder)
             return S_OK;
     }
+
+    //Try to access folder listed by Dir::GetAllFileNames()
+    ComPtr<IStorageItem> Item=Listed_Item_Get(Folder_Name);
+    if (Item && SUCCEEDED(Item.As(&Folder)) && Folder)
+        return S_OK;
 
     //Try to access folder by sha256 hashed path in future access list
     HString Path_Hash;

@@ -85,6 +85,7 @@ libzen.so.0 libzen0v5 #MINVER#
  (c++)"ZenLib::Directory_Select_Caption@Base" 0.4.23
  (c++)"ZenLib::Dir::Exists(ZenLib::Ztring const&)@Base" 0.4.23
  (c++)"ZenLib::Dir::GetAllFileNames(ZenLib::Ztring const&, ZenLib::Dir::dirlist_t)@Base" 0.4.23
+ (c++)"ZenLib::Dir::ReleaseFileNames(ZenLib::ZtringList const&)@Base" 0.4.42
  (c++)"ZenLib::EmptyZtring@Base" 0.4.23
  (c++)"ZenLib::EOL@Base" 0.4.23
  (c++)"ZenLib::File::Close()@Base" 0.4.23
