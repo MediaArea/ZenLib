@@ -942,6 +942,31 @@ int main(int argc, char* argv[])
         Check(F.Create(From_UTF8(Directory+"/file_"+Names[0])) && Exists_Raw(Path), "File::Create("+Printable(Names[0])+")", "file not created with this name");
     }
 
+    // Names with an extension or starting with a dot, and directory names with a dot: the file or directory has the whole name, also where
+    // its name is given to the system apart from its directory (e.g. WinRT)
+    {
+        std::string Path_Directory=Directory+"/dot.dir";
+        std::string Path=Path_Directory+"/file.ext";
+        std::string Path_Copied=Path_Directory+"/copied.ext";
+        std::string Path_Moved=Path_Directory+"/moved.ext";
+        std::string Path_Dot=Path_Directory+"/.dot";
+        std::string Path_Created=Directory+"/created.dir/sub.dir"; // Also its parent
+        if (!Create_Raw_Directory(Path_Directory))
+            Check(false, "internal", "directory not created");
+        File F;
+        bool Created=F.Create(From_UTF8(Path));
+        F.Close();
+        Check(Created && Exists_Raw(Path), "File::Create(file.ext)", Created?"file created with another name":"file not created");
+        #if defined(_WIN32) // Not supported on other systems
+            Check(File::Copy(From_UTF8(Path), From_UTF8(Path_Copied)) && Exists_Raw(Path_Copied) && Exists_Raw(Path), "File::Copy(file.ext)", "file not copied with this name");
+        #endif
+        Check(File::Move(From_UTF8(Path), From_UTF8(Path_Moved)) && Exists_Raw(Path_Moved) && !Exists_Raw(Path), "File::Move(file.ext)", "file not moved with this name");
+        Created=F.Create(From_UTF8(Path_Dot));
+        F.Close();
+        Check(Created && Exists_Raw(Path_Dot), "File::Create(.dot)", Created?"file created with another name":"file not created");
+        Check(Dir::Create(From_UTF8(Path_Created)) && Exists_Raw(Path_Created, true) && Dir::Exists(From_UTF8(Path_Created)), "Dir::Create(created.dir/sub.dir)", "directory not created with this name");
+    }
+
     // Names decoded with From_Local(), as some programs decode their command line arguments (e.g. MediaConch, dvrescue): not encoded twice
     if (IsUnicode)
         for (size_t i=0; i<Names_Size; i++)
