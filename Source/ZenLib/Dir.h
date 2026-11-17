@@ -44,6 +44,9 @@ public :
 
     //Open/close
     static ZtringList GetAllFileNames(const Ztring &Dir_Name, dirlist_t Options=(dirlist_t)(Include_Files|Parse_SubDirs));
+    //Names given by a call of GetAllFileNames() which are no longer needed: with UWP, the items listed are kept for opening them by their
+    //name (e.g. File::Open()) also when the WinRT functions don't give them by their path, until each listing which gave them is released
+    static void ReleaseFileNames(const ZtringList &File_Names);
 
     //Helpers
     static bool Exists(const Ztring &Dir_Name);

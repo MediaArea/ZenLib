@@ -71,6 +71,11 @@ namespace ZenLib
 #if defined(WINDOWS) && !defined(UNICODE) && !defined(ZENLIB_USEWX)
     ZENLIB_INTERNAL bool IsCodePageBytes(const char* S, size_t Size); //In Ztring.cpp
 #endif
+#if defined(WINDOWS) && defined(WINDOWS_UWP) && !defined(ZENLIB_USEWX)
+    //In OS_Utils.cpp
+    ZENLIB_INTERNAL void Listed_Item_Add(const HStringReference &Path, const ComPtr<IStorageItem> &Item);
+    ZENLIB_INTERNAL void Listed_Item_Release(const HStringReference &Path);
+#endif
 
 //---------------------------------------------------------------------------
 // Directory name with a path separator at the end, "\" and "/" are path separators on Windows
@@ -298,12 +303,12 @@ ZtringList Dir::GetAllFileNames(const Ztring &Dir_Name_, dirlist_t Options)
 
                     if ((Options&Include_Files) && IsFile && ((Options&Include_Hidden) || File_Name[0] != __T('.')))
                     {
-                        Add_Item_To_FUA(WinRT_Name(File_Name_Complete).Ref(), Item);
+                        Listed_Item_Add(WinRT_Name(File_Name_Complete).Ref(), Item);
                         ToReturn.push_back(File_Name_Complete);
                     }
                     else if ((Options&Include_Dirs) && IsFolder)
                     {
-                        Add_Item_To_FUA(WinRT_Name(File_Name_Complete).Ref(), Item);
+                        Listed_Item_Add(WinRT_Name(File_Name_Complete).Ref(), Item);
                         ToReturn.push_back(File_Name_Complete);
                     }
 
@@ -456,6 +461,17 @@ ZtringList Dir::GetAllFileNames(const Ztring &Dir_Name_, dirlist_t Options)
                         Debug+=", files count="; Debug +=Ztring::ToZtring(ToReturn.size()).To_UTF8())
 
     return ToReturn;
+}
+
+//---------------------------------------------------------------------------
+void Dir::ReleaseFileNames(const ZtringList &File_Names)
+{
+    #if defined(WINDOWS) && defined(WINDOWS_UWP) && !defined(ZENLIB_USEWX)
+        for (size_t Pos=0; Pos<File_Names.size(); Pos++)
+            Listed_Item_Release(WinRT_Name(File_Names[Pos]).Ref());
+    #else
+        (void)File_Names; //Nothing kept
+    #endif
 }
 
 //***************************************************************************

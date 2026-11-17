@@ -29,6 +29,7 @@
             #include <windows.storage.streams.h>
             #include <windows.security.cryptography.h>
             #include <windows.security.cryptography.core.h>
+            #include <map>
             using namespace Microsoft::WRL;
             using namespace Microsoft::WRL::Wrappers;
             using namespace ABI::Windows::Foundation;
@@ -45,6 +46,9 @@
     #endif
 #endif //ZENLIB_USEWX
 #include "ZenLib/OS_Utils.h"
+#if defined(WINDOWS) && defined(WINDOWS_UWP) && !defined(ZENLIB_USEWX)
+    #include "ZenLib/CriticalSection.h"
+#endif
 //File names are UTF-8 whatever the locale on macOS and Android, also on other systems if ZENLIB_FILENAME_UTF8 is defined (e.g. tests)
 #if !defined(ZENLIB_USEWX) && !defined(WINDOWS) && !defined(WSTRING_MISSING)
     #if defined(__APPLE__) || defined(__ANDROID__) || defined(ZENLIB_FILENAME_UTF8)
@@ -83,7 +87,8 @@ bool IsWin9X ()
 
 #if defined(WINDOWS) && defined(WINDOWS_UWP)
 //---------------------------------------------------------------------------
-HRESULT Add_Item_To_FUA(HStringReference Path, ComPtr<IStorageItem> &Item)
+//Token of an item in the future access list: SHA-256 hash of its path, in base64
+static HRESULT Get_Path_Hash(const HStringReference &Path, HString &Path_Hash)
 {
     ComPtr<IBuffer> Path_Buffer;
     ComPtr<IBuffer> Hash_Buffer;
@@ -92,7 +97,6 @@ HRESULT Add_Item_To_FUA(HStringReference Path, ComPtr<IStorageItem> &Item)
     ComPtr<IHashAlgorithmProvider> Hash_Provider;
     UINT32 Buffer_Lenght = 0;
     UINT32 Hash_Lenght = 0;
-    HString Path_Hash;
 
     if (SUCCEEDED(GetActivationFactory(HString::MakeReference(RuntimeClass_Windows_Security_Cryptography_CryptographicBuffer).Get(), &Cryptographic_Buffer_Statics)) &&
         Cryptographic_Buffer_Statics &&
@@ -110,6 +114,75 @@ HRESULT Add_Item_To_FUA(HStringReference Path, ComPtr<IStorageItem> &Item)
         Hash_Lenght &&
         Buffer_Lenght == Hash_Lenght &&
         SUCCEEDED(Cryptographic_Buffer_Statics->EncodeToBase64String(*Hash_Buffer.GetAddressOf(), Path_Hash.GetAddressOf())))
+        return S_OK;
+
+    return E_FAIL;
+}
+
+//---------------------------------------------------------------------------
+//Items listed by Dir::GetAllFileNames(), for Get_File() and Get_Folder() when the WinRT functions don't give them by their path: kept in
+//memory until each listing which gave them is released (see Dir::ReleaseFileNames()), not in the future access list, which keeps them
+//after the end of the program and is limited to 1000 items
+struct Listed_Item
+{
+    ComPtr<IStorageItem> Item;
+    size_t Count;
+
+    Listed_Item() : Count(0) {}
+};
+struct Listed_Items_Data
+{
+    CriticalSection CS;
+    std::map<std::wstring, Listed_Item> Items;
+};
+static Listed_Items_Data& Listed_Items()
+{
+    static Listed_Items_Data* Data=new Listed_Items_Data; //Never deleted: a static object would release the items left at the end of the program, maybe after the end of WinRT
+    return *Data;
+}
+static std::wstring Listed_Item_Name(const HStringReference &Path)
+{
+    UINT32 Length=0;
+    const wchar_t* Buffer=WindowsGetStringRawBuffer(Path.Get(), &Length);
+    return std::wstring(Buffer, Length);
+}
+
+//---------------------------------------------------------------------------
+ZENLIB_INTERNAL void Listed_Item_Add(const HStringReference &Path, const ComPtr<IStorageItem> &Item)
+{
+    Listed_Items_Data& Data=Listed_Items();
+    CriticalSectionLocker CSL(Data.CS);
+    Listed_Item& Listed=Data.Items[Listed_Item_Name(Path)];
+    Listed.Item=Item;
+    Listed.Count++;
+}
+
+//---------------------------------------------------------------------------
+ZENLIB_INTERNAL void Listed_Item_Release(const HStringReference &Path)
+{
+    Listed_Items_Data& Data=Listed_Items();
+    CriticalSectionLocker CSL(Data.CS);
+    std::map<std::wstring, Listed_Item>::iterator Listed=Data.Items.find(Listed_Item_Name(Path));
+    if (Listed!=Data.Items.end() && !--Listed->second.Count)
+        Data.Items.erase(Listed);
+}
+
+//---------------------------------------------------------------------------
+static ComPtr<IStorageItem> Listed_Item_Get(const HStringReference &Path)
+{
+    Listed_Items_Data& Data=Listed_Items();
+    CriticalSectionLocker CSL(Data.CS);
+    std::map<std::wstring, Listed_Item>::iterator Listed=Data.Items.find(Listed_Item_Name(Path));
+    if (Listed==Data.Items.end())
+        return ComPtr<IStorageItem>();
+    return Listed->second.Item;
+}
+
+//---------------------------------------------------------------------------
+HRESULT Add_Item_To_FUA(HStringReference Path, ComPtr<IStorageItem> &Item)
+{
+    HString Path_Hash;
+    if (SUCCEEDED(Get_Path_Hash(Path, Path_Hash)))
     {
         ComPtr<IStorageApplicationPermissionsStatics> Permissions_Manager;
         ComPtr<IStorageItemAccessList> FutureAccess_List;
@@ -138,32 +211,14 @@ HRESULT Get_File(HStringReference File_Name, ComPtr<IStorageFile> &File)
             return S_OK;
     }
 
-    //Try to access file by sha256 hashed path in future access list
-    ComPtr<IBuffer> Path_Buffer;
-    ComPtr<IBuffer> Hash_Buffer;
-    ComPtr<ICryptographicBufferStatics> Cryptographic_Buffer_Statics;
-    ComPtr<IHashAlgorithmProviderStatics> Hash_Provider_Statics;
-    ComPtr<IHashAlgorithmProvider> Hash_Provider;
-    UINT32 Buffer_Lenght=0;
-    UINT32 Hash_Lenght=0;
-    HString Path_Hash;
+    //Try to access file listed by Dir::GetAllFileNames()
+    ComPtr<IStorageItem> Item=Listed_Item_Get(File_Name);
+    if (Item && SUCCEEDED(Item.As(&File)) && File)
+        return S_OK;
 
-    if (SUCCEEDED(GetActivationFactory(HString::MakeReference(RuntimeClass_Windows_Security_Cryptography_CryptographicBuffer).Get(), &Cryptographic_Buffer_Statics)) &&
-        Cryptographic_Buffer_Statics &&
-        SUCCEEDED(Cryptographic_Buffer_Statics->ConvertStringToBinary(File_Name.Get(), BinaryStringEncoding_Utf16LE, &Path_Buffer)) &&
-        Path_Buffer &&
-        SUCCEEDED(GetActivationFactory(HString::MakeReference(RuntimeClass_Windows_Security_Cryptography_Core_HashAlgorithmProvider).Get(), &Hash_Provider_Statics)) &&
-        Hash_Provider_Statics &&
-        SUCCEEDED(Hash_Provider_Statics->OpenAlgorithm(HString::MakeReference(L"SHA256").Get(), &Hash_Provider)) &&
-        Hash_Provider &&
-        SUCCEEDED(Hash_Provider->HashData(*Path_Buffer.GetAddressOf(), &Hash_Buffer)) &&
-        Hash_Buffer &&
-        SUCCEEDED(Hash_Buffer->get_Length(&Buffer_Lenght)) &&
-        Buffer_Lenght &&
-        SUCCEEDED(Hash_Provider->get_HashLength(&Hash_Lenght)) &&
-        Hash_Lenght &&
-        Buffer_Lenght == Hash_Lenght &&
-        SUCCEEDED(Cryptographic_Buffer_Statics->EncodeToBase64String(*Hash_Buffer.GetAddressOf(), Path_Hash.GetAddressOf())))
+    //Try to access file by sha256 hashed path in future access list
+    HString Path_Hash;
+    if (SUCCEEDED(Get_Path_Hash(File_Name, Path_Hash)))
     {
         ComPtr<IStorageApplicationPermissionsStatics> Permissions_Manager;
         if (SUCCEEDED(GetActivationFactory(HString::MakeReference(RuntimeClass_Windows_Storage_AccessCache_StorageApplicationPermissions).Get(), &Permissions_Manager)) && Permissions_Manager)
@@ -173,7 +228,7 @@ HRESULT Get_File(HStringReference File_Name, ComPtr<IStorageFile> &File)
             if (SUCCEEDED(Permissions_Manager->get_FutureAccessList(&FutureAccess_List)) &&
                 FutureAccess_List &&
                 SUCCEEDED(FutureAccess_List->GetFileAsync(Path_Hash.Get(), &Async_GetFile_FutureAccess)) &&
-                Await(Async_GetFile_FutureAccess) &&
+                SUCCEEDED(Await(Async_GetFile_FutureAccess)) &&
                 SUCCEEDED(Async_GetFile_FutureAccess->GetResults(&File)) &&
                 File)
                 return S_OK;
@@ -198,32 +253,14 @@ HRESULT Get_Folder(HStringReference Folder_Name, ComPtr<IStorageFolder> &Folder)
             return S_OK;
     }
 
-    //Try to access folder by sha256 hashed path in future access list
-    ComPtr<IBuffer> Path_Buffer;
-    ComPtr<IBuffer> Hash_Buffer;
-    ComPtr<ICryptographicBufferStatics> Cryptographic_Buffer_Statics;
-    ComPtr<IHashAlgorithmProviderStatics> Hash_Provider_Statics;
-    ComPtr<IHashAlgorithmProvider> Hash_Provider;
-    UINT32 Buffer_Lenght = 0;
-    UINT32 Hash_Lenght = 0;
-    HString Path_Hash;
+    //Try to access folder listed by Dir::GetAllFileNames()
+    ComPtr<IStorageItem> Item=Listed_Item_Get(Folder_Name);
+    if (Item && SUCCEEDED(Item.As(&Folder)) && Folder)
+        return S_OK;
 
-    if (SUCCEEDED(GetActivationFactory(HString::MakeReference(RuntimeClass_Windows_Security_Cryptography_CryptographicBuffer).Get(), &Cryptographic_Buffer_Statics)) &&
-        Cryptographic_Buffer_Statics &&
-        SUCCEEDED(Cryptographic_Buffer_Statics->ConvertStringToBinary(Folder_Name.Get(), BinaryStringEncoding_Utf16LE, &Path_Buffer)) &&
-        Path_Buffer &&
-        SUCCEEDED(GetActivationFactory(HString::MakeReference(RuntimeClass_Windows_Security_Cryptography_Core_HashAlgorithmProvider).Get(), &Hash_Provider_Statics)) &&
-        Hash_Provider_Statics &&
-        SUCCEEDED(Hash_Provider_Statics->OpenAlgorithm(HString::MakeReference(L"SHA256").Get(), &Hash_Provider)) &&
-        Hash_Provider &&
-        SUCCEEDED(Hash_Provider->HashData(*Path_Buffer.GetAddressOf(), &Hash_Buffer)) &&
-        Hash_Buffer &&
-        SUCCEEDED(Hash_Buffer->get_Length(&Buffer_Lenght)) &&
-        Buffer_Lenght &&
-        SUCCEEDED(Hash_Provider->get_HashLength(&Hash_Lenght)) &&
-        Hash_Lenght &&
-        Buffer_Lenght == Hash_Lenght &&
-        SUCCEEDED(Cryptographic_Buffer_Statics->EncodeToBase64String(*Hash_Buffer.GetAddressOf(), Path_Hash.GetAddressOf())))
+    //Try to access folder by sha256 hashed path in future access list
+    HString Path_Hash;
+    if (SUCCEEDED(Get_Path_Hash(Folder_Name, Path_Hash)))
     {
         ComPtr<IStorageApplicationPermissionsStatics> Permissions_Manager;
         if (SUCCEEDED(GetActivationFactory(HString::MakeReference(RuntimeClass_Windows_Storage_AccessCache_StorageApplicationPermissions).Get(), &Permissions_Manager)) && Permissions_Manager)
@@ -232,8 +269,8 @@ HRESULT Get_Folder(HStringReference Folder_Name, ComPtr<IStorageFolder> &Folder)
             ComPtr<IAsyncOperation<StorageFolder*> > Async_GetFolder_FutureAccess;
             if (SUCCEEDED(Permissions_Manager->get_FutureAccessList(&FutureAccess_List)) &&
                 FutureAccess_List &&
-                SUCCEEDED(FutureAccess_List->GetFolderAsync(Folder_Name.Get(), &Async_GetFolder_FutureAccess)) &&
-                Await(Async_GetFolder_FutureAccess) &&
+                SUCCEEDED(FutureAccess_List->GetFolderAsync(Path_Hash.Get(), &Async_GetFolder_FutureAccess)) &&
+                SUCCEEDED(Await(Async_GetFolder_FutureAccess)) &&
                 SUCCEEDED(Async_GetFolder_FutureAccess->GetResults(&Folder)) &&
                 Folder)
                 return S_OK;
