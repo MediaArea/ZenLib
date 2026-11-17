@@ -118,6 +118,7 @@ libzen.so.0 libzen0v5 #MINVER#
  (c++)"ZenLib::File::Position_Get()@Base" 0.4.23
  (c++)"ZenLib::File::Size_Get()@Base" 0.4.23
  (c++)"ZenLib::File::Size_Get(ZenLib::Ztring const&)@Base" 0.4.23
+ (c++)"ZenLib::File::Sizes_Get(std::vector<ZenLib::Ztring, std::allocator<ZenLib::Ztring> > const&)@Base" 0.4.42
  (c++)"ZenLib::File::Truncate(unsigned long long)@Base" 0.4.23
  (c++)"ZenLib::File::Write(ZenLib::Ztring const&)@Base" 0.4.23
  (c++)"ZenLib::float32_int32s(float, bool)@Base" 0.4.23
