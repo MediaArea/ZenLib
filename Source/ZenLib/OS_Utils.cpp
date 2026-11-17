@@ -461,6 +461,9 @@ std::string FileName_To_Native(const Ztring &File_Name)
 //---------------------------------------------------------------------------
 Ztring FileName_From_Native(const char* File_Name)
 {
+    if (!File_Name)
+        return Ztring(); //As Ztring::From_Local(), e.g. getenv() of a variable which is not set
+
     #if defined(ZENLIB_FILENAME_UTF8_SYSTEM)
         //UTF-8, else with a locale which is neither ASCII nor UTF-8 its encoding (e.g. typed in a terminal using it), bytes which are not valid kept
         if (!FileName_IsUTF8(File_Name) && Local_Other())

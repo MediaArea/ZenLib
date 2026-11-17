@@ -814,6 +814,9 @@ int main(int argc, char* argv[])
         Check(FileName_To_Native(FileName_From_Native("ascii.bin"))=="ascii.bin", "FileName_To_Native(FileName_From_Native(ascii.bin))", "result is "+Printable(FileName_To_Native(FileName_From_Native("ascii.bin"))));
     }
 
+    // No name (e.g. getenv() of a variable which is not set): empty, as From_Local(NULL)
+    Check(FileName_From_Native(NULL).empty(), "FileName_From_Native(NULL)", "not empty");
+
     // Strings which are not valid in the encoding of the locale (UTF-8 with an ASCII locale), with all the locales: same bytes back, not an empty
     // string, not the UTF-8 string of the same characters, and the valid part is decoded, as Python with "surrogateescape"; also as file names,
     // except if they are converted from a locale which is neither ASCII nor UTF-8 (the bytes may depend on the existing files)
