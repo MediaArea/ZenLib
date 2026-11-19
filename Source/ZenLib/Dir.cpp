@@ -397,12 +397,11 @@ ZtringList Dir::GetAllFileNames(const Ztring &Dir_Name_, dirlist_t Options)
             }
 
             //A dir?
-            if (!Dir::Exists(Dir_Name))
-                return ToReturn; //Does not exist
+            bool IsDir=Dir::Exists(Dir_Name);
 
             //open
             std::string Dir_Name_Native=FileName_To_Native(Dir_Name);
-            DIR* Dir=opendir(Dir_Name_Native.c_str());
+            DIR* Dir=IsDir?opendir(Dir_Name_Native.c_str()):NULL;
             if (Dir)
             {
                 //This is a dir
@@ -442,16 +441,38 @@ ZtringList Dir::GetAllFileNames(const Ztring &Dir_Name_, dirlist_t Options)
                 closedir(Dir);
             }
             #if !defined(__ANDROID_API__) || __ANDROID_API__ >= 28
+            else if (IsDir)
+                ToReturn.push_back(Dir_Name); //A directory which can not be read, listed with its name
             else
             {
+                //A name with wildcards, only * and ? of the last path component being wildcards as with Windows (e.g. a folder name with brackets or ?)
+                std::string Pattern;
+                size_t LastComponent_Pos=Dir_Name_Native.rfind('/');
+                LastComponent_Pos=(LastComponent_Pos==std::string::npos)?0:(LastComponent_Pos+1);
+                for (size_t Pos=0; Pos<Dir_Name_Native.size(); Pos++)
+                {
+                    if (Dir_Name_Native[Pos]=='\\' || Dir_Name_Native[Pos]=='[' || (Pos<LastComponent_Pos && (Dir_Name_Native[Pos]=='*' || Dir_Name_Native[Pos]=='?')))
+                        Pattern+='\\';
+                    Pattern+=Dir_Name_Native[Pos];
+                }
+
                 glob_t globbuf;
-                if (glob(FileName_To_Native(Dir_Name).c_str(), GLOB_NOSORT, NULL, &globbuf)==0)
+                if (glob(Pattern.c_str(), 0, NULL, &globbuf)==0)
                 {
                     for (size_t Pos=0; Pos<globbuf.gl_pathc; Pos++)
                     {
                         Ztring File_Name=FileName_From_Native(globbuf.gl_pathv[Pos]);
-                        if (!File_Name.empty() && FileName_To_Native(File_Name)==globbuf.gl_pathv[Pos])
-                            ToReturn.push_back(File_Name);
+                        if (File_Name.empty() || FileName_To_Native(File_Name)!=globbuf.gl_pathv[Pos])
+                            continue;
+                        if (Exists(File_Name))
+                        {
+                            if (Options&Include_Dirs)
+                                ToReturn.push_back(File_Name); //A dir
+                            if (Options&Parse_SubDirs)
+                                ToReturn+=GetAllFileNames(File_Name, Options); //A SubDir
+                        }
+                        else if (Options&Include_Files)
+                            ToReturn.push_back(File_Name); //A file
                     }
                     globfree(&globbuf);
                 }
