@@ -17,6 +17,8 @@
 
 //---------------------------------------------------------------------------
 #include "ZenLib/FileName.h"
+#include "ZenLib/Dir.h"
+#include "ZenLib/File.h"
 #ifdef ZENLIB_USEWX
     #include <wx/filename.h>
 #else //ZENLIB_USEWX
@@ -244,16 +246,29 @@ Ztring FileName::TempFileName_Create(const Ztring &Prefix)
     #else //ZENLIB_USEWX
         #ifdef WINDOWS
             //Wide functions, also without Unicode (UTF-8 text), for the characters which are not in the code page
-            wchar_t Path[MAX_PATH+1];
-            if (!GetTempPathW(MAX_PATH, Path))
+            DWORD Path_Size=GetTempPathW(0, NULL);
+            std::wstring Path(Path_Size, L'\0');
+            if (!Path_Size || !(Path_Size=GetTempPathW(Path_Size, &Path[0])) || Path_Size>=Path.size())
                 return Ztring(); //Problem while getting a temp path
+            Path.resize(Path_Size);
 
             #ifndef WINDOWS_GAMES
-                wchar_t FileName[MAX_PATH+1];
-                if (!GetTempFileNameW(Path, Prefix.To_Unicode().c_str(), 0, FileName))
-                    return Ztring(); //Problem while getting a file name
-
-                return Ztring().From_Unicode(FileName);
+                //Name as GetTempFileNameW() creates it, without its limit of the length of the directory: up to the first 3 characters of
+                //the prefix, a hexadecimal number from the time (the next one if this name exists) and ".tmp", the file is created
+                Ztring Name_Start=Ztring().From_Unicode(Path+Prefix.To_Unicode().substr(0, 3));
+                int16u Unique=(int16u)GetTickCount();
+                for (int32u Try=0; Try<0xFFFF; Try++, Unique++)
+                {
+                    if (!Unique)
+                        Unique++;
+                    Ztring Name=Name_Start+Ztring().From_Number(Unique, 16)+__T(".tmp");
+                    File F;
+                    if (F.Create(Name, false))
+                        return Name;
+                    if (!File::Exists(Name) && !Dir::Exists(Name))
+                        break; //Problem while creating the file
+                }
+                return Ztring(); //Problem while getting a file name
             #else // #ifdef WINDOWS_GAMES
                 return __T("D:\\xxx.txt");
             #endif // #ifdef WINDOWS_GAMES

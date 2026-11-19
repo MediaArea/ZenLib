@@ -480,6 +480,69 @@ Ztring FileName_From_Native(const char* File_Name)
     #endif
 }
 
+#if defined(WINDOWS) && !defined(WINDOWS_UWP) && !defined(ZENLIB_USEWX)
+//---------------------------------------------------------------------------
+//Long paths: without their support by the process, the names for the wide functions are limited to MAX_PATH characters including the null
+//character, 12 less to create a directory (room for a 8.3 name, see CreateDirectoryW()), except with the extended-length prefix, which
+//needs a full path with "\" as separator and without "." or ".." (the name after the prefix is given to the file system as it is)
+static bool FileName_LongPaths_Enabled()
+{
+    #if !defined(WINDOWS_GAMES)
+        //Windows 10 version 1607 and more, LongPathsEnabled in the registry and longPathAware in the manifest of the program (read at the start)
+        typedef BOOLEAN (WINAPI *RtlAreLongPathsEnabled_Type)();
+        HMODULE NtDll=GetModuleHandleW(L"ntdll.dll");
+        if (NtDll)
+        {
+            RtlAreLongPathsEnabled_Type RtlAreLongPathsEnabled=(RtlAreLongPathsEnabled_Type)(void(*)())GetProcAddress(NtDll, "RtlAreLongPathsEnabled");
+            if (RtlAreLongPathsEnabled)
+                return RtlAreLongPathsEnabled()!=FALSE;
+        }
+    #endif //!defined(WINDOWS_GAMES)
+    return false;
+}
+
+//---------------------------------------------------------------------------
+static std::wstring FileName_Wide_LongPath(const std::wstring &Name)
+{
+    //Long paths supported by the process, or a name with a prefix ("\\?\", "\??\", or "\\.\" for a device)
+    static const bool LongPaths_Enabled=FileName_LongPaths_Enabled();
+    if (LongPaths_Enabled || (Name.size()>=4 && Name[0]==L'\\' && (Name[1]==L'\\' || Name[1]==L'?') && (Name[2]==L'?' || Name[2]==L'.') && Name[3]==L'\\'))
+        return Name;
+
+    //Short full paths as they are, without the computation of the full path ("C:\", "\\server\share", also with "/")
+    const size_t Size_Max=MAX_PATH-12-1;
+    if (Name.size()<=Size_Max && ((Name.size()>=3 && Name[1]==L':' && (Name[2]==L'\\' || Name[2]==L'/')) || (Name.size()>=2 && (Name[0]==L'\\' || Name[0]==L'/') && (Name[1]==L'\\' || Name[1]==L'/'))))
+        return Name;
+
+    //Full path as the functions build it (current directory, separators, "." and ".."), with the prefix if it is too long
+    DWORD Size=GetFullPathNameW(Name.c_str(), 0, NULL, NULL);
+    if (!Size)
+        return Name;
+    std::wstring Full(Size, L'\0');
+    Size=GetFullPathNameW(Name.c_str(), Size, &Full[0], NULL);
+    if (!Size || Size>=Full.size())
+        return Name; //Error, or the current directory changed between the 2 calls
+    Full.resize(Size);
+    if (Full.size()<=Size_Max)
+        return Name;
+    if (Full.size()>=3 && Full[1]==L':' && Full[2]==L'\\')
+        return L"\\\\?\\"+Full;
+    if (Full.size()>=3 && Full[0]==L'\\' && Full[1]==L'\\' && Full[2]!=L'?' && Full[2]!=L'.')
+        return L"\\\\?\\UNC"+Full.substr(1);
+    return Name; //e.g. a device
+}
+
+//---------------------------------------------------------------------------
+std::wstring FileName_To_Wide(const Ztring &File_Name)
+{
+    #ifdef UNICODE
+        return FileName_Wide_LongPath(File_Name);
+    #else
+        return FileName_Wide_LongPath(File_Name.To_Unicode());
+    #endif
+}
+#endif
+
 #if defined(WINDOWS) && !defined(WINDOWS_UWP) && !defined(UNICODE) && !defined(ZENLIB_USEWX)
 //---------------------------------------------------------------------------
 //In Ztring.cpp
@@ -492,12 +555,28 @@ std::wstring FileName_To_Wide_Existing(const Ztring &File_Name)
     size_t ASCII_Size=0;
     while (ASCII_Size<File_Name.size() && !((int8u)File_Name[ASCII_Size]&0x80))
         ASCII_Size++;
-    if (ASCII_Size==File_Name.size() || IsCodePageBytes(File_Name.c_str(), File_Name.size()) || GetFileAttributesW(Name.c_str())!=INVALID_FILE_ATTRIBUTES)
+    if (ASCII_Size==File_Name.size() || IsCodePageBytes(File_Name.c_str(), File_Name.size()) || GetFileAttributesW(FileName_Wide_LongPath(Name).c_str())!=INVALID_FILE_ATTRIBUTES)
         return Name;
     std::wstring Name_CodePage=Ztring().From_Local(File_Name.c_str()).To_Unicode();
-    if (Name_CodePage!=Name && GetFileAttributesW(Name_CodePage.c_str())!=INVALID_FILE_ATTRIBUTES)
+    if (Name_CodePage!=Name && GetFileAttributesW(FileName_Wide_LongPath(Name_CodePage).c_str())!=INVALID_FILE_ATTRIBUTES)
         return Name_CodePage;
     return Name;
+}
+#endif
+
+#if defined(WINDOWS) && !defined(WINDOWS_UWP) && !defined(ZENLIB_USEWX)
+//---------------------------------------------------------------------------
+//Name for the wide functions as File and Dir open it: without Unicode, an existing file or directory with the name of
+//FileName_To_Wide_Existing(), else the name of FileName_To_Wide()
+ZENLIB_INTERNAL std::wstring FileName_To_Wide(const Ztring &File_Name, bool Existing)
+{
+    #if !defined(UNICODE)
+        if (Existing)
+            return FileName_Wide_LongPath(FileName_To_Wide_Existing(File_Name));
+    #else
+        (void)Existing;
+    #endif
+    return FileName_To_Wide(File_Name);
 }
 #endif
 
@@ -513,7 +592,7 @@ Ztring Directory_Select_Caption;
 
 #if defined(WINDOWS) && !defined(WINDOWS_UWP) && !defined(WINDOWS_GAMES)
     //Wide functions, also without Unicode (UTF-8 text), for the characters which are not in the code page
-    wchar_t InitDir[MAX_PATH];
+    std::wstring InitDir; //Last selected directory, of any length
 
     int __stdcall ShowOpenFolder_CallbackProc (HWND hwnd, UINT uMsg, LPARAM, LPARAM)
     {
@@ -521,7 +600,7 @@ Ztring Directory_Select_Caption;
         {
             SetWindowTextW(hwnd, Directory_Select_Caption.To_Unicode().c_str());    // Caption
             SendMessageW  (hwnd, BFFM_ENABLEOK, 0, TRUE);
-            SendMessageW  (hwnd, BFFM_SETSELECTIONW, true, (LPARAM)&InitDir);
+            SendMessageW  (hwnd, BFFM_SETSELECTIONW, true, (LPARAM)InitDir.c_str());
         }
         return 0;
     }
@@ -537,6 +616,7 @@ Ztring Directory_Select_Caption;
         BROWSEINFOW     BrowseInfo;
         LPITEMIDLIST    ItemIdList;
         std::wstring    Title_Wide=Title.To_Unicode();
+        wchar_t         DisplayName[MAX_PATH]; //Name of the folder (not its path), size expected by SHBrowseForFolderW()
 
         //Initializing the SHBrowseForFolder function
         if (SHGetMalloc(&Malloc)!=NOERROR)
@@ -546,7 +626,7 @@ Ztring Directory_Select_Caption;
         ZeroMemory(&BrowseInfo, sizeof(BROWSEINFOW));
         BrowseInfo.ulFlags+=BIF_RETURNONLYFSDIRS;
         BrowseInfo.hwndOwner=(HWND)Handle;
-        BrowseInfo.pszDisplayName=InitDir;
+        BrowseInfo.pszDisplayName=DisplayName;
         BrowseInfo.lpszTitle=Title_Wide.c_str();
         BrowseInfo.lpfn=ShowOpenFolder_CallbackProc;
 
@@ -557,12 +637,20 @@ Ztring Directory_Select_Caption;
         ShellFolder->Release();
         if (ItemIdList!=NULL)
         {
-            SHGetPathFromIDListW(ItemIdList, InitDir);
+            //Path of any length (the shell allocator is the one of COM)
+            Ztring ToReturn;
+            PWSTR Path=NULL;
+            if (SUCCEEDED(SHGetNameFromIDList(ItemIdList, SIGDN_FILESYSPATH, &Path)) && Path)
+            {
+                InitDir=Path;
+                ToReturn.From_Unicode(Path);
+                Malloc->Free(Path);
+            }
             Malloc->Free(ItemIdList);
             Malloc->Release();
 
             //The value
-            return Ztring().From_Unicode(InitDir);
+            return ToReturn;
         }
         else
             return Ztring();

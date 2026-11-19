@@ -57,14 +57,12 @@ namespace ZenLib
 {
 
 //---------------------------------------------------------------------------
-//Names for the wide functions of Windows, also without Unicode (UTF-8 text)
+//Names for the wide functions of Windows, also without Unicode (UTF-8 text), with the extended-length prefix if needed (see FileName_To_Wide())
 #if defined(WINDOWS) && !defined(WINDOWS_UWP) && !defined(ZENLIB_USEWX)
+    ZENLIB_INTERNAL std::wstring FileName_To_Wide(const Ztring &File_Name, bool Existing); //In OS_Utils.cpp, also the name of the code page of an existing file without Unicode
     #ifdef UNICODE
-        static inline const std::wstring& FileName_To_Wide(const Ztring &File_Name) {return File_Name;}
-        static inline const std::wstring& FileName_To_Wide_Existing(const Ztring &File_Name) {return File_Name;}
         static inline Ztring FileName_From_Wide(const wchar_t* File_Name) {return File_Name;}
     #else //UNICODE
-        static inline std::wstring FileName_To_Wide(const Ztring &File_Name) {return File_Name.To_Unicode();}
         static inline Ztring FileName_From_Wide(const wchar_t* File_Name) {return Ztring().From_Unicode(File_Name);}
     #endif //UNICODE
 #endif
@@ -330,13 +328,13 @@ ZtringList Dir::GetAllFileNames(const Ztring &Dir_Name_, dirlist_t Options)
                 if (Exists(Dir_Name))
                     Dir_Name=Dir_Pattern(Dir_Name);
 
-                //Path
+                //Path, from the name as given (without the extended-length prefix if not given with it)
                 Ztring Path=FileName::Path_Get(Dir_Name);
                 if (Path.empty())
                 {
-                    DWORD Path_Size=GetFullPathNameW(FileName_To_Wide(Dir_Name).c_str(), 0, NULL, NULL);
+                    DWORD Path_Size=GetFullPathNameW(Dir_Name.To_Unicode().c_str(), 0, NULL, NULL);
                     wchar_t* PathTemp=new wchar_t[Path_Size+1];
-                    if (GetFullPathNameW(FileName_To_Wide(Dir_Name).c_str(), Path_Size+1, PathTemp, NULL))
+                    if (GetFullPathNameW(Dir_Name.To_Unicode().c_str(), Path_Size+1, PathTemp, NULL))
                         Path=FileName::Path_Get(FileName_From_Wide(PathTemp));
                     delete [] PathTemp;
                 }
@@ -527,7 +525,7 @@ bool Dir::Exists(const Ztring &File_Name)
 
                 return false;
             #else
-                DWORD FileAttributes=GetFileAttributesW(FileName_To_Wide_Existing(File_Name).c_str());
+                DWORD FileAttributes=GetFileAttributesW(FileName_To_Wide(File_Name, true).c_str());
 
                 ZENLIB_DEBUG2(   "Dir Exists",
                                     Debug+=", returns "; Debug +=Ztring::ToZtring(((FileAttributes!=INVALID_FILE_ATTRIBUTES) && (FileAttributes&FILE_ATTRIBUTE_DIRECTORY))?1:0).To_UTF8())
@@ -638,13 +636,13 @@ void GetAllFileNames::Start  (const Ztring &Dir_Name_, Dir::dirlist_t Options_)
         if (Dir::Exists(p->Dir_Name))
             p->Dir_Name=Dir_Pattern(p->Dir_Name);
 
-        //Path
+        //Path, from the name as given (without the extended-length prefix if not given with it)
         p->Path=FileName::Path_Get(p->Dir_Name);
         if (p->Path.empty())
         {
-            DWORD Path_Size=GetFullPathNameW(FileName_To_Wide(p->Dir_Name).c_str(), 0, NULL, NULL);
+            DWORD Path_Size=GetFullPathNameW(p->Dir_Name.To_Unicode().c_str(), 0, NULL, NULL);
             wchar_t* PathTemp=new wchar_t[Path_Size+1];
-            if (GetFullPathNameW(FileName_To_Wide(p->Dir_Name).c_str(), Path_Size+1, PathTemp, NULL))
+            if (GetFullPathNameW(p->Dir_Name.To_Unicode().c_str(), Path_Size+1, PathTemp, NULL))
                 p->Path=FileName::Path_Get(FileName_From_Wide(PathTemp));
             delete [] PathTemp;
         }

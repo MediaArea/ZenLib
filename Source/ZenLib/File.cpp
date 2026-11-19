@@ -100,16 +100,9 @@ namespace ZenLib
 {
 
 //---------------------------------------------------------------------------
-//Names for the wide functions of Windows, also without Unicode (UTF-8 text)
+//Names for the wide functions of Windows, also without Unicode (UTF-8 text), with the extended-length prefix if needed (see FileName_To_Wide())
 #if defined(WINDOWS) && !defined(WINDOWS_UWP) && !defined(ZENLIB_USEWX)
-    #ifdef UNICODE
-        static inline const std::wstring& FileName_To_Wide(const Ztring &File_Name) {return File_Name;}
-        static inline const std::wstring& FileName_To_Wide_Existing(const Ztring &File_Name) {return File_Name;}
-        static inline Ztring FileName_From_Wide(const wchar_t* File_Name) {return File_Name;}
-    #else //UNICODE
-        static inline std::wstring FileName_To_Wide(const Ztring &File_Name) {return File_Name.To_Unicode();}
-        static inline Ztring FileName_From_Wide(const wchar_t* File_Name) {return Ztring().From_Unicode(File_Name);}
-    #endif //UNICODE
+    ZENLIB_INTERNAL std::wstring FileName_To_Wide(const Ztring &File_Name, bool Existing); //In OS_Utils.cpp, also the name of the code page of an existing file without Unicode
 #endif
 #if defined(WINDOWS_UWP)
     ZENLIB_INTERNAL Ztring FileName_Item_Get(const Ztring &File_Name); //In FileName.cpp
@@ -398,7 +391,7 @@ bool File::Open (const tstring &File_Name_, access_t Access)
                     default                  : dwDesiredAccess=0;               dwShareMode=0;                                 dwCreationDisposition=0;             break;
                 }
 
-                File_Handle=CreateFileW((Access==Access_Read?FileName_To_Wide_Existing(File_Name):FileName_To_Wide(File_Name)).c_str(), dwDesiredAccess, dwShareMode, NULL, dwCreationDisposition, 0, NULL);
+                File_Handle=CreateFileW(FileName_To_Wide(File_Name, Access==Access_Read).c_str(), dwDesiredAccess, dwShareMode, NULL, dwCreationDisposition, 0, NULL);
                 #if 0 //Disabled
                 if (File_Handle==INVALID_HANDLE_VALUE)
                 {
@@ -1579,7 +1572,7 @@ bool File::Exists(const Ztring &File_Name)
 
                 return false;
             #else
-                DWORD FileAttributes=GetFileAttributesW(FileName_To_Wide_Existing(File_Name).c_str());
+                DWORD FileAttributes=GetFileAttributesW(FileName_To_Wide(File_Name, true).c_str());
 
                 ZENLIB_DEBUG2(      "File Exists",
                                     Debug+=", File_Name="; Debug+=Ztring::ToZtring(((FileAttributes!=INVALID_FILE_ATTRIBUTES) && !(FileAttributes&FILE_ATTRIBUTE_DIRECTORY))?1:0).To_UTF8())
