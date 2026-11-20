@@ -109,6 +109,16 @@ namespace ZenLib
 #endif
 
 //---------------------------------------------------------------------------
+//Index of the opened stream storage for the directory test of Size_Get() (0: not tested, 1: not a directory, 2: directory)
+#if !defined(ZENLIB_USEWX) && defined(ZENLIB_STANDARD)
+    static int File_IsDirectory_Index()
+    {
+        static const int Index=std::ios_base::xalloc();
+        return Index;
+    }
+#endif
+
+//---------------------------------------------------------------------------
 // Debug
 #ifdef ZENLIB_DEBUG
     #include <stdio.h>
@@ -1016,6 +1026,8 @@ int64u File::Size_Get()
         return 0;
 
     #ifdef ZENLIB_USEWX
+        if (wxFileName::DirExists(File_Name.c_str()))
+            return 0; //A directory has no size, as on Windows where it can not be opened
         return ((wxFile*)File_Handle)->Length();
     #else //ZENLIB_USEWX
         #ifdef ZENLIB_STANDARD
@@ -1025,6 +1037,18 @@ int64u File::Size_Get()
             File_Size=lseek(File_Handle, 0, SEEK_END);
             lseek(File_Handle, CurrentPos, SEEK_SET);
             */
+            //A directory has no size, as with Sizes_Get() and on Windows where it can not be opened: the end of a directory is not a size (e.g. 0x7FFFFFFFFFFFFFFF on ext4)
+            long& IsDirectory=((fstream*)File_Handle)->iword(File_IsDirectory_Index()); //Tested once per opened file, a stat() may be a round trip to a server
+            if (!IsDirectory)
+            {
+                struct stat Stat;
+                IsDirectory=(!stat(FileName_To_Native(File_Name).c_str(), &Stat) && S_ISDIR(Stat.st_mode))?2:1;
+            }
+            if (IsDirectory==2)
+            {
+                Size=0;
+                return Size;
+            }
             fstream::pos_type CurrentPos=((fstream*)File_Handle)->tellg();
             if (CurrentPos!=(fstream::pos_type)-1)
             {
