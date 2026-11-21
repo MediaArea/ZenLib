@@ -87,9 +87,9 @@ public:
         if(HowMany>16){
           ret|=ptr[2]<<(16-endbit);
           if(HowMany>24){
-        ret|=ptr[3]<<(24-endbit);
+        ret|=(int32u)ptr[3]<<(24-endbit);
         if(HowMany>32 && endbit){
-          ret|=ptr[4]<<(32-endbit);
+          ret|=(int32u)ptr[4]<<(32-endbit);
         }
           }
         }
