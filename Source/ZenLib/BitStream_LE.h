@@ -32,11 +32,23 @@ public:
                                                                                   buffer(NULL), 
                                                                                   ptr(NULL), 
                                                                                   ptr_BeforeLastCall(NULL), 
-                                                                                  storage(0) {
+                                                                                  storage(0),
+                                                                                  endbyte_BookMark(0),
+                                                                                  endbit_BookMark(0),
+                                                                                  buffer_BookMark(NULL),
+                                                                                  ptr_BookMark(NULL),
+                                                                                  ptr_BeforeLastCall_BookMark(NULL),
+                                                                                  storage_BookMark(0) {
     };
 
     BitStream_LE (const int8u* Buffer_, size_t Size_)                           : BitStream(Buffer_, Size_),
-                                                                                  ptr_BeforeLastCall(NULL) {
+                                                                                  ptr_BeforeLastCall(NULL),
+                                                                                  endbyte_BookMark(0),
+                                                                                  endbit_BookMark(0),
+                                                                                  buffer_BookMark(NULL),
+                                                                                  ptr_BookMark(NULL),
+                                                                                  ptr_BeforeLastCall_BookMark(NULL),
+                                                                                  storage_BookMark(0) {
         Attach(Buffer_, Size_);
     };
 
@@ -124,6 +136,28 @@ public:
         Get(bits);
     }
 
+    void BookMarkPos(bool ToSet)
+    {
+        if (ToSet)
+        {
+            endbyte_BookMark=endbyte;
+            endbit_BookMark=endbit;
+            buffer_BookMark=buffer;
+            ptr_BookMark=ptr;
+            ptr_BeforeLastCall_BookMark=ptr_BeforeLastCall;
+            storage_BookMark=storage;
+        }
+        else
+        {
+            endbyte=endbyte_BookMark;
+            endbit=endbit_BookMark;
+            buffer=buffer_BookMark;
+            ptr=ptr_BookMark;
+            ptr_BeforeLastCall=ptr_BeforeLastCall_BookMark;
+            storage=storage_BookMark;
+        }
+    };
+
     int32u Remain () //How many bits remain?
     {
         return storage*8-(endbyte*8+endbit);
@@ -158,6 +192,13 @@ private :
     const unsigned char *ptr;
     const unsigned char *ptr_BeforeLastCall;
     long storage;
+
+    long endbyte_BookMark;
+    int  endbit_BookMark;
+    const unsigned char *buffer_BookMark;
+    const unsigned char *ptr_BookMark;
+    const unsigned char *ptr_BeforeLastCall_BookMark;
+    long storage_BookMark;
 };
 
 } //namespace ZenLib
