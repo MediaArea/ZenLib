@@ -60,9 +60,44 @@ bool InvalidReadDoesNotChangePreviousOffset()
     return true;
 }
 
+bool PeekDoesNotChangeOffsets()
+{
+    const int8u Data[] = { 0x11, 0x22, 0x33 };
+    BitStream_LE Stream_LE(Data, sizeof(Data));
+    BitStream& Stream=Stream_LE; //Used through the base class, as by MediaInfoLib
+
+    if (!Check(Stream.Get(12)==0x211, "Initial read returned an unexpected value"))
+        return false;
+
+    const auto Remain=Stream.Remain();
+    const auto Offset=Stream.Offset_Get();
+    const auto BitOffset=Stream.BitOffset_Get();
+    const auto PreviousOffset=Stream.OffsetBeforeLastCall_Get();
+
+    if (!Check(Stream.Peek(8)==0x32, "A peek returned an unexpected value"))
+        return false;
+    Stream.Peek(32); //Past the end
+
+    if (!Check(Stream.Remain()==Remain, "A peek changed the remaining bit count"))
+        return false;
+    if (!Check(Stream.Offset_Get()==Offset, "A peek changed the byte offset"))
+        return false;
+    if (!Check(Stream.BitOffset_Get()==BitOffset, "A peek changed the bit offset"))
+        return false;
+    if (!Check(Stream.OffsetBeforeLastCall_Get()==PreviousOffset, "A peek changed the previous-call offset"))
+        return false;
+
+    if (!Check(Stream.Get(8)==0x32, "The read after a peek returned an unexpected value"))
+        return false;
+
+    return true;
+}
+
 } // unnamed namespace
 
 int main()
 {
-    return InvalidReadDoesNotChangePreviousOffset() ? 0 : 1;
+    if (!InvalidReadDoesNotChangePreviousOffset())
+        return 1;
+    return PeekDoesNotChangeOffsets() ? 0 : 1;
 }
