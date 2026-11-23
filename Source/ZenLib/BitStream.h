@@ -302,7 +302,7 @@ public:
         return (int64u)Peek(HowMany);
     }
 
-    void BookMarkPos(bool ToSet)
+    virtual void BookMarkPos(bool ToSet)
     {
         if (ToSet)
         {
