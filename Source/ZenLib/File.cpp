@@ -271,6 +271,9 @@ bool File::Open (const tstring &File_Name_, access_t Access)
 
     File_Name=File_Name_;
 
+    if (File_Name.empty())
+        return false;
+
     #ifdef ZENLIB_USEWX
         File_Handle=(void*)new wxFile();
         if (((wxFile*)File_Handle)->Open(File_Name.c_str(), (wxFile::OpenMode)Access)==0)
@@ -1542,6 +1545,9 @@ bool File::Exists(const Ztring &File_Name)
 {
     ZENLIB_DEBUG1(      "File Exists",
                         Debug+=", File_Name="; Debug+=Ztring(File_Name).To_UTF8())
+
+    if (File_Name.empty())
+        return false;
 
     #ifdef ZENLIB_USEWX
         wxFileName FN(File_Name.c_str());

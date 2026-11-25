@@ -963,6 +963,11 @@ int main(int argc, char* argv[])
                 Check(FileName::Absolute_Get("C:\\\x95\x5C\\..\\a")==Ztring("C:\\a"), "FileName::Absolute_Get(), bytes of the code page", "wrong name");
             }
         #endif
+        Check(!File::Exists(Ztring()), "File::Exists() without name", "found");
+        {
+            File F;
+            Check(!F.Open(Ztring()) && !F.Opened_Get(), "File::Open() without name", "opened");
+        }
     }
 
     // ASCII text is the same with all locales
