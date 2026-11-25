@@ -17,6 +17,7 @@
 
 //---------------------------------------------------------------------------
 #ifdef ZENLIB_USEWX
+    #include <wx/filename.h>
 #else //ZENLIB_USEWX
     #ifdef WINDOWS
         #undef __TEXT
@@ -43,6 +44,10 @@
             #include <shlobj.h>
             #include <shellapi.h>
         #endif
+    #else //WINDOWS
+        #include <cerrno>
+        #include <unistd.h>
+        #include <vector>
     #endif
 #endif //ZENLIB_USEWX
 #include "ZenLib/OS_Utils.h"
@@ -480,6 +485,47 @@ Ztring FileName_From_Native(const char* File_Name)
     #endif
 }
 
+#if defined(WINDOWS) && !defined(ZENLIB_USEWX)
+//---------------------------------------------------------------------------
+//Full path as the functions build it (current directory, separators, "." and ".."), empty if it is unknown
+static std::wstring FileName_Wide_Full(const std::wstring &Name)
+{
+    DWORD Size=GetFullPathNameW(Name.c_str(), 0, NULL, NULL);
+    if (!Size)
+        return std::wstring();
+    std::wstring Full(Size, L'\0');
+    Size=GetFullPathNameW(Name.c_str(), Size, &Full[0], NULL);
+    if (!Size || Size>=Full.size())
+        return std::wstring(); //Error, or the current directory changed between the 2 calls
+    Full.resize(Size);
+    return Full;
+}
+#endif
+
+//---------------------------------------------------------------------------
+//Current folder (real path, on Windows the path as it was set), or the one of a drive ("C:") on Windows, empty if it is unknown
+ZENLIB_INTERNAL Ztring CurrentFolder_Get(const Ztring &Drive)
+{
+    #ifdef ZENLIB_USEWX
+        //For a drive, wxFileName::GetCwd() sets the current folder of the process to this drive then back: not thread safe
+        return wxFileName::GetCwd(Ztring(Drive, 0, 1).c_str()).c_str();
+    #else //ZENLIB_USEWX
+        #ifdef WINDOWS
+            return Ztring().From_Unicode(FileName_Wide_Full(Drive.To_Unicode()+L".\\")); //"." alone gives "C:" if the current folder is "C:\"
+        #else
+            (void)Drive;
+            std::vector<char> Folder(1024);
+            while (!getcwd(&Folder[0], Folder.size()))
+            {
+                if (errno!=ERANGE || Folder.size()>=0x100000) //Some systems (e.g. FreeBSD) also give ERANGE for a folder longer than PATH_MAX
+                    return Ztring();
+                Folder.resize(Folder.size()*2);
+            }
+            return FileName_From_Native(&Folder[0]);
+        #endif
+    #endif //ZENLIB_USEWX
+}
+
 #if defined(WINDOWS) && !defined(WINDOWS_UWP) && !defined(ZENLIB_USEWX)
 //---------------------------------------------------------------------------
 //Long paths: without their support by the process, the names for the wide functions are limited to MAX_PATH characters including the null
@@ -514,15 +560,8 @@ static std::wstring FileName_Wide_LongPath(const std::wstring &Name)
     if (Name.size()<=Size_Max && ((Name.size()>=3 && Name[1]==L':' && (Name[2]==L'\\' || Name[2]==L'/')) || (Name.size()>=2 && (Name[0]==L'\\' || Name[0]==L'/') && (Name[1]==L'\\' || Name[1]==L'/'))))
         return Name;
 
-    //Full path as the functions build it (current directory, separators, "." and ".."), with the prefix if it is too long
-    DWORD Size=GetFullPathNameW(Name.c_str(), 0, NULL, NULL);
-    if (!Size)
-        return Name;
-    std::wstring Full(Size, L'\0');
-    Size=GetFullPathNameW(Name.c_str(), Size, &Full[0], NULL);
-    if (!Size || Size>=Full.size())
-        return Name; //Error, or the current directory changed between the 2 calls
-    Full.resize(Size);
+    //Full path, with the prefix if it is too long
+    std::wstring Full=FileName_Wide_Full(Name);
     if (Full.size()<=Size_Max)
         return Name;
     if (Full.size()>=3 && Full[1]==L':' && Full[2]==L'\\')

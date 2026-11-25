@@ -292,6 +292,18 @@ static FILE* Open_Raw(const std::string& Path)
     return _wfopen_s(&F, To_Wide(Path).c_str(), L"wb")?NULL:F;
 }
 
+static bool Change_Directory(const std::string& Path)
+{
+    return SetCurrentDirectoryW(To_Wide(Path).c_str())!=0;
+}
+
+static Ztring Current_Directory()
+{
+    wchar_t ToReturn[32768];
+    DWORD Size=GetCurrentDirectoryW(32768, ToReturn);
+    return Size && Size<32768?Ztring().From_Unicode(ToReturn):Ztring();
+}
+
 static bool Create_Raw_Directory(const std::string& Path)
 {
     return !_wmkdir(To_Wide(Path).c_str());
@@ -308,6 +320,17 @@ static bool Exists_Raw(const std::string& Path, bool IsDirectory=false)
 static FILE* Open_Raw(const std::string& Path)
 {
     return fopen(Path.c_str(), "wb");
+}
+
+static bool Change_Directory(const std::string& Path)
+{
+    return !chdir(Path.c_str());
+}
+
+static Ztring Current_Directory()
+{
+    char ToReturn[4096];
+    return getcwd(ToReturn, sizeof(ToReturn))?FileName_From_Native(ToReturn):Ztring();
 }
 
 static bool Create_Raw_Directory(const std::string& Path)
@@ -367,6 +390,23 @@ struct volume_file
     size_t      Size;
     std::string Typed;
 };
+
+// Names related to a name, with the levels up 0 and 1, NULL if it depends on the current directory
+struct related_names
+{
+    const char* Name;
+    const char* FullName;
+    const char* FolderName[2];
+    const char* FolderPath[2];
+    const char* FromFolder[2]; // of "new"
+    const char* Absolute;
+};
+
+static void Check_Related(const char* Expected, const Ztring& Result, const std::string& Function, const char* Name)
+{
+    if (Expected)
+        Check(Result==From_UTF8(Expected), "FileName::"+Function+"("+Printable(Name)+")", "result is "+Printable(Result.To_UTF8())+" instead of "+Printable(Expected));
+}
 
 static void Volume_Add(std::vector<volume_file>& Files, const std::string& Raw, size_t Size, const std::string& Typed)
 {
@@ -806,6 +846,125 @@ int main(int argc, char* argv[])
         }
     }
 
+    // Names related to a name
+    {
+        static const related_names Related[]=
+        {
+            {"",                        "",             {"", ""},               {"", ""},                   {"", ""},                           ""},
+            {"name.ext",                "name.ext",     {NULL, NULL},           {".", ".."},                {"new", "../new"},                  NULL},
+            {"./name",                  "name",         {NULL, NULL},           {".", ".."},                {"./new", "../new"},                NULL},
+            {"../name",                 "name",         {NULL, NULL},           {"..", "../.."},            {"../new", "../../new"},            NULL},
+            {"dir/name",                "name",         {"dir", NULL},          {"dir", "."},               {"dir/new", "new"},                 NULL},
+            {"dir/",                    "",             {"dir", NULL},          {"dir", "."},               {"dir/new", "new"},                 NULL},
+            {"dir//./sub/../name",      "name",         {"dir", NULL},          {"dir//./sub/..", "dir//./sub/../.."}, {"dir//./sub/../new", "dir//./sub/../../new"}, NULL},
+            {"dir//./name",             "name",         {"dir", NULL},          {"dir//.", "."},            {"dir//./new", "new"},              NULL},
+            {"/dir/sub/name.ext",       "name.ext",     {"sub", "dir"},         {"/dir/sub", "/dir"},       {"/dir/sub/new", "/dir/new"},       "/dir/sub/name.ext"},
+            {"/name",                   "name",         {"", ""},               {"/", "/.."},               {"/new", "/../new"},                "/name"},
+            {"/",                       "",             {"", ""},               {"/", "/.."},               {"/new", "/../new"},                "/"},
+            {"/../dir/.././..//sub/",   "",             {"sub", ""},            {"/../dir/.././..//sub", "/../dir/.././.."}, {"/../dir/.././..//sub/new", "/../dir/.././..//new"}, "/sub"},
+            {"/dir/..",                 "..",           {"dir", ""},            {"/dir", "/"},              {"/dir/new", "/new"},               "/"},
+            {"/dir/...",                "...",          {"dir", ""},            {"/dir", "/"},              {"/dir/new", "/new"},               "/dir/..."},
+            {"http://server/dir/name",  "name",         {"dir", "server"},      {"http://server/dir", "http://server"}, {"http://server/dir/new", "http://server/new"}, "http://server/dir/name"},
+            #if defined(_WIN32)
+            {"dir\\name",               "name",         {"dir", NULL},          {"dir", "."},               {"dir\\new", "new"},                NULL},
+            {"C:\\dir/sub\\name.ext",   "name.ext",     {"sub", "dir"},         {"C:\\dir/sub", "C:\\dir"}, {"C:\\dir/sub\\new", "C:\\dir/new"}, "C:\\dir\\sub\\name.ext"},
+            {"C:/../dir//./../name",    "name",         {"", ""},               {"C:/../dir//./..", "C:/../dir//./../.."}, {"C:/../dir//./../new", "C:/../dir//./../..\\new"}, "C:\\name"},
+            {"C://dir/name",            "name",         {"dir", ""},            {"C://dir", "C:/"},         {"C://dir/new", "C://new"},         "C:\\dir\\name"},
+            {"C:name",                  "name",         {NULL, NULL},           {"C:", "C:.."},             {"C:new", "C:..\\new"},             NULL},
+            {"C:dir\\name",             "name",         {"dir", NULL},          {"C:dir", "C:"},            {"C:dir\\new", "C:new"},            NULL},
+            {"\\\\server\\share\\dir\\name", "name",    {"dir", ""},            {"\\\\server\\share\\dir", "\\\\server\\share\\"}, {"\\\\server\\share\\dir\\new", "\\\\server\\share\\new"}, "\\\\server\\share\\dir\\name"},
+            {"//server/share/../dir/name", "name",      {"dir", ""},            {"//server/share/../dir", "//server/share/.."}, {"//server/share/../dir/new", "//server/share/../new"}, "\\\\server\\share\\dir\\name"},
+            {"\\\\server\\share\\name", "name",         {"", ""},               {"\\\\server\\share\\", "\\\\server\\share\\.."}, {"\\\\server\\share\\new", "\\\\server\\share\\..\\new"}, "\\\\server\\share\\name"},
+            {"\\\\?\\C:\\dir\\..\\sub\\.\\name", "name", {"sub", ""},           {"\\\\?\\C:\\sub", "\\\\?\\C:\\"}, {"\\\\?\\C:\\sub\\new", "\\\\?\\C:\\new"}, "\\\\?\\C:\\sub\\name"},
+            {"\\\\?\\C:\\name",         "name",         {"", ""},               {"\\\\?\\C:\\", "\\\\?\\C:\\"}, {"\\\\?\\C:\\new", "\\\\?\\C:\\new"}, "\\\\?\\C:\\name"},
+            {"\\\\?\\UNC\\server\\share\\dir\\sub\\name", "name", {"sub", "dir"}, {"\\\\?\\UNC\\server\\share\\dir\\sub", "\\\\?\\UNC\\server\\share\\dir"}, {"\\\\?\\UNC\\server\\share\\dir\\sub\\new", "\\\\?\\UNC\\server\\share\\dir\\new"}, "\\\\?\\UNC\\server\\share\\dir\\sub\\name"},
+            {"\\\\?\\UNC\\server\\share\\..\\name", "name", {"", ""},           {"\\\\?\\UNC\\server\\share\\", "\\\\?\\UNC\\server\\share\\"}, {"\\\\?\\UNC\\server\\share\\new", "\\\\?\\UNC\\server\\share\\new"}, "\\\\?\\UNC\\server\\share\\name"},
+            #else
+            {"dir\\name",               "dir\\name",    {NULL, NULL},           {".", ".."},                {"new", "../new"},                  NULL},
+            {"//dir/C:name",            "C:name",       {"dir", ""},            {"//dir", "/"},             {"//dir/new", "//new"},             "/dir/C:name"},
+            {"/dir/c://name",           "name",         {"c:", "dir"},          {"/dir/c:", "/dir"},        {"/dir/c://new", "/dir/new"},       "/dir/c:/name"},
+            #endif
+        };
+        for (size_t i=0; i<sizeof(Related)/sizeof(*Related); i++)
+        {
+            const related_names& Names_Expected=Related[i];
+            Ztring Path=From_UTF8(Names_Expected.Name);
+            Check_Related(Names_Expected.FullName, FileName::FullName_Get(Path), "FullName_Get", Names_Expected.Name);
+            for (size_t Levels_Up=0; Levels_Up<2; Levels_Up++)
+            {
+                std::string Shown(Levels_Up?", 1 level up":"");
+                Check_Related(Names_Expected.FolderName[Levels_Up], FileName::FolderName_Get(Path, Levels_Up), "FolderName_Get"+Shown, Names_Expected.Name);
+                #if defined(_WIN32)
+                    // Folders added by the function with the path separator of the system
+                    Ztring FolderPath=FileName::FolderPath_Get(Path, Levels_Up), FromFolder=FileName::FromFolder_Get(Path, __T("new"), Levels_Up);
+                    if (Path.find(__T('\\'))==Ztring::npos && Path.find(__T(':'))==Ztring::npos)
+                    {
+                        FolderPath.FindAndReplace(__T("\\"), __T("/"), 0, Ztring_Recursive);
+                        FromFolder.FindAndReplace(__T("\\"), __T("/"), 0, Ztring_Recursive);
+                    }
+                #else
+                    Ztring FolderPath=FileName::FolderPath_Get(Path, Levels_Up), FromFolder=FileName::FromFolder_Get(Path, __T("new"), Levels_Up);
+                #endif
+                Check_Related(Names_Expected.FolderPath[Levels_Up], FolderPath, "FolderPath_Get"+Shown, Names_Expected.Name);
+                Check_Related(Names_Expected.FromFolder[Levels_Up], FromFolder, "FromFolder_Get"+Shown, Names_Expected.Name);
+            }
+            #if defined(_WIN32)
+                if (Names_Expected.Name[0]=='/' && Names_Expected.Name[1]!='/')
+                    continue; // From the root of the current drive, see below
+            #endif
+            Check_Related(Names_Expected.Absolute, FileName::Absolute_Get(Path), "Absolute_Get", Names_Expected.Name);
+        }
+        Check(FileName::FolderName_Get(__T("http://name"), 3).empty(), "FileName::FolderName_Get(http://name)", "not empty");
+        Check(FileName::FolderName_Get(__T("http://server/dir/name"), 2).empty() && FileName::FolderName_Get(__T("http://server/name"))==__T("server") && FileName::FolderName_Get(__T("http://server/name"), 1).empty() && FileName::FolderName_Get(__T("http://name")).empty(), "FileName::FolderName_Get(http://server/dir/name) above the host", "not empty");
+
+        // Roots
+        static const char* const Roots[][2]=
+        {
+            {"",                        ""},
+            {"name",                    ""},
+            {"dir/name",                ""},
+            {"../name",                 ""},
+            {"/dir/name",               "/"},
+            {"/",                       "/"},
+            {"http://server/dir/name",  ""},
+            #if defined(_WIN32)
+            {"C:\\dir\\name",           "C:\\"},
+            {"C:/dir",                  "C:/"},
+            {"C:name",                  "C:"},
+            {"C:",                      "C:"},
+            {"\\dir\\name",             "\\"},
+            {"\\\\server\\share\\dir\\name", "\\\\server\\share\\"},
+            {"//server/share/dir/name", "//server/share/"},
+            {"\\\\server",              "\\\\server"},
+            {"\\\\?\\C:\\dir\\name",    "\\\\?\\C:\\"},
+            {"\\\\?\\UNC\\server\\share\\dir\\name", "\\\\?\\UNC\\server\\share\\"},
+            #else
+            {"//dir/name",              "/"},
+            {"C:\\dir\\name",           ""},
+            {"a:b.mp4",                 ""},
+            {"\\\\server\\share\\name", ""},
+            #endif
+        };
+        for (size_t i=0; i<sizeof(Roots)/sizeof(*Roots); i++)
+            Check_Related(Roots[i][1], FileName::Root_Get(From_UTF8(Roots[i][0])), "Root_Get", Roots[i][0]);
+        #if defined(_WIN32)
+            Check(FileName::ExtendedLength_Get(__T("\\\\?\\C:\\dir\\..\\sub\\.\\\\"))==__T("\\\\?\\C:\\sub\\"), "FileName::ExtendedLength_Get()", "wrong name");
+            Check(FileName::ExtendedLength_Get(__T("C:\\dir\\..\\sub"))==__T("C:\\dir\\..\\sub"), "FileName::ExtendedLength_Get() of another form", "changed");
+        #else
+            Check(FileName::ExtendedLength_Get(__T("\\\\?\\C:\\dir\\..\\sub"))==__T("\\\\?\\C:\\dir\\..\\sub"), "FileName::ExtendedLength_Get()", "changed");
+        #endif
+        Check(FileName::FullName_RFind(__T("a_b/c_d_e"), __T('_'))==7 && FileName::FullName_RFind(__T("a_b/cde"), __T('_'))==Ztring::npos && FileName::FullName_RFind(__T(""), __T('_'))==Ztring::npos, "FileName::FullName_RFind()", "wrong position");
+        #if defined(_WIN32) && !defined(UNICODE)
+            if (GetACP()==932) // The second byte of the characters is "\" and "_"
+            {
+                Ztring Path("a\\b_\x95\x5C\\c_\x83\x5F.ext");
+                Check(FileName::FullName_Get(Path)==Ztring("c_\x83\x5F.ext") && FileName::FullName_RFind(Path, '_')==8, "FileName::FullName_Get(), bytes of the code page", "wrong name or position");
+                Check(FileName::FolderName_Get(Path)==Ztring("b_\x95\x5C") && FileName::FolderName_Get(Path, 1)==Ztring("a") && FileName::FolderPath_Get(Path, 1)==Ztring("a") && FileName::FromFolder_Get(Path, "new", 1)==Ztring("a\\new"), "FileName::FolderName_Get(), bytes of the code page", "wrong names");
+                Check(FileName::Absolute_Get("C:\\\x95\x5C\\..\\a")==Ztring("C:\\a"), "FileName::Absolute_Get(), bytes of the code page", "wrong name");
+            }
+        #endif
+    }
+
     // ASCII text is the same with all locales
     {
         Ztring Wide;
@@ -1171,6 +1330,96 @@ int main(int argc, char* argv[])
             }
         }
     #endif //!defined(_WIN32) && (!defined(__ANDROID_API__) || __ANDROID_API__ >= 28)
+
+    // Current directory, also not ASCII, for the names related to a name which is not from the root
+    std::string Current_Path=Directory+"/current";
+    if (!Create_Raw_Directory(Current_Path) || !Create_Raw_Directory(Current_Path+"/sub"))
+        Check(false, "internal", "can't create "+Printable(Current_Path));
+    for (size_t i=0; i<=Names_Size; i++)
+    {
+        std::string Path=Current_Path+(i?std::string("/current_")+Names[i-1]:"");
+        std::string Name=Path.substr(Path.rfind('/')+1);
+        std::string Shown=Printable(Name);
+        if ((i && !Create_Raw_Directory(Path)) || !Create_Raw(Path+"/name") || !Change_Directory(Path))
+        {
+            Check(false, "internal", "can't use "+Printable(Path));
+            continue;
+        }
+        Ztring Current=Current_Directory();
+        Ztring Name_Z=FileName::FullName_Get(Current);
+        Ztring Parent=Ztring(Current, 0, Current.size()-Name_Z.size());
+        Ztring Separator(1, PathSeparator);
+        #if defined(_WIN32)
+            Check(Name_Z==From_UTF8(Name), "current directory "+Shown, "result is "+Printable(Name_Z.To_UTF8()));
+        #else
+            Check(FileName_To_Native(Name_Z)==Name, "current directory "+Shown, "result is "+Printable(Name_Z.To_UTF8()));
+        #endif
+        Check(FileName::Absolute_Get(__T("name"))==Current+Separator+__T("name") && FileName::Absolute_Get(__T("./dir//../name"))==Current+Separator+__T("name"), "FileName::Absolute_Get(name) from "+Shown, "result is "+Printable(FileName::Absolute_Get(__T("name")).To_UTF8()));
+        Check(FileName::Absolute_Get(__T("."))==Current && FileName::Absolute_Get(__T("dir/.."))==Current, "FileName::Absolute_Get(.) from "+Shown, "result is "+Printable(FileName::Absolute_Get(__T(".")).To_UTF8()));
+        Check(FileName::Absolute_Get(__T("../name"))==Parent+__T("name"), "FileName::Absolute_Get(../name) from "+Shown, "result is "+Printable(FileName::Absolute_Get(__T("../name")).To_UTF8()));
+        Check(FileName::FolderName_Get(__T("name"))==Name_Z && FileName::FolderName_Get(__T("./name"))==Name_Z && FileName::FolderName_Get(__T("dir/../name"))==Name_Z && FileName::FolderName_Get(__T("dir/name"), 1)==Name_Z, "FileName::FolderName_Get(name) from "+Shown, "result is "+Printable(FileName::FolderName_Get(__T("name")).To_UTF8()));
+        Ztring Parent_Name=FileName::FolderName_Get(Current);
+        Check(!Parent_Name.empty() && FileName::FolderName_Get(__T("name"), 1)==Parent_Name && FileName::FolderName_Get(__T("../name"))==Parent_Name, "FileName::FolderName_Get(../name) from "+Shown, "result is "+Printable(FileName::FolderName_Get(__T("../name")).To_UTF8()));
+        Check(FileName::FolderName_Get(__T("name"), 100).empty(), "FileName::FolderName_Get(name) above the root from "+Shown, "not empty");
+        Check(File::Exists(FileName::Absolute_Get(__T("name"))), "File::Exists(FileName::Absolute_Get(name)) from "+Shown, "not found");
+        #if defined(_WIN32)
+            if (Current.size()>2 && Current[1]==__T(':'))
+            {
+                Ztring Drive(Current, 0, 2);
+                Check(FileName::Absolute_Get(Drive+__T("name"))==Current+Separator+__T("name") && FileName::FolderName_Get(Drive+__T("name"))==Name_Z, "FileName::Absolute_Get(name of the drive) from "+Shown, "result is "+Printable(FileName::Absolute_Get(Drive+__T("name")).To_UTF8()));
+                Check(FileName::Absolute_Get(__T("\\dir/..\\name"))==Drive+__T("\\name") && FileName::Absolute_Get(__T("/name"))==Drive+__T("\\name"), "FileName::Absolute_Get(\\name) from "+Shown, "result is "+Printable(FileName::Absolute_Get(__T("\\name")).To_UTF8()));
+            }
+        #endif
+    }
+    // Current directory which is a root
+    {
+        Ztring Root=Current_Directory();
+        Ztring Separator(1, PathSeparator);
+        #if defined(_WIN32)
+            size_t Root_Size=Root.size()>2 && Root[1]==__T(':')?3:Root.size(); // Of the drive, the directory of the tests may also be on a share
+        #else
+            size_t Root_Size=1;
+        #endif
+        Root.resize(Root_Size);
+        if (!Change_Directory(Root.To_UTF8()))
+            Check(false, "internal", "can't use "+Printable(Root.To_UTF8()));
+        else if (Current_Directory()==Root && Root[Root_Size-1]==PathSeparator)
+        {
+            Check(FileName::Absolute_Get(__T("name"))==Root+__T("name") && FileName::Absolute_Get(__T("./name"))==Root+__T("name") && FileName::Absolute_Get(__T("../dir//../name"))==Root+__T("name") && FileName::Absolute_Get(__T("dir/name"))==Root+__T("dir")+Separator+__T("name"), "FileName::Absolute_Get(name) from a root", "result is "+Printable(FileName::Absolute_Get(__T("name")).To_UTF8()));
+            Check(FileName::Absolute_Get(__T("."))==Root && FileName::Absolute_Get(__T(".."))==Root && FileName::Absolute_Get(__T("dir/.."))==Root, "FileName::Absolute_Get(.) from a root", "result is "+Printable(FileName::Absolute_Get(__T(".")).To_UTF8()));
+            Check(FileName::Absolute_Get(Separator+__T("dir")+Separator+__T("name"))==Root+__T("dir")+Separator+__T("name"), "FileName::Absolute_Get(name from the root) from a root", "result is "+Printable(FileName::Absolute_Get(Separator+__T("dir")+Separator+__T("name")).To_UTF8()));
+            Check(FileName::FolderName_Get(__T("name")).empty() && FileName::FolderName_Get(__T("../name")).empty() && FileName::FolderName_Get(__T("dir/name"))==__T("dir") && FileName::FolderName_Get(__T("dir/name"), 1).empty(), "FileName::FolderName_Get(name) from a root", "result is "+Printable(FileName::FolderName_Get(__T("name")).To_UTF8()));
+            #if defined(_WIN32)
+                Ztring Drive(Root, 0, 2);
+                Check(FileName::Absolute_Get(Drive+__T("name"))==Root+__T("name") && FileName::Absolute_Get(Drive)==Root && FileName::FolderName_Get(Drive+__T("name")).empty(), "FileName::Absolute_Get(name of the drive) from a root", "result is "+Printable(FileName::Absolute_Get(Drive+__T("name")).To_UTF8()));
+            #endif
+        }
+    }
+    #if !defined(_WIN32)
+    {
+        // Current directory reached through a symbolic link: its real path, whatever PWD, as ".." for the system
+        std::string Target=Current_Path+"/sub/target";
+        std::string Link=Current_Path+"/link";
+        if (!Create_Raw_Directory(Target) || !Create_Raw(Target+"/name") || symlink("sub/target", Link.c_str()) || setenv("PWD", Link.c_str(), 1) || !Change_Directory(Link))
+            Check(false, "internal", "can't use "+Printable(Link));
+        else
+        {
+            Ztring Current=Current_Directory();
+            Check(FileName::Absolute_Get(__T("name"))==Current+__T("/name") && FileName::FolderName_Get(__T("name"))==__T("target") && FileName::FolderName_Get(__T("../name"))==__T("sub"), "FileName::Absolute_Get(name) from a symbolic link", "result is "+Printable(FileName::Absolute_Get(__T("name")).To_UTF8()));
+        }
+
+        // Current directory deleted: unknown
+        std::string Deleted=Current_Path+"/deleted";
+        if (!Create_Raw_Directory(Deleted) || !Change_Directory(Deleted))
+            Check(false, "internal", "can't use "+Printable(Deleted));
+        else if (!rmdir(Deleted.c_str())) // Not accepted by all systems
+        {
+            Check(FileName::Absolute_Get(__T("dir/../name"))==__T("dir/../name"), "FileName::Absolute_Get(name) from a deleted directory", "result is "+Printable(FileName::Absolute_Get(__T("dir/../name")).To_UTF8()));
+            Check(FileName::FolderName_Get(__T("name")).empty() && FileName::FolderName_Get(__T("dir/name"))==__T("dir"), "FileName::FolderName_Get(name) from a deleted directory", "result is "+Printable(FileName::FolderName_Get(__T("name")).To_UTF8()));
+        }
+    }
+    #endif //!defined(_WIN32)
+    Change_Directory(Directory); // Not in a directory to delete
 
     if (!Status)
         printf("OK: %u checks\n", (unsigned)Checks);

@@ -338,6 +338,41 @@ int main(int argc, char* argv[])
         Check(Size_Raw(Long_Directory+"/network.txt")==10, "File::Create() of a network path", "not created");
     }
 
+    // Names related to a name from a current directory longer than MAX_PATH (needs the support of long paths by the process on Windows), also
+    // than PATH_MAX elsewhere (the system may not give its name, then it is unknown)
+    if (!Change_Directory(Directory))
+        Check(false, "internal", "current directory not changed");
+    #if defined(_WIN32)
+        std::string Current=LongPaths?Slashes(Directory)+"/"+Relative_Directory:std::string();
+        if (!Current.empty() && !SetCurrentDirectoryW(Raw_Name(Current).c_str()+4))
+            Check(false, "internal", "long current directory not changed");
+    #else
+        std::string Current=S(FileName::Absolute_Get(Z(".")));
+        for (int i=0; i<30; i++)
+        {
+            std::string Name(200, 'x');
+            Current+="/"+Name;
+            if (!Create_Raw_Directory(Name) || !Change_Directory(Name))
+            {
+                Check(false, "internal", "long current directory not changed");
+                break;
+            }
+        }
+    #endif
+    if (!Current.empty())
+    {
+        std::string Absolute=Slashes(S(FileName::Absolute_Get(Z("name"))));
+        bool IsUnknown=false;
+        #if !defined(_WIN32) && !defined(__GLIBC__)
+            IsUnknown=Absolute=="name";
+        #endif
+        Check(IsUnknown || Absolute==Current+"/name", "FileName::Absolute_Get() from a long current directory", "result is "+Absolute);
+        std::string Folder=Current.substr(Current.rfind('/')+1);
+        Check(S(FileName::FolderName_Get(Z("name")))==(IsUnknown?"":Folder), "FileName::FolderName_Get() from a long current directory", "result is "+S(FileName::FolderName_Get(Z("name"))));
+        Check(S(FileName::FolderName_Get(Z("../dir/name"))) =="dir" && S(FileName::FolderPath_Get(Z("name"), 1))=="..", "FileName::FolderName_Get() with the folder from a long current directory", "wrong names");
+    }
+    Change_Directory(Directory); // Not in a directory to delete
+
     printf("OK: %u checks\n", (unsigned)Checks);
     return Status;
 }
