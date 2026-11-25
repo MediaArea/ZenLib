@@ -371,6 +371,11 @@ int main(int argc, char* argv[])
         Check(S(FileName::FolderName_Get(Z("name")))==(IsUnknown?"":Folder), "FileName::FolderName_Get() from a long current directory", "result is "+S(FileName::FolderName_Get(Z("name"))));
         Check(S(FileName::FolderName_Get(Z("../dir/name"))) =="dir" && S(FileName::FolderPath_Get(Z("name"), 1))=="..", "FileName::FolderName_Get() with the folder from a long current directory", "wrong names");
     }
+    {
+        // Real name longer than MAX_PATH, without the extended-length prefix
+        std::string Real=Slashes(S(File::RealName_Get(Z(Long_File))));
+        Check(Real.size()>=Relative_Directory.size()+9 && Real.substr(Real.size()-Relative_Directory.size()-9)==Relative_Directory+"/file.txt" && Real.find('?')==std::string::npos && Read_10(Real), "File::RealName_Get() of a long name", "result is "+Real);
+    }
     Change_Directory(Directory); // Not in a directory to delete
 
     printf("OK: %u checks\n", (unsigned)Checks);

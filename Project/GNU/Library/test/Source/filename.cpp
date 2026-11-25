@@ -1370,6 +1370,16 @@ int main(int argc, char* argv[])
                 Check(FileName::Absolute_Get(__T("\\dir/..\\name"))==Drive+__T("\\name") && FileName::Absolute_Get(__T("/name"))==Drive+__T("\\name"), "FileName::Absolute_Get(\\name) from "+Shown, "result is "+Printable(FileName::Absolute_Get(__T("\\name")).To_UTF8()));
             }
         #endif
+
+        // Real name
+        Ztring Real=File::RealName_Get(__T("name"));
+        Check(FileName::FullName_Get(Real)==__T("name") && File::Exists(Real) && File::RealName_Get(Real)==Real, "File::RealName_Get(name) from "+Shown, "result is "+Printable(Real.To_UTF8()));
+        Check(File::RealName_Get(__T("./name"))==Real && File::RealName_Get(Parent+Name_Z+Separator+__T("name"))==Real && File::RealName_Get(__T("../")+Name_Z+__T("/name"))==Real, "File::RealName_Get() of other names of a file in "+Shown, "not the same name");
+        Check(File::RealName_Get(__T("."))+Separator+__T("name")==Real, "File::RealName_Get(.) from "+Shown, "result is "+Printable(File::RealName_Get(__T(".")).To_UTF8()));
+        Check(File::RealName_Get(__T("missing"))==Current+Separator+__T("missing") && File::RealName_Get(Ztring()).empty(), "File::RealName_Get(missing) from "+Shown, "result is "+Printable(File::RealName_Get(__T("missing")).To_UTF8()));
+        #if defined(_WIN32) && !defined(WINDOWS_UWP)
+            Check(File::RealName_Get(__T("NAME"))==Real && File::RealName_Get(__T("\\\\?\\")+Current+Separator+__T("name"))==Real, "File::RealName_Get(NAME) from "+Shown, "result is "+Printable(File::RealName_Get(__T("NAME")).To_UTF8()));
+        #endif
     }
     // Current directory which is a root
     {
@@ -1388,6 +1398,7 @@ int main(int argc, char* argv[])
             Check(FileName::Absolute_Get(__T("name"))==Root+__T("name") && FileName::Absolute_Get(__T("./name"))==Root+__T("name") && FileName::Absolute_Get(__T("../dir//../name"))==Root+__T("name") && FileName::Absolute_Get(__T("dir/name"))==Root+__T("dir")+Separator+__T("name"), "FileName::Absolute_Get(name) from a root", "result is "+Printable(FileName::Absolute_Get(__T("name")).To_UTF8()));
             Check(FileName::Absolute_Get(__T("."))==Root && FileName::Absolute_Get(__T(".."))==Root && FileName::Absolute_Get(__T("dir/.."))==Root, "FileName::Absolute_Get(.) from a root", "result is "+Printable(FileName::Absolute_Get(__T(".")).To_UTF8()));
             Check(FileName::Absolute_Get(Separator+__T("dir")+Separator+__T("name"))==Root+__T("dir")+Separator+__T("name"), "FileName::Absolute_Get(name from the root) from a root", "result is "+Printable(FileName::Absolute_Get(Separator+__T("dir")+Separator+__T("name")).To_UTF8()));
+            Check(File::RealName_Get(__T("missing/name"))==Root+__T("missing")+Separator+__T("name") && File::RealName_Get(__T("."))==File::RealName_Get(Root), "File::RealName_Get(missing/name) from a root", "result is "+Printable(File::RealName_Get(__T("missing/name")).To_UTF8()));
             Check(FileName::FolderName_Get(__T("name")).empty() && FileName::FolderName_Get(__T("../name")).empty() && FileName::FolderName_Get(__T("dir/name"))==__T("dir") && FileName::FolderName_Get(__T("dir/name"), 1).empty(), "FileName::FolderName_Get(name) from a root", "result is "+Printable(FileName::FolderName_Get(__T("name")).To_UTF8()));
             #if defined(_WIN32)
                 Ztring Drive(Root, 0, 2);
@@ -1400,12 +1411,15 @@ int main(int argc, char* argv[])
         // Current directory reached through a symbolic link: its real path, whatever PWD, as ".." for the system
         std::string Target=Current_Path+"/sub/target";
         std::string Link=Current_Path+"/link";
-        if (!Create_Raw_Directory(Target) || !Create_Raw(Target+"/name") || symlink("sub/target", Link.c_str()) || setenv("PWD", Link.c_str(), 1) || !Change_Directory(Link))
+        if (!Create_Raw_Directory(Target) || !Create_Raw(Target+"/name") || symlink("sub/target", Link.c_str()) || symlink("name", (Target+"/name_link").c_str()) || setenv("PWD", Link.c_str(), 1) || !Change_Directory(Link))
             Check(false, "internal", "can't use "+Printable(Link));
         else
         {
             Ztring Current=Current_Directory();
+            Ztring Real=File::RealName_Get(__T("name"));
             Check(FileName::Absolute_Get(__T("name"))==Current+__T("/name") && FileName::FolderName_Get(__T("name"))==__T("target") && FileName::FolderName_Get(__T("../name"))==__T("sub"), "FileName::Absolute_Get(name) from a symbolic link", "result is "+Printable(FileName::Absolute_Get(__T("name")).To_UTF8()));
+            Check(FileName::FullName_Get(Real)==__T("name") && FileName::FolderName_Get(Real)==__T("target"), "File::RealName_Get(name) from a symbolic link", "result is "+Printable(Real.To_UTF8()));
+            Check(File::RealName_Get(__T("name_link"))==Real && File::RealName_Get(FileName_From_Native(Link.c_str())+__T("/name_link"))==Real && File::RealName_Get(FileName_From_Native(Link.c_str()))+__T("/name")==Real, "File::RealName_Get(symbolic link)", "result is "+Printable(File::RealName_Get(__T("name_link")).To_UTF8()));
         }
 
         // Current directory deleted: unknown
@@ -1416,6 +1430,7 @@ int main(int argc, char* argv[])
         {
             Check(FileName::Absolute_Get(__T("dir/../name"))==__T("dir/../name"), "FileName::Absolute_Get(name) from a deleted directory", "result is "+Printable(FileName::Absolute_Get(__T("dir/../name")).To_UTF8()));
             Check(FileName::FolderName_Get(__T("name")).empty() && FileName::FolderName_Get(__T("dir/name"))==__T("dir"), "FileName::FolderName_Get(name) from a deleted directory", "result is "+Printable(FileName::FolderName_Get(__T("name")).To_UTF8()));
+            Check(File::RealName_Get(__T("name"))==__T("name"), "File::RealName_Get(name) from a deleted directory", "result is "+Printable(File::RealName_Get(__T("name")).To_UTF8()));
         }
     }
     #endif //!defined(_WIN32)

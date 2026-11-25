@@ -125,6 +125,7 @@ libzen.so.0 libzen0v5 #MINVER#
  (c++)"ZenLib::File::Opened_Get()@Base" 0.4.23
  (c++)"ZenLib::File::Open(std::__cxx11::basic_string<wchar_t, std::char_traits<wchar_t>, std::allocator<wchar_t> > const&, ZenLib::File::access_t)@Base" 0.4.31-2~
  (c++)"ZenLib::File::Position_Get()@Base" 0.4.23
+ (c++)"ZenLib::File::RealName_Get(ZenLib::Ztring const&)@Base" 0.4.42
  (c++)"ZenLib::File::Size_Get()@Base" 0.4.23
  (c++)"ZenLib::File::Size_Get(ZenLib::Ztring const&)@Base" 0.4.23
  (c++)"ZenLib::File::Sizes_Get(std::vector<ZenLib::Ztring, std::allocator<ZenLib::Ztring> > const&)@Base" 0.4.42

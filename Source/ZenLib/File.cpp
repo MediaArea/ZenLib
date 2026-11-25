@@ -32,6 +32,7 @@
             #include <unistd.h>
             #include <fcntl.h>
             #include <cerrno>
+            #include <cstdlib>
             #ifndef O_DIRECTORY
                 #define O_DIRECTORY 0
             #endif
@@ -1602,6 +1603,51 @@ bool File::Exists(const Ztring &File_Name)
             #endif
         #endif
     #endif //ZENLIB_USEWX
+}
+
+//---------------------------------------------------------------------------
+Ztring File::RealName_Get(const Ztring &File_Name)
+{
+    if (File_Name.empty())
+        return Ztring();
+
+    #ifndef ZENLIB_USEWX
+        #if defined(WINDOWS)
+            #if !defined(ZENLIB_STANDARD) && !defined(WINDOWS_UWP)
+                HANDLE Handle=CreateFileW(FileName_To_Wide(File_Name, true).c_str(), 0, FILE_SHARE_READ|FILE_SHARE_WRITE|FILE_SHARE_DELETE, NULL, OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS, NULL); //Also a directory
+                if (Handle!=INVALID_HANDLE_VALUE)
+                {
+                    std::wstring Real(MAX_PATH, L'\0');
+                    DWORD Size=GetFinalPathNameByHandleW(Handle, &Real[0], (DWORD)Real.size(), 0);
+                    if (Size>Real.size())
+                    {
+                        Real.resize(Size);
+                        Size=GetFinalPathNameByHandleW(Handle, &Real[0], Size, 0);
+                    }
+                    CloseHandle(Handle);
+                    if (Size && Size<Real.size())
+                    {
+                        //Without the extended-length prefix, added to the long names when they are used (see FileName_To_Wide())
+                        Real.resize(Size);
+                        if (!Real.compare(0, 8, L"\\\\?\\UNC\\"))
+                            Real.erase(2, 6);
+                        else if (!Real.compare(0, 4, L"\\\\?\\"))
+                            Real.erase(0, 4);
+                        return Ztring().From_Unicode(Real);
+                    }
+                }
+            #endif
+        #else
+            char* Real=realpath(FileName_To_Native(File_Name).c_str(), NULL);
+            if (Real)
+            {
+                Ztring ToReturn=FileName_From_Native(Real);
+                free(Real);
+                return ToReturn;
+            }
+        #endif
+    #endif //ZENLIB_USEWX
+    return FileName::Absolute_Get(File_Name);
 }
 
 //---------------------------------------------------------------------------

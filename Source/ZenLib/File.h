@@ -85,6 +85,7 @@ public :
     static Ztring   Created_Get(const Ztring &File_Name);
     static Ztring   Modified_Get(const Ztring &File_Name);
     static bool     Exists(const Ztring &File_Name);
+    static Ztring   RealName_Get(const Ztring &File_Name); ///< Real name of an existing file or directory: from the root, with the links applied, on Windows with the case of the file system; FileName::Absolute_Get() if it is unknown
     static bool     Copy(const Ztring &Source, const Ztring &Destination, bool OverWrite=false);
     static bool     Move(const Ztring &Source, const Ztring &Destination, bool OverWrite=false);
     static bool     Delete(const Ztring &File_Name);
