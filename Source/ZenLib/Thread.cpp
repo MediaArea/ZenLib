@@ -315,6 +315,22 @@ Thread::returnvalue Thread::ForceTerminate()
     #endif
 }
 
+//---------------------------------------------------------------------------
+void Thread::RequestTerminateAndDelete()
+{
+    {
+        CriticalSectionLocker CSL(C);
+
+        if (State==State_Running || State==State_Paused || State==State_Terminating)
+        {
+            State=State_Terminating_Delete; //Deleted by Internal_Exit()
+            return;
+        }
+    }
+
+    delete this;
+}
+
 //***************************************************************************
 // Status
 //***************************************************************************
@@ -327,7 +343,7 @@ bool Thread::IsRunning()
 //---------------------------------------------------------------------------
 bool Thread::IsTerminating()
 {
-    return State==State_Terminating;
+    return State==State_Terminating || State==State_Terminating_Delete;
 }
 
 //---------------------------------------------------------------------------
@@ -367,21 +383,28 @@ void Thread::Yield()
 //---------------------------------------------------------------------------
 Thread::returnvalue Thread::Internal_Exit()
 {
-    CriticalSectionLocker CSL(C);
-
-    //Coherency
-    if (State!=State_Running
-     && State!=State_Terminating)
+    bool ToDelete;
     {
-        return IsNotRunning;
+        CriticalSectionLocker CSL(C);
+
+        //Coherency
+        if (State!=State_Running
+         && State!=State_Terminating
+         && State!=State_Terminating_Delete)
+        {
+            return IsNotRunning;
+        }
+
+        //Closing old handle
+        CloseHandle((HANDLE)ThreadPointer); ThreadPointer=NULL;
+
+        //Configuring
+        ToDelete=State==State_Terminating_Delete;
+        State=State_Terminated;
     }
 
-    //Closing old handle
-    CloseHandle((HANDLE)ThreadPointer); ThreadPointer=NULL;
-
-    //Configuring
-    State=State_Terminated;
-
+    if (ToDelete)
+        delete this; //Left to the thread by RequestTerminateAndDelete()
     return Ok;
 }
 
@@ -529,6 +552,22 @@ Thread::returnvalue Thread::ForceTerminate()
     return Ok;
 }
 
+//---------------------------------------------------------------------------
+void Thread::RequestTerminateAndDelete()
+{
+    {
+        CriticalSectionLocker CSL(C);
+
+        if (State==State_Running || State==State_Paused || State==State_Terminating)
+        {
+            State=State_Terminating_Delete; //Deleted by Internal_Exit()
+            return;
+        }
+    }
+
+    delete this;
+}
+
 //***************************************************************************
 // Status
 //***************************************************************************
@@ -542,7 +581,7 @@ bool Thread::IsRunning()
 //---------------------------------------------------------------------------
 bool Thread::IsTerminating()
 {
-    return State==State_Terminating;
+    return State==State_Terminating || State==State_Terminating_Delete;
 }
 
 //---------------------------------------------------------------------------
@@ -573,21 +612,28 @@ void Thread::Yield()
 
 Thread::returnvalue Thread::Internal_Exit()
 {
-    CriticalSectionLocker CSL(C);
-
-    //Coherency
-    if (State!=State_Running
-     && State!=State_Terminating)
+    bool ToDelete;
     {
-        return IsNotRunning;
+        CriticalSectionLocker CSL(C);
+
+        //Coherency
+        if (State!=State_Running
+         && State!=State_Terminating
+         && State!=State_Terminating_Delete)
+        {
+            return IsNotRunning;
+        }
+
+        //Closing old handle
+        ThreadPointer=NULL;
+
+        //Configuring
+        ToDelete=State==State_Terminating_Delete;
+        State=State_Terminated;
     }
 
-    //Closing old handle
-    ThreadPointer=NULL;
-
-    //Configuring
-    State=State_Terminated;
-
+    if (ToDelete)
+        delete this; //Left to the thread by RequestTerminateAndDelete()
     return Ok;
 }
 
