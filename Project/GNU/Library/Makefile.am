@@ -84,13 +84,15 @@ TESTS = \
  test/filename.sh \
  test/longpath.sh \
  Tests/zen_bitstream \
- Tests/zen_bitstream_fast
+ Tests/zen_bitstream_fast \
+ Tests/zen_thread
 
 check_PROGRAMS = \
  test/zen_filename \
  test/zen_longpath \
  Tests/zen_bitstream \
- Tests/zen_bitstream_fast
+ Tests/zen_bitstream_fast \
+ Tests/zen_thread
 test_zen_filename_SOURCES = test/Source/filename.cpp
 test_zen_filename_CXXFLAGS = $(AM_CXXFLAGS) -Wall -Wextra
 test_zen_filename_LDADD = libzen.la
@@ -106,6 +108,10 @@ Tests_zen_bitstream_LDADD = libzen.la
 Tests_zen_bitstream_fast_SOURCES = Tests/BitStream_Fast.cpp
 Tests_zen_bitstream_fast_CXXFLAGS = $(AM_CXXFLAGS) -Wall -Wextra
 Tests_zen_bitstream_fast_LDADD = libzen.la
+
+Tests_zen_thread_SOURCES = Tests/Thread.cpp
+Tests_zen_thread_CXXFLAGS = $(AM_CXXFLAGS) -Wall -Wextra
+Tests_zen_thread_LDADD = libzen.la
 
 AM_CXXFLAGS = -std=c++11
 AM_CPPFLAGS = -I../../../Source
