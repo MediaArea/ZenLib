@@ -48,6 +48,7 @@ public :
     returnvalue Pause();
     returnvalue RequestTerminate();
     returnvalue ForceTerminate();
+    void        RequestTerminateAndDelete(); //Object deleted at the end of the thread, now if not started or ended
 
     //Status
     bool        IsRunning();
@@ -77,10 +78,11 @@ private :
     enum state
     {
         State_New,              // didn't start execution yet (--> Running)
-        State_Running,          // thread is running (--> Paused, Terminating)
-        State_Paused,           // thread is temporarily suspended (--> Running)
-        State_Terminating,      // thread should terminate a.s.a.p. (--> Terminated)
+        State_Running,          // thread is running (--> Paused, Terminating, Terminating_Delete)
+        State_Paused,           // thread is temporarily suspended (--> Running, Terminating_Delete)
+        State_Terminating,      // thread should terminate a.s.a.p. (--> Terminated, Terminating_Delete)
         State_Terminated,       // thread is terminated
+        State_Terminating_Delete, // thread should terminate a.s.a.p., then the object is deleted (--> Terminated)
     };
     state State;
     CriticalSection C;

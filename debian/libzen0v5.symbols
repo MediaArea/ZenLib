@@ -268,6 +268,7 @@ libzen.so.0 libzen0v5 #MINVER#
  (c++)"ZenLib::Thread::IsTerminating()@Base" 0.4.23
  (c++)"ZenLib::Thread::Pause()@Base" 0.4.23
  (c++)"ZenLib::Thread::RequestTerminate()@Base" 0.4.23
+ (c++)"ZenLib::Thread::RequestTerminateAndDelete()@Base" 0.4.42
  (c++)"ZenLib::Thread::RunAgain()@Base" 0.4.23
  (c++)"ZenLib::Thread::Run()@Base" 0.4.23
  (c++)"ZenLib::Thread_Start(void*)@Base" 0.4.23
