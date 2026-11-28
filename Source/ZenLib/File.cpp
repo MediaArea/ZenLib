@@ -32,6 +32,7 @@
             #include <unistd.h>
             #include <fcntl.h>
             #include <cerrno>
+            #include <cstdlib>
             #ifndef O_DIRECTORY
                 #define O_DIRECTORY 0
             #endif
@@ -103,9 +104,6 @@ namespace ZenLib
 //Names for the wide functions of Windows, also without Unicode (UTF-8 text), with the extended-length prefix if needed (see FileName_To_Wide())
 #if defined(WINDOWS) && !defined(WINDOWS_UWP) && !defined(ZENLIB_USEWX)
     ZENLIB_INTERNAL std::wstring FileName_To_Wide(const Ztring &File_Name, bool Existing); //In OS_Utils.cpp, also the name of the code page of an existing file without Unicode
-#endif
-#if defined(WINDOWS_UWP)
-    ZENLIB_INTERNAL Ztring FileName_Item_Get(const Ztring &File_Name); //In FileName.cpp
 #endif
 
 //---------------------------------------------------------------------------
@@ -272,6 +270,9 @@ bool File::Open (const tstring &File_Name_, access_t Access)
                         Debug+=", File_Name="; Debug +=Ztring(File_Name_).To_UTF8();)
 
     File_Name=File_Name_;
+
+    if (File_Name.empty())
+        return false;
 
     #ifdef ZENLIB_USEWX
         File_Handle=(void*)new wxFile();
@@ -510,7 +511,7 @@ bool File::Create (const Ztring &File_Name_, bool OverWrite)
 
                 //Split file and folder
                 tstring Destination_Dir=FileName::Path_Get(File_Name);
-                tstring Destination_File=FileName_Item_Get(File_Name);
+                tstring Destination_File=FileName::FullName_Get(File_Name);
 
                 //Open dst folder
                 ComPtr<IStorageFolder> Folder;
@@ -1545,6 +1546,9 @@ bool File::Exists(const Ztring &File_Name)
     ZENLIB_DEBUG1(      "File Exists",
                         Debug+=", File_Name="; Debug+=Ztring(File_Name).To_UTF8())
 
+    if (File_Name.empty())
+        return false;
+
     #ifdef ZENLIB_USEWX
         wxFileName FN(File_Name.c_str());
         return FN.FileExists();
@@ -1573,7 +1577,7 @@ bool File::Exists(const Ztring &File_Name)
 
                 //Try directory access methods
                 tstring Dir_=FileName::Path_Get(File_Name_);
-                tstring File_=FileName_Item_Get(File_Name_);
+                tstring File_=FileName::FullName_Get(File_Name_);
 
                 ComPtr<IStorageFolder> Folder;
                 if (FAILED(Get_Folder(WinRT_Name(Dir_).Ref(), Folder)))
@@ -1608,6 +1612,51 @@ bool File::Exists(const Ztring &File_Name)
 }
 
 //---------------------------------------------------------------------------
+Ztring File::RealName_Get(const Ztring &File_Name)
+{
+    if (File_Name.empty())
+        return Ztring();
+
+    #ifndef ZENLIB_USEWX
+        #if defined(WINDOWS)
+            #if !defined(ZENLIB_STANDARD) && !defined(WINDOWS_UWP)
+                HANDLE Handle=CreateFileW(FileName_To_Wide(File_Name, true).c_str(), 0, FILE_SHARE_READ|FILE_SHARE_WRITE|FILE_SHARE_DELETE, NULL, OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS, NULL); //Also a directory
+                if (Handle!=INVALID_HANDLE_VALUE)
+                {
+                    std::wstring Real(MAX_PATH, L'\0');
+                    DWORD Size=GetFinalPathNameByHandleW(Handle, &Real[0], (DWORD)Real.size(), 0);
+                    if (Size>Real.size())
+                    {
+                        Real.resize(Size);
+                        Size=GetFinalPathNameByHandleW(Handle, &Real[0], Size, 0);
+                    }
+                    CloseHandle(Handle);
+                    if (Size && Size<Real.size())
+                    {
+                        //Without the extended-length prefix, added to the long names when they are used (see FileName_To_Wide())
+                        Real.resize(Size);
+                        if (!Real.compare(0, 8, L"\\\\?\\UNC\\"))
+                            Real.erase(2, 6);
+                        else if (!Real.compare(0, 4, L"\\\\?\\"))
+                            Real.erase(0, 4);
+                        return Ztring().From_Unicode(Real);
+                    }
+                }
+            #endif
+        #else
+            char* Real=realpath(FileName_To_Native(File_Name).c_str(), NULL);
+            if (Real)
+            {
+                Ztring ToReturn=FileName_From_Native(Real);
+                free(Real);
+                return ToReturn;
+            }
+        #endif
+    #endif //ZENLIB_USEWX
+    return FileName::Absolute_Get(File_Name);
+}
+
+//---------------------------------------------------------------------------
 bool File::Copy(const Ztring &Source, const Ztring &Destination, bool OverWrite)
 {
     #ifdef ZENLIB_USEWX
@@ -1633,7 +1682,7 @@ bool File::Copy(const Ztring &Source, const Ztring &Destination, bool OverWrite)
 
                 //Split destination file and folder
                 tstring Destination_Dir=FileName::Path_Get(Destination_);
-                tstring Destination_File=FileName_Item_Get(Destination_);
+                tstring Destination_File=FileName::FullName_Get(Destination_);
 
                 //Open src file
                 ComPtr<IStorageFile> File;
@@ -1689,7 +1738,7 @@ bool File::Move(const Ztring &Source, const Ztring &Destination, bool OverWrite)
 
                 //Split destination file and folder
                 tstring Destination_Dir=FileName::Path_Get(Destination_);
-                tstring Destination_File=FileName_Item_Get(Destination_);
+                tstring Destination_File=FileName::FullName_Get(Destination_);
 
                 //Open src file
                 ComPtr<IStorageFile> File;

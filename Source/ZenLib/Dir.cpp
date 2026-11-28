@@ -66,9 +66,6 @@ namespace ZenLib
         static inline Ztring FileName_From_Wide(const wchar_t* File_Name) {return Ztring().From_Unicode(File_Name);}
     #endif //UNICODE
 #endif
-#if defined(WINDOWS_UWP)
-    ZENLIB_INTERNAL Ztring FileName_Item_Get(const Ztring &File_Name); //In FileName.cpp
-#endif
 #if defined(WINDOWS) && !defined(UNICODE) && !defined(ZENLIB_USEWX)
     ZENLIB_INTERNAL bool IsCodePageBytes(const char* S, size_t Size); //In Ztring.cpp
 #endif
@@ -523,7 +520,7 @@ bool Dir::Exists(const Ztring &File_Name)
 
                 //Try directory access methods
                 tstring Parent=FileName::Path_Get(File_Name_);
-                tstring Dir=FileName_Item_Get(File_Name_);
+                tstring Dir=FileName::FullName_Get(File_Name_);
 
                 ComPtr<IStorageFolder> Parent_Folder;
                 if (FAILED(Get_Folder(WinRT_Name(Parent).Ref(), Parent_Folder)))
@@ -584,7 +581,7 @@ bool Dir::Create(const Ztring &File_Name)
                 Parent.FindAndReplace(__T("/"), __T("\\"), 0, Ztring_Recursive);
 
                 //Split folder and parent
-                Ztring Dir=FileName_Item_Get(File_Name);
+                Ztring Dir=FileName::FullName_Get(File_Name);
 
                 //Open parent folder
                 ComPtr<IStorageFolder> Folder;

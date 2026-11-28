@@ -30,6 +30,7 @@
         #include <windows.h>
     #endif
 #endif //ZENLIB_USEWX
+#include <vector>
 //---------------------------------------------------------------------------
 #if defined(WINDOWS) && !defined(UNICODE) && !defined(ZENLIB_USEWX)
     #define ZENLIB_FILENAME_CODEPAGE_BYTES //A string which is not UTF-8 text is the bytes of the code page (see Ztring::To_Unicode())
@@ -45,50 +46,194 @@ namespace ZenLib
 ZENLIB_INTERNAL bool IsCodePageBytes(const char* S, size_t Size);
 #endif
 
+//---------------------------------------------------------------------------
+//In OS_Utils.cpp
+ZENLIB_INTERNAL Ztring CurrentFolder_Get(const Ztring &Drive);
+
 //***************************************************************************
 // Helpers
 //***************************************************************************
 
 //---------------------------------------------------------------------------
-// Position of the last path separator: "/", also "\" on Windows
+// Name in which ASCII characters can be searched, at the same positions
 // Without Unicode on Windows, in the bytes of the code page given as they are (see Ztring::To_Unicode()), the second byte of a character of
-// a multibyte code page (e.g. "\" in cp932) is not a separator, UTF-8 text has no such byte
+// a multibyte code page (e.g. "\" in cp932) is not a character, so it is replaced, UTF-8 text has no such byte
+#if defined(WINDOWS) && !defined(UNICODE)
+static Ztring Characters_Get(const Ztring &Name)
+{
+    Ztring ToReturn(Name);
+    #if defined(ZENLIB_FILENAME_CODEPAGE_BYTES)
+        if (!IsCodePageBytes(Name.c_str(), Name.size()))
+            return ToReturn;
+    #endif
+    for (size_t Pos=0; Pos<ToReturn.size(); Pos++)
+        if (IsDBCSLeadByte((BYTE)ToReturn[Pos]) && ++Pos<ToReturn.size())
+            ToReturn[Pos]='\0'; //Second byte
+    return ToReturn;
+}
+#else
+static const Ztring& Characters_Get(const Ztring &Name)
+{
+    return Name;
+}
+#endif
+
+//---------------------------------------------------------------------------
+// Path separators: "/", also "\" on Windows
+#if defined(WINDOWS)
+    static const Char* const PathSeparators=__T("\\/");
+#else
+    static const Char* const PathSeparators=__T("/");
+#endif
+
+//---------------------------------------------------------------------------
+// Position of the last path separator
 static size_t PathSeparator_RFind(const Ztring &Name)
 {
-    #if defined(WINDOWS) && !defined(UNICODE)
-        #if defined(ZENLIB_FILENAME_CODEPAGE_BYTES)
-            if (!IsCodePageBytes(Name.c_str(), Name.size()))
-                return Name.find_last_of(__T("\\/"));
-        #endif
-        size_t ToReturn=Ztring::npos;
-        for (size_t Pos=0; Pos<Name.size(); Pos++)
-        {
-            if (Name[Pos]=='\\' || Name[Pos]=='/')
-                ToReturn=Pos;
-            else if (IsDBCSLeadByte((BYTE)Name[Pos]))
-                Pos++; //Second byte
-        }
-        return ToReturn;
-    #elif defined(WINDOWS)
-        return Name.find_last_of(__T("\\/"));
-    #else
-        return Name.rfind(__T('/'));
-    #endif
+    return Characters_Get(Name).find_last_of(PathSeparators);
 }
 
 //---------------------------------------------------------------------------
-// Last item of a path, the whole name of the file or directory (Name_Get() gives it without the extension), for the WinRT functions which
-// take the folder of the item (Path_Get()) and its name
-#if defined(WINDOWS_UWP)
-ZENLIB_INTERNAL Ztring FileName_Item_Get(const Ztring &File_Name)
+// Size of the drive of a name ("C:" of "C:\name" or "C:name" on Windows)
+static size_t Drive_Size_Get(const Ztring &Name)
 {
-    size_t Pos_Path=PathSeparator_RFind(File_Name);
-    if (Pos_Path==Ztring::npos)
-        return File_Name; //Not found
-    else
-        return Ztring(File_Name, Pos_Path+1);
+    #if defined(WINDOWS)
+        if (Name.size()>=2 && Name[1]==__T(':') && Name[0]!=__T('\\') && Name[0]!=__T('/'))
+            return 2;
+    #else
+        (void)Name;
+    #endif
+    return 0;
 }
-#endif
+
+//---------------------------------------------------------------------------
+// Size of the folders of a name with the last path separator, of the drive for "C:name" on Windows
+static size_t Folders_Size_Get(const Ztring &Name)
+{
+    size_t Pos=PathSeparator_RFind(Name);
+    return Pos==Ztring::npos?Drive_Size_Get(Name):(Pos+1);
+}
+
+//---------------------------------------------------------------------------
+// "scheme://..."
+static bool IsUrl(const Ztring &Name)
+{
+    size_t Pos=Name.find(__T("://"));
+    return Pos!=Ztring::npos && Pos>=2 && Name.find_first_of(PathSeparators)==Pos+1;
+}
+
+//---------------------------------------------------------------------------
+// Folders of a name
+struct ZENLIB_INTERNAL name_folders
+{
+    std::vector<size_t> Separators; //Positions of the path separators
+    size_t              Root_Count; //Count of path separators of the root: 1 for "/" (also "\" and "C:\" on Windows), 4 for "\\server\share\" or "\\?\C:\", 6 for "\\?\UNC\server\share\", 2 for "scheme://" of an URL (its host is its first folder), 0 if the name is not from the root
+    size_t              Drive_Size;
+
+    explicit name_folders(const Ztring &Name)
+        : Root_Count(0)
+        , Drive_Size(Drive_Size_Get(Name))
+    {
+        const Ztring& Characters=Characters_Get(Name);
+        for (size_t Pos=Characters.find_first_of(PathSeparators); Pos!=Ztring::npos; Pos=Characters.find_first_of(PathSeparators, Pos+1))
+            Separators.push_back(Pos);
+        if (!Separators.empty() && Separators[0]==Drive_Size)
+        {
+            Root_Count=1;
+            #if defined(WINDOWS)
+                if (!Drive_Size && Separators.size()>=2 && Separators[1]==1)
+                    Root_Count=Name.compare(0, 8, __T("\\\\?\\UNC\\"))?4:6;
+            #endif
+        }
+        else if (IsUrl(Name))
+            Root_Count=2;
+    }
+
+    //Size of the root with its last path separator, all the name if the root is not complete (e.g. "\\server")
+    size_t Root_Size(const Ztring &Name) const
+    {
+        return Root_Count>Separators.size()?Name.size():(Separators[Root_Count-1]+1);
+    }
+
+    //Folder before a path separator
+    size_t Folder_Begin(size_t Pos) const
+    {
+        return Pos?(Separators[Pos-1]+1):Drive_Size;
+    }
+    Ztring Folder(const Ztring &Name, size_t Pos) const
+    {
+        size_t Begin=Folder_Begin(Pos);
+        return Ztring(Name, Begin, Separators[Pos]-Begin);
+    }
+    bool Folder_Is(const Ztring &Name, size_t Pos, const Char* Text) const
+    {
+        size_t Begin=Folder_Begin(Pos);
+        return !Name.compare(Begin, Separators[Pos]-Begin, Text);
+    }
+};
+
+//---------------------------------------------------------------------------
+// Name from the root, from the current folder (or its root for "\name" on Windows) if needed, empty if the current folder is unknown
+static Ztring FromRoot_Get(const Ztring &File_Name)
+{
+    #if defined(WINDOWS) && !defined(UNICODE)
+        Ztring Name=Ztring().From_Unicode(File_Name.To_Unicode()); //UTF-8 text, as the current folder
+    #else
+        const Ztring& Name=File_Name;
+    #endif
+    name_folders Folders(Name);
+    #if defined(WINDOWS)
+        if (Folders.Root_Count>(Folders.Drive_Size?(size_t)0:(size_t)1))
+            return Name;
+    #else
+        if (Folders.Root_Count)
+            return Name;
+    #endif
+
+    Ztring ToReturn=CurrentFolder_Get(Ztring(Name, 0, Folders.Drive_Size));
+    name_folders ToReturn_Folders(ToReturn);
+    if (!ToReturn_Folders.Root_Count)
+        return Ztring();
+    if (Folders.Root_Count)
+        ToReturn.resize(ToReturn_Folders.Root_Size(ToReturn));
+    ToReturn+=PathSeparator;
+    ToReturn.append(Name, Folders.Drive_Size, Ztring::npos);
+    return ToReturn;
+}
+
+//---------------------------------------------------------------------------
+// Name from the root with "." and ".." applied, without empty folders (and without path separator at the end, except a root)
+static Ztring Folders_Apply(const Ztring &Name)
+{
+    name_folders Folders(Name);
+    size_t Begin=Folders.Root_Size(Name);
+    Ztring ToReturn(Name, 0, Begin);
+    for (size_t Pos=0; Pos<Folders.Root_Count && Pos<Folders.Separators.size(); Pos++)
+        ToReturn[Folders.Separators[Pos]]=PathSeparator;
+    Folders.Separators.push_back(Name.size());
+    std::vector<size_t> Sizes; //Size of ToReturn before each folder
+    for (size_t Pos=Folders.Root_Count; Pos<Folders.Separators.size(); Pos++)
+    {
+        size_t Size=Folders.Separators[Pos]-Begin;
+        if (Size==2 && !Name.compare(Begin, Size, __T("..")))
+        {
+            if (!Sizes.empty())
+            {
+                ToReturn.resize(Sizes.back());
+                Sizes.pop_back();
+            }
+        }
+        else if (Size && (Size!=1 || Name[Begin]!=__T('.')))
+        {
+            Sizes.push_back(ToReturn.size());
+            if (Sizes.size()>1)
+                ToReturn+=PathSeparator;
+            ToReturn.append(Name, Begin, Size);
+        }
+        Begin=Folders.Separators[Pos]+1;
+    }
+    return ToReturn;
+}
 
 //***************************************************************************
 // Read/Write
@@ -231,6 +376,123 @@ Ztring& FileName::Extension_Set(const Ztring &Extension)
             (void)Extension;
         #endif
     #endif //ZENLIB_USEWX
+    return *this;
+}
+
+//***************************************************************************
+// Related names
+//***************************************************************************
+
+//---------------------------------------------------------------------------
+Ztring FileName::FullName_Get() const
+{
+    return Ztring(*this, Folders_Size_Get(*this));
+}
+
+//---------------------------------------------------------------------------
+FileName::size_type FileName::FullName_RFind(Char ToFind) const
+{
+    size_t ToReturn=Characters_Get(*this).rfind(ToFind);
+    return ToReturn!=npos && ToReturn>=Folders_Size_Get(*this)?ToReturn:npos;
+}
+
+//---------------------------------------------------------------------------
+Ztring FileName::FolderName_Get(size_t Levels_Up) const
+{
+    name_folders Folders(*this);
+    size_t Levels=Levels_Up;
+    size_t Parents=0;
+    for (size_t Pos=Folders.Separators.size(); Pos>Folders.Root_Count; Pos--)
+    {
+        Ztring Folder=Folders.Folder(*this, Pos-1);
+        if (Folder.empty() || Folder==__T("."))
+            continue;
+        if (Folder==__T(".."))
+            Parents++;
+        else if (Parents)
+            Parents--;
+        else if (Levels)
+            Levels--;
+        else
+            return Folder;
+    }
+    if (empty() || Folders.Root_Count)
+        return Ztring();
+    return FolderName_Get(FromRoot_Get(*this), Levels_Up);
+}
+
+//---------------------------------------------------------------------------
+Ztring FileName::FolderPath_Get(size_t Levels_Up) const
+{
+    Ztring ToReturn=FromFolder_Get(Ztring(), Levels_Up);
+    if (ToReturn.empty() && !empty())
+        return __T(".");
+    name_folders Folders(ToReturn);
+    while (Folders.Separators.size()>Folders.Root_Count && Folders.Separators.back()+1==ToReturn.size())
+    {
+        ToReturn.resize(Folders.Separators.back());
+        Folders.Separators.pop_back();
+    }
+    return ToReturn;
+}
+
+//---------------------------------------------------------------------------
+Ztring FileName::FromFolder_Get(const Ztring &Name, size_t Levels_Up) const
+{
+    if (empty())
+        return Ztring();
+    name_folders Folders(*this);
+    while (Levels_Up && Folders.Separators.size()>Folders.Root_Count)
+    {
+        size_t Pos=Folders.Separators.size()-1;
+        if (Folders.Folder_Is(*this, Pos, __T("..")))
+            break;
+        if (!Folders.Folder_Is(*this, Pos, __T("")) && !Folders.Folder_Is(*this, Pos, __T(".")))
+            Levels_Up--;
+        Folders.Separators.pop_back();
+    }
+    Ztring ToReturn(*this, 0, Folders.Separators.empty()?Folders.Drive_Size:(Folders.Separators.back()+1));
+    for (; Levels_Up; Levels_Up--)
+    {
+        ToReturn+=__T("..");
+        ToReturn+=PathSeparator;
+    }
+    ToReturn+=Name;
+    return ExtendedLength_Get(ToReturn);
+}
+
+//---------------------------------------------------------------------------
+Ztring FileName::Root_Get() const
+{
+    if (IsUrl(*this))
+        return Ztring();
+    name_folders Folders(*this);
+    return Ztring(*this, 0, Folders.Root_Count?Folders.Root_Size(*this):Folders.Drive_Size);
+}
+
+//---------------------------------------------------------------------------
+Ztring FileName::Absolute_Get() const
+{
+    if (empty() || IsUrl(*this))
+        return *this;
+    Ztring ToReturn=FromRoot_Get(*this);
+    if (ToReturn.empty())
+        return *this;
+    return Folders_Apply(ToReturn);
+}
+
+//---------------------------------------------------------------------------
+Ztring FileName::ExtendedLength_Get() const
+{
+    #if defined(WINDOWS)
+        if (!compare(0, 4, __T("\\\\?\\")))
+        {
+            Ztring ToReturn=Folders_Apply(*this);
+            if (Folders_Size_Get(*this)==size() && Folders_Size_Get(ToReturn)!=ToReturn.size())
+                ToReturn+=PathSeparator; //A folder given with its path separator
+            return ToReturn;
+        }
+    #endif
     return *this;
 }
 

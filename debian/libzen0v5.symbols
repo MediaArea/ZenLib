@@ -1,6 +1,9 @@
 libzen.so.0 libzen0v5 #MINVER#
  (c++|regex)"ZenLib::File::Read\(unsigned char\*, unsigned (int|long)\)@Base" 0.4.23
  (c++|regex)"ZenLib::File::Write\(unsigned char const\*, unsigned (int|long)\)@Base" 0.4.23
+ (c++|regex)"ZenLib::FileName::FolderName_Get\(unsigned (int|long)\) const@Base" 0.4.42
+ (c++|regex)"ZenLib::FileName::FolderPath_Get\(unsigned (int|long)\) const@Base" 0.4.42
+ (c++|regex)"ZenLib::FileName::FromFolder_Get\(ZenLib::Ztring const&, unsigned (int|long)\) const@Base" 0.4.42
  (c++|regex)"ZenLib::InfoMap::Get\(ZenLib::Ztring const&, unsigned (int|long)\) const@Base" 0.4.23
  (c++|regex)"ZenLib::InfoMap::Get\(ZenLib::Ztring const&, unsigned (int|long), ZenLib::Ztring const&, unsigned (int|long)\) const@Base" 0.4.23
  (c++|regex)"ZenLib::InfoMap::Separator_Set\(unsigned (int|long), ZenLib::Ztring const&\)@Base" 0.4.23
@@ -104,19 +107,25 @@ libzen.so.0 libzen0v5 #MINVER#
  (c++)"ZenLib::File::Modified_Get(ZenLib::Ztring const&)@Base" 0.4.23
  (c++)"ZenLib::File::Modified_Local_Get()@Base" 0.4.23
  (c++)"ZenLib::File::Move(ZenLib::Ztring const&, ZenLib::Ztring const&, bool)@Base" 0.4.23
+ (c++)"ZenLib::FileName::Absolute_Get() const@Base" 0.4.42
+ (c++)"ZenLib::FileName::ExtendedLength_Get() const@Base" 0.4.42
  (c++)"ZenLib::FileName::Extension_Get() const@Base" 0.4.23
  (c++)"ZenLib::FileName::Extension_Set(ZenLib::Ztring const&)@Base" 0.4.23
+ (c++)"ZenLib::FileName::FullName_Get() const@Base" 0.4.42
+ (c++)"ZenLib::FileName::FullName_RFind(wchar_t) const@Base" 0.4.42
  (c++)"ZenLib::FileName::Name_Get() const@Base" 0.4.23
  (c++)"ZenLib::FileName::Name_Set(ZenLib::Ztring const&)@Base" 0.4.23
  (c++)"ZenLib::FileName::Path_Get() const@Base" 0.4.23
  (c++)"ZenLib::FileName_PathSeparator@Base" 0.4.23
  (c++)"ZenLib::FileName::Path_Set(ZenLib::Ztring const&)@Base" 0.4.23
+ (c++)"ZenLib::FileName::Root_Get() const@Base" 0.4.42
  (c++)"ZenLib::FileName::TempFileName_Create(ZenLib::Ztring const&)@Base" 0.4.23
  (c++)"ZenLib::FileName_From_Native(char const*)@Base" 0.4.42
  (c++)"ZenLib::FileName_To_Native[abi:cxx11](ZenLib::Ztring const&)@Base" 0.4.42
  (c++)"ZenLib::File::Opened_Get()@Base" 0.4.23
  (c++)"ZenLib::File::Open(std::__cxx11::basic_string<wchar_t, std::char_traits<wchar_t>, std::allocator<wchar_t> > const&, ZenLib::File::access_t)@Base" 0.4.31-2~
  (c++)"ZenLib::File::Position_Get()@Base" 0.4.23
+ (c++)"ZenLib::File::RealName_Get(ZenLib::Ztring const&)@Base" 0.4.42
  (c++)"ZenLib::File::Size_Get()@Base" 0.4.23
  (c++)"ZenLib::File::Size_Get(ZenLib::Ztring const&)@Base" 0.4.23
  (c++)"ZenLib::File::Sizes_Get(std::vector<ZenLib::Ztring, std::allocator<ZenLib::Ztring> > const&)@Base" 0.4.42
